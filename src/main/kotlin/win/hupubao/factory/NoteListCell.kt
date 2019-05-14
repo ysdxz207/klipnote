@@ -11,7 +11,9 @@ import javafx.scene.paint.Paint
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
 import win.hupubao.beans.Note
+import win.hupubao.components.NoteEditView
 import win.hupubao.views.AddToClipboardEvent
+import win.hupubao.views.MainView
 
 
 class NoteListCell<T> : ListCell<T>() {
@@ -55,7 +57,7 @@ class NoteListCell<T> : ListCell<T>() {
 
                             if (it. clickCount == 1
                                     && it.button == MouseButton.SECONDARY) {
-                                println("ri")
+                                find<MainView>().root.center = find<NoteEditView>().root
                             }
                         }
 

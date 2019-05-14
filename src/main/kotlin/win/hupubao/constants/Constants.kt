@@ -1,5 +1,6 @@
 package win.hupubao.constants
 
 object Constants {
-    val PAGE_SIZE = 20
+    const val DEFAULT_CATEGORY_ID = 0
+    const val PAGE_SIZE = 20
 }

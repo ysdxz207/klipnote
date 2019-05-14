@@ -10,12 +10,14 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
 import win.hupubao.beans.Category
+import win.hupubao.components.CategoryMenu
 import win.hupubao.sql.Categories
 import win.hupubao.utils.StringUtils
 
 
 class EditCategoryFragment : Fragment("编辑分类") {
     private val mainView: MainView by inject()
+    private val categoryMenu: CategoryMenu by inject()
 
     private lateinit var textFieldCategoryName: TextField
     private lateinit var btnSave: Button
@@ -74,7 +76,7 @@ class EditCategoryFragment : Fragment("编辑分类") {
                     }
                     close()
                     // 触发加载分类列表事件
-                    EventBus.getDefault().post(LoadCategoriesEvent(mainView.listViewCategories))
+                    EventBus.getDefault().post(LoadCategoriesEvent(categoryMenu.listViewCategories))
                 }
             }
         }

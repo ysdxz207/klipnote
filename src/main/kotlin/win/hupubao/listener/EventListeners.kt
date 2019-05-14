@@ -10,11 +10,13 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
 import win.hupubao.beans.Category
 import win.hupubao.beans.Note
+import win.hupubao.components.CategoryMenu
 import win.hupubao.constants.Constants
 import win.hupubao.factory.NoteListCell
 import win.hupubao.sql.Notes
@@ -48,15 +50,25 @@ class EventListeners {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoadNotesEvent(event: LoadNotesEvent) {
         GlobalScope.launch(Dispatchers.JavaFx) {
+            val listViewCategories = find<CategoryMenu>().listViewCategories
+            var category = listViewCategories.selectedItem
+            // 默认选中默认分类
+            if (category == null) {
+                transaction {
+                    category = Category.findById(Constants.DEFAULT_CATEGORY_ID)
+                }
+                listViewCategories.selectionModel.select(0)
+            }
+            // 获取笔记总条数
             transaction {
-                val count = Notes.select { Notes.title like "%${event.searchText}%" }.count()
+                val count = Notes.select { Notes.title like "%${event.searchText}%" and (Notes.category eq category!!.id)}.count()
                 event.pagination.pageCount = if (count % Constants.PAGE_SIZE == 0) {
                     count / Constants.PAGE_SIZE
                 } else {
                     count / Constants.PAGE_SIZE + 1
                 }
             }
-
+            // 组装列表及数据
             event.pagination.setPageFactory { pageIndex ->
                 val listViewNotes = ListView<Note>()
                 listViewNotes.setCellFactory {
@@ -67,7 +79,10 @@ class EventListeners {
                 }
                 listViewNotes.asyncItems {
                     transaction {
-                        Note.find { Notes.title like "%${event.searchText}%" }.orderBy(Notes.sort to SortOrder.DESC).limit(Constants.PAGE_SIZE, pageIndex * Constants.PAGE_SIZE).toMutableList()
+                        Note.find { Notes.title like "%${event.searchText}%"}
+                                .orderBy(Notes.sort to SortOrder.DESC)
+                                .limit(Constants.PAGE_SIZE, pageIndex * Constants.PAGE_SIZE)
+                                .toMutableList()
                     }
                 }
                 listViewNotes

@@ -9,13 +9,18 @@ import javafx.scene.image.Image
 import org.greenrobot.eventbus.EventBus
 import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
+import win.hupubao.App
 import win.hupubao.beans.Category
+import win.hupubao.components.CategoryMenu
+import win.hupubao.components.NoteListView
+import win.hupubao.constants.Constants
 import win.hupubao.views.LoadCategoriesEvent
 import win.hupubao.views.MainView
 import win.hupubao.views.ShowEditCategoryEvent
 
 
 class CategoryListCell<T> : ListCell<T>() {
+    private val windowSize = App.windowSize
 
 
     init {
@@ -35,7 +40,13 @@ class CategoryListCell<T> : ListCell<T>() {
                     alignment = Pos.CENTER
                     label {
                         text = t.toString()
-                        maxWidth = 160.0
+                        prefWidth = windowSize.Lwidth - 110.0
+                    }
+
+                    onMouseClicked = EventHandler {
+                        find<MainView>().root.center = find<NoteListView>().root
+                        // 触发加载分类列表事件
+                        EventBus.getDefault().post(LoadCategoriesEvent(find<CategoryMenu>().listViewCategories))
                     }
                 }
                 right = hbox {
@@ -50,7 +61,7 @@ class CategoryListCell<T> : ListCell<T>() {
                             text = "编辑分类"
                         }
 
-                        if ((t as Category).id.value == Int.MAX_VALUE) {
+                        if ((t as Category).id.value == Constants.DEFAULT_CATEGORY_ID) {
                             hide()
                         }
 
@@ -72,7 +83,7 @@ class CategoryListCell<T> : ListCell<T>() {
                             text = "删除分类"
                         }
 
-                        if ((t as Category).id.value == Int.MAX_VALUE) {
+                        if ((t as Category).id.value == Constants.DEFAULT_CATEGORY_ID) {
                             hide()
                         }
 
@@ -84,7 +95,7 @@ class CategoryListCell<T> : ListCell<T>() {
                                 transaction {
                                     category.delete()
                                 }
-                                EventBus.getDefault().post(LoadCategoriesEvent(find(MainView::class).listViewCategories))
+                                EventBus.getDefault().post(LoadCategoriesEvent(find(CategoryMenu::class).listViewCategories))
                             })
                         }
                     }

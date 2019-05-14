@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import win.hupubao.beans.Category
+import win.hupubao.constants.Constants
 import win.hupubao.sql.Categories
 import win.hupubao.sql.Notes
 import java.sql.Connection
@@ -20,8 +21,8 @@ object DataUtils {
         transaction {
             SchemaUtils.create(Notes, Categories)
 
-            if (Category.findById(0) == null) {
-                Category.new(0, init = {
+            if (Category.findById(Constants.DEFAULT_CATEGORY_ID) == null) {
+                Category.new(Constants.DEFAULT_CATEGORY_ID, init = {
                     name = "默认分类"
                     sort = Int.MAX_VALUE
                 })

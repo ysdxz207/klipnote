@@ -6,7 +6,7 @@
     -fx-padding: 0 0 0 32px;
 }
 
-.list-cell-category:filled:selected:focused, .list-cell-category:filled:selected {
+.list-cell-category:filled:selected:focused {
     -fx-background-color: #fe99df;
     -fx-text-fill: white;
 }
@@ -38,7 +38,7 @@
     -fx-background-color: #fffafa;
 }
 
-.list-cell-note:filled:selected:focused, .list-cell-note:filled:selected {
+.list-cell-note:filled:selected:focused {
      /*-fx-background-color: #ffaaac;*/
  }
 
