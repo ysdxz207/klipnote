@@ -4,6 +4,7 @@ import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.control.ListView
+import javafx.scene.control.Pagination
 import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.layout.Priority
@@ -19,10 +20,10 @@ import tornadofx.*
 import win.hupubao.App
 import win.hupubao.beans.Category
 import win.hupubao.beans.Note
-import win.hupubao.beans.Notes
 import win.hupubao.factory.CategoryListCell
-import win.hupubao.factory.NoteListCell
 import win.hupubao.listener.ClipboardChangedListener
+import win.hupubao.sql.Notes
+import win.hupubao.utils.ClipboardHelper
 import win.hupubao.utils.DataUtils
 import java.awt.datatransfer.DataFlavor
 
@@ -34,7 +35,7 @@ class MainView : View("Klipnote") {
     private val windowSize = App.windowSize
 
     lateinit var listViewCategories: ListView<Category>
-    lateinit var listViewNotes: ListView<Note>
+    lateinit var paginationNotes: Pagination
     lateinit var textFieldSearch: TextField
 
     override val root = borderpane {
@@ -88,6 +89,10 @@ class MainView : View("Klipnote") {
                                     left = Color.TRANSPARENT)
                             promptTextFill = Color.valueOf("#D9D9D9")
                         }
+
+                        textProperty().addListener(ChangeListener { _, _, newValue ->
+                            EventBus.getDefault().post(LoadNotesEvent(paginationNotes, newValue))
+                        })
                     }
                 }
             }
@@ -255,20 +260,19 @@ class MainView : View("Klipnote") {
             region {
                 prefWidth = 8.0
             }
-            listViewNotes = listview {
+
+            paginationNotes = pagination {
+
                 vgrow = Priority.ALWAYS
                 maxHeight = Double.POSITIVE_INFINITY
                 hgrow = Priority.ALWAYS
                 maxWidth = Double.POSITIVE_INFINITY
-                setCellFactory {
-                    NoteListCell<Note>()
-                }
 
-                style {
-                    backgroundInsets += box(0.px)
-                }
+                currentPageIndex = 0
             }
+
         }
+
     }
 
 
@@ -279,35 +283,40 @@ class MainView : View("Klipnote") {
 
 
         ClipboardChangedListener.onChanged = {
-            try {
-                val strVal = it.getTransferData(DataFlavor.stringFlavor).toString()
-//                val imageVal = it.getTransferData(DataFlavor.imageFlavor)
-                transaction {
-                    val n = Notes.slice(Notes.sort, Notes.sort.max()).select { Notes.sort neq Int.MAX_VALUE }.last()
-                    Note.new {
-                        title = if (strVal.length > 20) {
-                            strVal.replace("\n", "").substring(0, 20)
-                        } else {
-                            strVal
-                        }
-                        content = strVal
-                        sort = (n.getOrNull(Notes.sort) ?: 0) + 1
-                        category = Category.findById(1)!!
-                    }
-                }
 
-                // 重新加载笔记列表
-                EventBus.getDefault().post(LoadNotesEvent(listViewNotes))
-            } catch (e: Exception) {
-                e.printStackTrace()
+            if (!ClipboardHelper.isBySet) {
+
+                try {
+                    val strVal = it.getTransferData(DataFlavor.stringFlavor).toString()
+//                val imageVal = it.getTransferData(DataFlavor.imageFlavor)
+                    transaction {
+                        val n = Notes.slice(Notes.sort, Notes.sort.max()).select { Notes.sort neq Int.MAX_VALUE }.last()
+                        Note.new {
+                            title = if (strVal.length > 20) {
+                                strVal.replace("\n", "").substring(0, 20)
+                            } else {
+                                strVal
+                            }
+                            content = strVal
+                            sort = (n.getOrNull(Notes.sort) ?: 0) + 1
+                            category = Category.findById(1)!!
+                        }
+                    }
+
+                    // 重新加载笔记列表
+                    EventBus.getDefault().post(LoadNotesEvent(paginationNotes, textFieldSearch.text))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
+
         }
 
 
         // 触发加载分类列表事件
         EventBus.getDefault().post(LoadCategoriesEvent(listViewCategories))
         // 触发加载笔记列表事件
-        EventBus.getDefault().post(LoadNotesEvent(listViewNotes))
+        EventBus.getDefault().post(LoadNotesEvent(paginationNotes, textFieldSearch.text))
 
     }
 

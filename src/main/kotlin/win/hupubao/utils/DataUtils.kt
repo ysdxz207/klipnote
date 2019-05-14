@@ -4,9 +4,9 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
-import win.hupubao.beans.Categories
 import win.hupubao.beans.Category
-import win.hupubao.beans.Notes
+import win.hupubao.sql.Categories
+import win.hupubao.sql.Notes
 import java.sql.Connection
 
 object DataUtils {

@@ -1,5 +1,6 @@
 package win.hupubao.listener
 
+import win.hupubao.utils.ClipboardHelper
 import java.awt.Toolkit
 import java.awt.datatransfer.Clipboard
 import java.awt.datatransfer.ClipboardOwner
@@ -17,12 +18,7 @@ object ClipboardChangedListener : ClipboardOwner {
 
     override fun lostOwnership(c: Clipboard, t: Transferable) {
         try {
-            Thread.sleep(1000)
-        } catch (e: Exception) {
-        }
-
-
-        try {
+            Thread.sleep(200)
             regainOwnership(c.getContents(this))
         } catch (e: Exception) {
             e.printStackTrace()
@@ -33,6 +29,7 @@ object ClipboardChangedListener : ClipboardOwner {
     private fun regainOwnership(t: Transferable) {
         clipboard.setContents(t, this)
         onChanged(t)
+        ClipboardHelper.isBySet = false
     }
 
 }

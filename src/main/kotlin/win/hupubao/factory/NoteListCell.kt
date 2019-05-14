@@ -6,6 +6,7 @@ import javafx.scene.Cursor
 import javafx.scene.control.ContentDisplay
 import javafx.scene.control.ListCell
 import javafx.scene.image.Image
+import javafx.scene.input.MouseButton
 import javafx.scene.paint.Paint
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
@@ -38,17 +39,23 @@ class NoteListCell<T> : ListCell<T>() {
                             cursor = Cursor.HAND
                         }
 
+                        tooltip {
+                            text = "左键点击复制笔记内容，右键编辑。"
+                        }
+
                         onMouseClicked = EventHandler {
 
-                            if (it.clickCount == 1) {
+                            if (it.clickCount == 1
+                                    && it.button == MouseButton.PRIMARY) {
 
                                 // 添加到剪贴板
                                 EventBus.getDefault().post(AddToClipboardEvent((t as Note).content))
                                 return@EventHandler
                             }
 
-                            if (it. clickCount == 2) {
-
+                            if (it. clickCount == 1
+                                    && it.button == MouseButton.SECONDARY) {
+                                println("ri")
                             }
                         }
 
@@ -57,34 +64,6 @@ class NoteListCell<T> : ListCell<T>() {
 
                 }
                 right = hbox {
-                    imageview {
-                        alignment = Pos.CENTER_RIGHT
-                        image = Image("icon/note/note_edit.png")
-                        style {
-                            cursor = Cursor.HAND
-                        }
-
-                        tooltip {
-                            text = "修改"
-                        }
-                    }
-
-                    region {
-                        prefWidth = 10.0
-                    }
-                    imageview {
-                        alignment = Pos.CENTER_RIGHT
-                        image = Image("icon/note/note_copy.png")
-                        style {
-                            cursor = Cursor.HAND
-                        }
-                        tooltip {
-                            text = "复制"
-                        }
-                    }
-                    region {
-                        prefWidth = 10.0
-                    }
                     imageview {
                         alignment = Pos.CENTER_RIGHT
                         image = Image("icon/note/note_star.png")
@@ -96,8 +75,9 @@ class NoteListCell<T> : ListCell<T>() {
                         }
                     }
                     region {
-                        prefWidth = 10.0
+                        prefWidth = 16.0
                     }
+
                     imageview {
                         alignment = Pos.CENTER_RIGHT
                         image = Image("icon/note/note_delete.png")

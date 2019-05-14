@@ -1,4 +1,4 @@
-package win.hupubao.beans
+package win.hupubao.sql
 
 import org.jetbrains.exposed.dao.IntIdTable
 

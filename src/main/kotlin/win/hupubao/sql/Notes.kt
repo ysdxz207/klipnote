@@ -1,6 +1,7 @@
-package win.hupubao.beans
+package win.hupubao.sql
 
 import org.jetbrains.exposed.dao.IntIdTable
+import win.hupubao.sql.Categories
 
 object Notes: IntIdTable() {
     var title = varchar("title", length = 256).nullable()

@@ -9,8 +9,8 @@ import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
-import win.hupubao.beans.Categories
 import win.hupubao.beans.Category
+import win.hupubao.sql.Categories
 import win.hupubao.utils.StringUtils
 
 

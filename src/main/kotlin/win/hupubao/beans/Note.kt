@@ -3,6 +3,7 @@ package win.hupubao.beans
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
+import win.hupubao.sql.Notes
 
 class Note(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Note>(Notes)
