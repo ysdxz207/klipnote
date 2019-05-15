@@ -12,9 +12,11 @@ import tornadofx.*
 import win.hupubao.App
 import win.hupubao.beans.Category
 import win.hupubao.components.CategoryMenu
+import win.hupubao.components.Header
 import win.hupubao.components.NoteListView
 import win.hupubao.constants.Constants
 import win.hupubao.views.LoadCategoriesEvent
+import win.hupubao.views.LoadNotesEvent
 import win.hupubao.views.MainView
 import win.hupubao.views.ShowEditCategoryEvent
 
@@ -36,17 +38,16 @@ class CategoryListCell<T> : ListCell<T>() {
         } else {
             graphic = borderpane {
 
+                onMouseClicked = EventHandler {
+                    EventBus.getDefault().post(LoadNotesEvent(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text))
+                    find<MainView>().root.center = find<NoteListView>().root
+                }
+
                 left = hbox {
                     alignment = Pos.CENTER
                     label {
                         text = t.toString()
                         prefWidth = windowSize.Lwidth - 110.0
-                    }
-
-                    onMouseClicked = EventHandler {
-                        find<MainView>().root.center = find<NoteListView>().root
-                        // 触发加载分类列表事件
-                        EventBus.getDefault().post(LoadCategoriesEvent(find<CategoryMenu>().listViewCategories))
                     }
                 }
                 right = hbox {

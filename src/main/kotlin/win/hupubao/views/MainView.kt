@@ -1,18 +1,16 @@
 package win.hupubao.views
 
 import org.greenrobot.eventbus.EventBus
-import org.jetbrains.exposed.sql.max
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import tornadofx.*
-import win.hupubao.App
 import win.hupubao.beans.Category
 import win.hupubao.beans.Note
 import win.hupubao.components.CategoryMenu
 import win.hupubao.components.Header
 import win.hupubao.components.NoteListView
+import win.hupubao.constants.Constants
 import win.hupubao.listener.ClipboardChangedListener
-import win.hupubao.sql.Notes
 import win.hupubao.utils.ClipboardHelper
 import win.hupubao.utils.DataUtils
 import java.awt.datatransfer.DataFlavor
@@ -38,7 +36,6 @@ class MainView : View("Klipnote") {
         left<CategoryMenu>()
 
         // 笔记区域
-//        center<NoteListView>()
         center = find<NoteListView>().root
 
     }
@@ -58,7 +55,6 @@ class MainView : View("Klipnote") {
                     val strVal = it.getTransferData(DataFlavor.stringFlavor).toString()
 //                val imageVal = it.getTransferData(DataFlavor.imageFlavor)
                     transaction {
-                        val n = Notes.slice(Notes.sort, Notes.sort.max()).select { Notes.sort neq Int.MAX_VALUE }.last()
                         Note.new {
                             title = if (strVal.length > 20) {
                                 strVal.replace("\n", "").substring(0, 20)
@@ -66,8 +62,8 @@ class MainView : View("Klipnote") {
                                 strVal
                             }
                             content = strVal
-                            sort = (n.getOrNull(Notes.sort) ?: 0) + 1
-                            category = Category.findById(1)!!
+                            category = Category.findById(Constants.DEFAULT_CATEGORY_ID)!!
+                            createTime = DateTime.now()
                         }
                     }
 

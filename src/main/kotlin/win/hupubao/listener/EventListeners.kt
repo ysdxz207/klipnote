@@ -11,7 +11,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
 import win.hupubao.beans.Category
@@ -59,35 +58,43 @@ class EventListeners {
                 }
                 listViewCategories.selectionModel.select(0)
             }
-            // 获取笔记总条数
-            transaction {
-                val count = Notes.select { Notes.title like "%${event.searchText}%" and (Notes.category eq category!!.id)}.count()
-                event.pagination.pageCount = if (count % Constants.PAGE_SIZE == 0) {
-                    count / Constants.PAGE_SIZE
-                } else {
-                    count / Constants.PAGE_SIZE + 1
-                }
-            }
-            // 组装列表及数据
-            event.pagination.setPageFactory { pageIndex ->
-                val listViewNotes = ListView<Note>()
-                listViewNotes.setCellFactory {
-                    NoteListCell<Note>()
-                }
-                listViewNotes.style {
-                    backgroundInsets += box(0.px)
-                }
-                listViewNotes.asyncItems {
-                    transaction {
-                        Note.find { Notes.title like "%${event.searchText}%"}
-                                .orderBy(Notes.sort to SortOrder.DESC)
-                                .limit(Constants.PAGE_SIZE, pageIndex * Constants.PAGE_SIZE)
-                                .toMutableList()
-                    }
-                }
-                listViewNotes
 
+
+            transaction {
+                val query = Note.find { Notes.title like "%${event.searchText}%" and (Notes.category eq category!!.id) }
+
+                // 获取笔记显示页数
+                val count = query.count()
+                event.pagination.pageCount = when {
+                    count == 0 -> 1
+                    count % Constants.PAGE_SIZE == 0 -> count / Constants.PAGE_SIZE
+                    else -> count / Constants.PAGE_SIZE + 1
+                }
+
+                // 组装列表及数据
+                event.pagination.setPageFactory { pageIndex ->
+                    val listViewNotes = ListView<Note>()
+                    listViewNotes.setCellFactory {
+                        NoteListCell<Note>()
+                    }
+
+
+                    listViewNotes.style {
+                        backgroundInsets += box(0.px)
+                    }
+
+                    listViewNotes.asyncItems {
+                        transaction {
+                            query.orderBy(Notes.createTime to SortOrder.DESC)
+                                    .limit(Constants.PAGE_SIZE, pageIndex * Constants.PAGE_SIZE)
+                                    .toMutableList()
+                        }
+                    }
+                    listViewNotes
+
+                }
             }
+
         }
 
 

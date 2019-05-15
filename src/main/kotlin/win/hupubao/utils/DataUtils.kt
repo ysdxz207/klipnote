@@ -2,6 +2,8 @@ package win.hupubao.utils
 
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.max
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import win.hupubao.beans.Category
@@ -28,5 +30,14 @@ object DataUtils {
                 })
             }
         }
+    }
+
+    fun getCategorySortNum(): Int {
+        var sortNum = 0
+        transaction {
+            val n = Categories.slice(Categories.sort, Categories.sort.max()).select { Categories.sort neq Int.MAX_VALUE }.last()
+            sortNum = (n.getOrNull(Categories.sort) ?: 0) + 1
+        }
+        return sortNum
     }
 }

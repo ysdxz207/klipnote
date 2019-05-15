@@ -7,9 +7,12 @@ import javafx.scene.control.ContentDisplay
 import javafx.scene.control.ListCell
 import javafx.scene.image.Image
 import javafx.scene.input.MouseButton
+import javafx.scene.layout.Priority
 import javafx.scene.paint.Paint
 import org.greenrobot.eventbus.EventBus
+import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
+import win.hupubao.App
 import win.hupubao.beans.Note
 import win.hupubao.components.NoteEditView
 import win.hupubao.views.AddToClipboardEvent
@@ -17,6 +20,9 @@ import win.hupubao.views.MainView
 
 
 class NoteListCell<T> : ListCell<T>() {
+
+    private val windowSize = App.windowSize
+
 
     init {
         contentDisplay = ContentDisplay.GRAPHIC_ONLY
@@ -29,20 +35,34 @@ class NoteListCell<T> : ListCell<T>() {
         if (item == null || empty) {
             graphic = null
         } else {
+            val note = t as Note
+
             graphic = borderpane {
+                onHover {
+                    if (it) {
+                        right.show()
+                    } else {
+                        right.hide()
+                    }
+                }
 
                 left = hbox {
-                    alignment = Pos.CENTER
+
                     label {
                         text = t.toString()
-                        maxWidth = 600.0
+                        prefWidth = windowSize.width - windowSize.Lwidth - 200.0
                         textFill = Paint.valueOf("#000000")
+                        vgrow = Priority.ALWAYS
+                        maxHeight = Double.POSITIVE_INFINITY
+
                         style {
                             cursor = Cursor.HAND
                         }
 
+
+
                         tooltip {
-                            text = "左键点击复制笔记内容，右键编辑。"
+                            text = "左键点击复制笔记内容。"
                         }
 
                         onMouseClicked = EventHandler {
@@ -51,13 +71,8 @@ class NoteListCell<T> : ListCell<T>() {
                                     && it.button == MouseButton.PRIMARY) {
 
                                 // 添加到剪贴板
-                                EventBus.getDefault().post(AddToClipboardEvent((t as Note).content))
+                                EventBus.getDefault().post(AddToClipboardEvent(note.content))
                                 return@EventHandler
-                            }
-
-                            if (it. clickCount == 1
-                                    && it.button == MouseButton.SECONDARY) {
-                                find<MainView>().root.center = find<NoteEditView>().root
                             }
                         }
 
@@ -65,7 +80,39 @@ class NoteListCell<T> : ListCell<T>() {
 
 
                 }
+
                 right = hbox {
+                    hide()
+
+                    imageview {
+                        alignment = Pos.CENTER_RIGHT
+                        image = Image("icon/note/note_edit.png")
+                        style {
+                            cursor = Cursor.HAND
+                        }
+                        tooltip {
+                            text = "编辑"
+                        }
+
+                        onMouseClicked = EventHandler {
+                            if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
+                                val noteEditView = NoteEditView()
+
+                                noteEditView.labelId.text = note.id.value.toString()
+                                noteEditView.labelTime.text = note.createTime.toString("yyyy-MM-dd HH:mm:ss")
+                                noteEditView.textFieldTitle.text = note.title
+                                transaction {
+                                    noteEditView.comboBoxCategory.selectionModel.select(note.category)
+                                }
+                                noteEditView.textAreaContent.text = note.content
+                                find<MainView>().root.center = noteEditView.root
+                            }
+                        }
+                    }
+                    region {
+                        prefWidth = 16.0
+                    }
+
                     imageview {
                         alignment = Pos.CENTER_RIGHT
                         image = Image("icon/note/note_star.png")
@@ -96,7 +143,5 @@ class NoteListCell<T> : ListCell<T>() {
                 }
             }
         }
-
-
     }
 }

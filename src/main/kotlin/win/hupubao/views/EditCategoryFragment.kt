@@ -5,13 +5,11 @@ import javafx.scene.control.Button
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.TextField
 import org.greenrobot.eventbus.EventBus
-import org.jetbrains.exposed.sql.max
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
 import win.hupubao.beans.Category
 import win.hupubao.components.CategoryMenu
-import win.hupubao.sql.Categories
+import win.hupubao.utils.DataUtils
 import win.hupubao.utils.StringUtils
 
 
@@ -62,12 +60,9 @@ class EditCategoryFragment : Fragment("编辑分类") {
                 action {
                     transaction {
                         if (category == null) {
-
-                            val c = Categories.slice(Categories.sort, Categories.sort.max()).select { Categories.sort neq Int.MAX_VALUE }.last()
-
                             Category.new {
                                 name = textFieldCategoryName.text
-                                sort = (c.getOrNull(Categories.sort)?:0) + 1
+                                sort = DataUtils.getCategorySortNum()
                             }
                         } else {
                             // 更新分类数据

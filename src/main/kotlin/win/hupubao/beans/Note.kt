@@ -10,7 +10,7 @@ class Note(id: EntityID<Int>) : IntEntity(id) {
 
     var title by Notes.title
     var content by Notes.content
-    var sort by Notes.sort
+    var createTime by Notes.createTime
     var category by Category referencedOn Notes.category
 
     override fun toString(): String {
