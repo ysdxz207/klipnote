@@ -28,6 +28,21 @@ object DataUtils {
                     name = "默认分类"
                     sort = Int.MAX_VALUE
                 })
+
+                Category.new(Constants.RECYCLE_CATEGORY_ID, init = {
+                    name = "回收站"
+                    sort = Constants.RECYCLE_CATEGORY_ID
+                })
+
+                Category.new(Constants.STAR_CATEGORY_ID, init = {
+                    name = "收藏"
+                    sort = Constants.STAR_CATEGORY_ID
+                })
+
+                Category.new(Constants.CLIPBOARD_CATEGORY_ID, init = {
+                    name = "粘贴板"
+                    sort = Constants.CLIPBOARD_CATEGORY_ID
+                })
             }
         }
     }

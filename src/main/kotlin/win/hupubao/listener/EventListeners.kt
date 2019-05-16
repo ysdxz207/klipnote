@@ -9,6 +9,7 @@ import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -18,6 +19,7 @@ import win.hupubao.beans.Note
 import win.hupubao.components.CategoryMenu
 import win.hupubao.constants.Constants
 import win.hupubao.factory.NoteListCell
+import win.hupubao.sql.Categories
 import win.hupubao.sql.Notes
 import win.hupubao.utils.Alert
 import win.hupubao.utils.ClipboardHelper
@@ -38,7 +40,7 @@ class EventListeners {
     fun onLoadCategoriesEvent(event: LoadCategoriesEvent) {
         event.listView.asyncItems {
             transaction {
-                Category.all().sortedByDescending { it.sort }.toMutableList()
+                Category.find { Categories.id greaterEq  EntityID(Constants.DEFAULT_CATEGORY_ID, Categories) }.sortedByDescending { it.sort }.toMutableList()
             }
         }
     }

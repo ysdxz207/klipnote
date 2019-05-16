@@ -7,12 +7,14 @@ import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import org.greenrobot.eventbus.EventBus
+import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import tornadofx.*
 import win.hupubao.beans.Category
 import win.hupubao.beans.Note
 import win.hupubao.constants.Constants
+import win.hupubao.sql.Categories
 import win.hupubao.views.LoadNotesEvent
 import win.hupubao.views.MainView
 
@@ -60,7 +62,7 @@ class NoteEditView : View() {
                     }
                     asyncItems {
                         transaction {
-                            Category.all().toMutableList()
+                            Category.find { Categories.id greaterEq EntityID(Constants.DEFAULT_CATEGORY_ID, Categories) }.toMutableList()
                         }
                     }
                 }
