@@ -13,9 +13,15 @@ import org.greenrobot.eventbus.EventBus
 import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
 import win.hupubao.App
+import win.hupubao.beans.Category
 import win.hupubao.beans.Note
+import win.hupubao.beans.params.NotesParam
+import win.hupubao.components.Header
 import win.hupubao.components.NoteEditView
+import win.hupubao.components.NoteListView
+import win.hupubao.constants.Constants
 import win.hupubao.views.AddToClipboardEvent
+import win.hupubao.views.LoadNotesEvent
 import win.hupubao.views.MainView
 
 
@@ -115,12 +121,38 @@ class NoteListCell<T> : ListCell<T>() {
 
                     imageview {
                         alignment = Pos.CENTER_RIGHT
-                        image = Image("icon/note/note_star.png")
+                        if (transaction { note.category.id.value } == Constants.STAR_CATEGORY_ID) {
+                            image = Image("icon/note/note_star.png")
+                            tooltip {
+                                text = "取消收藏"
+                            }
+                        } else {
+                            image = Image("icon/note/note_unstar.png")
+                            tooltip {
+                                text = "收藏"
+                            }
+                        }
                         style {
                             cursor = Cursor.HAND
                         }
-                        tooltip {
-                            text = "收藏"
+
+                        onMouseClicked = EventHandler {
+                            if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
+
+                                transaction {
+                                    val starCategory = Category.findById(Constants.STAR_CATEGORY_ID)!!
+                                    if (note.category.equals(starCategory)) {
+                                        // 取消收藏
+                                        note.category = note.originCategory
+                                    } else {
+                                        //收藏
+                                        note.category = starCategory
+                                    }
+                                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, starCategory, find<Header>().textFieldSearch.text)))
+                                }
+
+                                // 重新加载列表
+                            }
                         }
                     }
                     region {
@@ -135,6 +167,31 @@ class NoteListCell<T> : ListCell<T>() {
                         }
                         tooltip {
                             text = "删除"
+                        }
+
+                        onMouseClicked = EventHandler {
+                            if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
+                                val deleteForever = transaction { note.category.id.value == Constants.RECYCLE_CATEGORY_ID }
+                                val displayName = if (deleteForever) {
+                                    "【永久删除】"
+                                } else {
+                                    "移动到【回收站】"
+                                }
+
+                                confirm(header = "", content = "笔记将被$displayName\n确定删除笔记吗？", actionFn = {
+                                    transaction {
+                                        if (deleteForever) {
+                                            note.delete()
+                                        } else {
+                                            note.category = Category.findById(Constants.RECYCLE_CATEGORY_ID)!!
+                                        }
+                                    }
+                                })
+
+                                // 重新加载列表
+                                EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, null, find<Header>().textFieldSearch.text)))
+
+                            }
                         }
                     }
                     region {

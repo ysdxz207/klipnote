@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 import tornadofx.*
 import win.hupubao.beans.Category
 import win.hupubao.beans.Note
+import win.hupubao.beans.params.NotesParam
 import win.hupubao.components.CategoryMenu
 import win.hupubao.components.Header
 import win.hupubao.components.NoteListView
@@ -52,9 +53,10 @@ class MainView : View("Klipnote") {
             if (!ClipboardHelper.isBySet) {
 
                 try {
-                    val strVal = it.getTransferData(DataFlavor.stringFlavor).toString()
-//                val imageVal = it.getTransferData(DataFlavor.imageFlavor)
                     transaction {
+                        val strVal = it.getTransferData(DataFlavor.stringFlavor).toString()
+//                val imageVal = it.getTransferData(DataFlavor.imageFlavor)
+                        val categoryClipboard = Category.findById(Constants.CLIPBOARD_CATEGORY_ID)!!
                         Note.new {
                             title = if (strVal.length > 20) {
                                 strVal.replace("\n", "").substring(0, 20)
@@ -62,13 +64,14 @@ class MainView : View("Klipnote") {
                                 strVal
                             }
                             content = strVal
-                            category = Category.findById(Constants.DEFAULT_CATEGORY_ID)!!
+                            category = categoryClipboard
+                            originCategory = categoryClipboard
                             createTime = DateTime.now()
                         }
-                    }
 
-                    // 重新加载笔记列表
-                    EventBus.getDefault().post(LoadNotesEvent(noteListView.paginationNotes, header.textFieldSearch.text))
+                        // 重新加载笔记列表
+                        EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, categoryClipboard, header.textFieldSearch.text)))
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -78,7 +81,7 @@ class MainView : View("Klipnote") {
 
 
         // 触发加载笔记列表事件
-        EventBus.getDefault().post(LoadNotesEvent(noteListView.paginationNotes, header.textFieldSearch.text))
+        EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, null, header.textFieldSearch.text)))
 
     }
 

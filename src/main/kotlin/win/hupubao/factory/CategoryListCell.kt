@@ -12,6 +12,7 @@ import org.jetbrains.exposed.sql.update
 import tornadofx.*
 import win.hupubao.App
 import win.hupubao.beans.Category
+import win.hupubao.beans.params.NotesParam
 import win.hupubao.components.CategoryMenu
 import win.hupubao.components.Header
 import win.hupubao.components.NoteListView
@@ -43,7 +44,7 @@ class CategoryListCell<T> : ListCell<T>() {
             graphic = borderpane {
 
                 onMouseClicked = EventHandler {
-                    EventBus.getDefault().post(LoadNotesEvent(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text))
+                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, category, find<Header>().textFieldSearch.text)))
                     find<MainView>().root.center = find<NoteListView>().root
                 }
 

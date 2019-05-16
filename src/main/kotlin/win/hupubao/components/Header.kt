@@ -8,6 +8,7 @@ import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
+import win.hupubao.beans.params.NotesParam
 import win.hupubao.views.LoadNotesEvent
 
 class Header : View("My View") {
@@ -61,7 +62,7 @@ class Header : View("My View") {
                     }
 
                     textProperty().addListener(ChangeListener { _, _, newValue ->
-                        EventBus.getDefault().post(LoadNotesEvent(noteListView.paginationNotes, newValue))
+                        EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, null, newValue)))
                     })
                 }
             }

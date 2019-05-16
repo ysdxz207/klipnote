@@ -1,6 +1,7 @@
 package win.hupubao.listener
 
 import javafx.scene.control.ListView
+import javafx.scene.paint.Paint
 import javafx.stage.Modality
 import javafx.stage.StageStyle
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +41,7 @@ class EventListeners {
     fun onLoadCategoriesEvent(event: LoadCategoriesEvent) {
         event.listView.asyncItems {
             transaction {
-                Category.find { Categories.id greaterEq  EntityID(Constants.DEFAULT_CATEGORY_ID, Categories) }.sortedByDescending { it.sort }.toMutableList()
+                Category.find { Categories.id greaterEq EntityID(Constants.DEFAULT_CATEGORY_ID, Categories) }.sortedByDescending { it.sort }.toMutableList()
             }
         }
     }
@@ -51,30 +52,77 @@ class EventListeners {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoadNotesEvent(event: LoadNotesEvent) {
         GlobalScope.launch(Dispatchers.JavaFx) {
-            val listViewCategories = find<CategoryMenu>().listViewCategories
-            var category = listViewCategories.selectedItem
+            val notesParam = event.notesParam
+            val categoryMenu = find<CategoryMenu>()
+            val listViewCategories = categoryMenu.listViewCategories
+            var category = notesParam.category ?: listViewCategories.selectedItem
             // 默认选中默认分类
             if (category == null) {
                 transaction {
                     category = Category.findById(Constants.DEFAULT_CATEGORY_ID)
+                    listViewCategories.selectionModel.select(0)
                 }
-                listViewCategories.selectionModel.select(0)
+            }
+
+            /**
+             * 分类按钮背景色重置
+             */
+            categoryMenu.buttonCategoryStar.style {
+                backgroundColor += Paint.valueOf("#FFFFFF")
+            }
+            categoryMenu.buttonCategoryRecycle.style {
+                backgroundColor += Paint.valueOf("#FFFFFF")
+            }
+            categoryMenu.buttonCategoryClipboard.style {
+                backgroundColor += Paint.valueOf("#FFFFFF")
+            }
+
+            /**
+             * 设置分类背景色
+             */
+            when (category?.id?.value) {
+                Constants.STAR_CATEGORY_ID -> {
+                    categoryMenu.buttonCategoryStar.style {
+                        backgroundColor += Paint.valueOf("#fe99df")
+                        textFill = Paint.valueOf("#FFFFFF")
+                    }
+                    listViewCategories.selectionModel.select(-1)
+                }
+                Constants.RECYCLE_CATEGORY_ID -> {
+                    categoryMenu.buttonCategoryRecycle.style {
+                        backgroundColor += Paint.valueOf("#fe99df")
+                        textFill = Paint.valueOf("#FFFFFF")
+                    }
+                    listViewCategories.selectionModel.select(-1)
+                }
+                Constants.CLIPBOARD_CATEGORY_ID -> {
+                    categoryMenu.buttonCategoryClipboard.style {
+                        backgroundColor += Paint.valueOf("#fe99df")
+                        textFill = Paint.valueOf("#FFFFFF")
+                    }
+                    listViewCategories.selectionModel.select(-1)
+                }
+                else -> {
+
+                }
             }
 
 
             transaction {
-                val query = Note.find { Notes.title like "%${event.searchText}%" and (Notes.category eq category!!.id) }
+                val query = Note.find {
+                    Notes.title like "%${notesParam.searchText}%" and (Notes.category eq category!!.id)
+                }
 
                 // 获取笔记显示页数
                 val count = query.count()
-                event.pagination.pageCount = when {
+                notesParam.pagination?.pageCount = when {
                     count == 0 -> 1
                     count % Constants.PAGE_SIZE == 0 -> count / Constants.PAGE_SIZE
                     else -> count / Constants.PAGE_SIZE + 1
                 }
 
                 // 组装列表及数据
-                event.pagination.setPageFactory { pageIndex ->
+                notesParam.pagination?.setPageFactory { pageIndex ->
                     val listViewNotes = ListView<Note>()
                     listViewNotes.setCellFactory {
                         NoteListCell<Note>()

@@ -29,16 +29,20 @@ object DataUtils {
                     sort = Int.MAX_VALUE
                 })
 
+            }
+            if (Category.findById(Constants.RECYCLE_CATEGORY_ID) == null) {
                 Category.new(Constants.RECYCLE_CATEGORY_ID, init = {
                     name = "回收站"
                     sort = Constants.RECYCLE_CATEGORY_ID
                 })
-
+            }
+            if (Category.findById(Constants.STAR_CATEGORY_ID) == null) {
                 Category.new(Constants.STAR_CATEGORY_ID, init = {
                     name = "收藏"
                     sort = Constants.STAR_CATEGORY_ID
                 })
-
+            }
+            if (Category.findById(Constants.CLIPBOARD_CATEGORY_ID) == null) {
                 Category.new(Constants.CLIPBOARD_CATEGORY_ID, init = {
                     name = "粘贴板"
                     sort = Constants.CLIPBOARD_CATEGORY_ID

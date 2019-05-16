@@ -3,6 +3,7 @@ package win.hupubao.components
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Cursor
+import javafx.scene.control.Button
 import javafx.scene.control.ListView
 import javafx.scene.image.Image
 import javafx.scene.layout.Priority
@@ -11,11 +12,16 @@ import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import org.greenrobot.eventbus.EventBus
+import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
 import win.hupubao.App.Companion.windowSize
 import win.hupubao.beans.Category
+import win.hupubao.beans.params.NotesParam
+import win.hupubao.constants.Constants
 import win.hupubao.factory.CategoryListCell
 import win.hupubao.views.LoadCategoriesEvent
+import win.hupubao.views.LoadNotesEvent
+import win.hupubao.views.MainView
 import win.hupubao.views.ShowEditCategoryEvent
 
 /**
@@ -23,6 +29,9 @@ import win.hupubao.views.ShowEditCategoryEvent
  */
 class CategoryMenu : View() {
     lateinit var listViewCategories: ListView<Category>
+    lateinit var buttonCategoryStar: Button
+    lateinit var buttonCategoryRecycle: Button
+    lateinit var buttonCategoryClipboard: Button
 
     override val root = vbox {
         maxWidth = windowSize.Lwidth
@@ -30,7 +39,7 @@ class CategoryMenu : View() {
         hbox {
 
             // left menu item
-            button {
+            buttonCategoryRecycle = button {
                 text = "回收站"
                 textFill = Paint.valueOf("#787878")
                 imageview {
@@ -49,6 +58,14 @@ class CategoryMenu : View() {
                 alignment = Pos.CENTER_LEFT
                 paddingLeft = 36.0
 
+                action {
+                    var category: Category? = null
+                    transaction {
+                        category = Category.findById(Constants.RECYCLE_CATEGORY_ID)
+                    }
+                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, category, find<Header>().textFieldSearch.text)))
+                    find<MainView>().root.center = find<NoteListView>().root
+                }
             }
         }
 
@@ -58,7 +75,7 @@ class CategoryMenu : View() {
         hbox {
 
             // left menu item
-            button {
+            buttonCategoryStar = button {
                 text = "收藏夹"
                 textFill = Paint.valueOf("#787878")
                 imageview {
@@ -76,6 +93,17 @@ class CategoryMenu : View() {
                 font = Font.font(null, FontWeight.BOLD, null, 20.0)
                 alignment = Pos.CENTER_LEFT
                 paddingLeft = 36.0
+
+                action {
+                    val notesParam = NotesParam()
+                    notesParam.pagination = find<NoteListView>().paginationNotes
+                    transaction {
+                        notesParam.category = Category.findById(Constants.STAR_CATEGORY_ID)
+                    }
+                    notesParam.searchText = find<Header>().textFieldSearch.text
+                    EventBus.getDefault().post(LoadNotesEvent(notesParam))
+                    find<MainView>().root.center = find<NoteListView>().root
+                }
             }
         }
         separator {
@@ -84,7 +112,7 @@ class CategoryMenu : View() {
         hbox {
 
             // left menu item
-            button {
+            buttonCategoryClipboard = button {
                 text = "剪贴板"
                 textFill = Paint.valueOf("#787878")
                 imageview {
@@ -101,6 +129,15 @@ class CategoryMenu : View() {
                 font = Font.font(null, FontWeight.BOLD, null, 20.0)
                 alignment = Pos.CENTER_LEFT
                 paddingLeft = 36.0
+
+                action {
+                    var category: Category? = null
+                    transaction {
+                        category = Category.findById(Constants.CLIPBOARD_CATEGORY_ID)
+                    }
+                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, category, find<Header>().textFieldSearch.text)))
+                    find<MainView>().root.center = find<NoteListView>().root
+                }
             }
         }
         separator {

@@ -13,6 +13,7 @@ import org.joda.time.DateTime
 import tornadofx.*
 import win.hupubao.beans.Category
 import win.hupubao.beans.Note
+import win.hupubao.beans.params.NotesParam
 import win.hupubao.constants.Constants
 import win.hupubao.sql.Categories
 import win.hupubao.views.LoadNotesEvent
@@ -101,6 +102,7 @@ class NoteEditView : View() {
                                     title = textFieldTitle.text
                                     content = textAreaContent.text
                                     category = comboBoxCategory.selectedItem!!
+                                    originCategory = comboBoxCategory.selectedItem!!
                                     createTime = DateTime.now()
                                 }
                             } else {
@@ -110,7 +112,7 @@ class NoteEditView : View() {
                                 note?.category = comboBoxCategory.selectedItem!!
                             }
 
-                            EventBus.getDefault().post(LoadNotesEvent(tornadofx.find<NoteListView>().paginationNotes, tornadofx.find<Header>().textFieldSearch.text))
+                            EventBus.getDefault().post(LoadNotesEvent(NotesParam(tornadofx.find<NoteListView>().paginationNotes, null, tornadofx.find<Header>().textFieldSearch.text)))
                             tornadofx.find<MainView>().root.center = tornadofx.find<NoteListView>().root
                         }
 
