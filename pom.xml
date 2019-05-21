@@ -84,6 +84,12 @@
             <version>3.1.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.1stleg</groupId>
+            <artifactId>jnativehook</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -196,6 +202,15 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${kotlin.compiler.jvmTarget}</source>
+                    <target>${kotlin.compiler.jvmTarget}</target>
+                    <encoding>utf8</encoding>
+                </configuration>
             </plugin>
         </plugins>
     </build>

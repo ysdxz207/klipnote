@@ -76,6 +76,9 @@ class EventListeners {
             categoryMenu.buttonCategoryClipboard.style {
                 backgroundColor += Paint.valueOf("#FFFFFF")
             }
+            categoryMenu.buttonCategoryClipboard.left.lookup("Label").style {
+                textFill = Paint.valueOf("#787878")
+            }
 
             /**
              * 设置分类背景色
@@ -83,22 +86,25 @@ class EventListeners {
             when (category?.id?.value) {
                 Constants.STAR_CATEGORY_ID -> {
                     categoryMenu.buttonCategoryStar.style {
-                        backgroundColor += Paint.valueOf("#fe99df")
+                        backgroundColor += Paint.valueOf("#fbaee0")
                         textFill = Paint.valueOf("#FFFFFF")
                     }
                     listViewCategories.selectionModel.select(-1)
                 }
                 Constants.RECYCLE_CATEGORY_ID -> {
                     categoryMenu.buttonCategoryRecycle.style {
-                        backgroundColor += Paint.valueOf("#fe99df")
+                        backgroundColor += Paint.valueOf("#fbaee0")
                         textFill = Paint.valueOf("#FFFFFF")
                     }
                     listViewCategories.selectionModel.select(-1)
                 }
                 Constants.CLIPBOARD_CATEGORY_ID -> {
                     categoryMenu.buttonCategoryClipboard.style {
-                        backgroundColor += Paint.valueOf("#fe99df")
+                        backgroundColor += Paint.valueOf("#fbaee0")
+                    }
+                    categoryMenu.buttonCategoryClipboard.left.lookup("Label").style {
                         textFill = Paint.valueOf("#FFFFFF")
+
                     }
                     listViewCategories.selectionModel.select(-1)
                 }

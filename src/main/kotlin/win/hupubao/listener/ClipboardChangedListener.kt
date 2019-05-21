@@ -8,6 +8,7 @@ import java.awt.datatransfer.Transferable
 
 object ClipboardChangedListener : ClipboardOwner {
     val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+    var watching = true
     var onChanged = fun (_: Transferable) {
 
     }
@@ -17,6 +18,7 @@ object ClipboardChangedListener : ClipboardOwner {
     }
 
     override fun lostOwnership(c: Clipboard, t: Transferable) {
+
         try {
             Thread.sleep(200)
             regainOwnership(c.getContents(this))
@@ -28,7 +30,9 @@ object ClipboardChangedListener : ClipboardOwner {
 
     private fun regainOwnership(t: Transferable) {
         clipboard.setContents(t, this)
-        onChanged(t)
+        if (watching) {
+            onChanged(t)
+        }
         ClipboardHelper.isBySet = false
     }
 

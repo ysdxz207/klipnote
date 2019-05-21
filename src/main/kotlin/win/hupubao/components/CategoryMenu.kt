@@ -6,6 +6,7 @@ import javafx.scene.Cursor
 import javafx.scene.control.Button
 import javafx.scene.control.ListView
 import javafx.scene.image.Image
+import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
@@ -16,9 +17,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
 import win.hupubao.App.Companion.windowSize
 import win.hupubao.beans.Category
+import win.hupubao.beans.Config
 import win.hupubao.beans.params.NotesParam
 import win.hupubao.constants.Constants
 import win.hupubao.factory.CategoryListCell
+import win.hupubao.listener.ClipboardChangedListener
 import win.hupubao.views.LoadCategoriesEvent
 import win.hupubao.views.LoadNotesEvent
 import win.hupubao.views.MainView
@@ -31,7 +34,7 @@ class CategoryMenu : View() {
     lateinit var listViewCategories: ListView<Category>
     lateinit var buttonCategoryStar: Button
     lateinit var buttonCategoryRecycle: Button
-    lateinit var buttonCategoryClipboard: Button
+    lateinit var buttonCategoryClipboard: BorderPane
 
     override val root = vbox {
         maxWidth = windowSize.Lwidth
@@ -112,11 +115,40 @@ class CategoryMenu : View() {
         hbox {
 
             // left menu item
-            buttonCategoryClipboard = button {
-                text = "剪贴板"
-                textFill = Paint.valueOf("#787878")
-                imageview {
-                    image = Image("icon/menu/clipboard.png")
+            buttonCategoryClipboard = borderpane {
+
+                left = hbox {
+                    alignment = Pos.CENTER
+                    imageview {
+                        image = Image("icon/menu/clipboard.png")
+                    }
+                    region {
+                        prefWidth = 4.0
+                    }
+                    label("剪贴板") {
+                        font = Font.font(null, FontWeight.BOLD, null, 20.0)
+                        textFill = Paint.valueOf("#787878")
+                    }
+                }
+
+
+                right = hbox {
+                    alignment = Pos.CENTER
+                    val switchButton = SwitchButton()
+                    // 读取配置
+                    var config: Config? = null
+                    transaction {
+                        config = Config.all().limit(1).toList()[0]
+                        switchButton.switchedOnProperty().value = config?.watchingClipboard
+                    }
+                    switchButton.switchedOnProperty().addListener(ChangeListener { observable, oldValue, newValue ->
+                        ClipboardChangedListener.watching = newValue
+                        transaction { config?.watchingClipboard = newValue }
+                    })
+                    add(switchButton)
+                    region {
+                        prefWidth = 20.0
+                    }
                 }
 
                 style {
@@ -126,11 +158,10 @@ class CategoryMenu : View() {
 
                 prefWidth = windowSize.Lwidth
                 prefHeight = 44.0
-                font = Font.font(null, FontWeight.BOLD, null, 20.0)
                 alignment = Pos.CENTER_LEFT
                 paddingLeft = 36.0
 
-                action {
+                onMouseClicked = EventHandler {
                     var category: Category? = null
                     transaction {
                         category = Category.findById(Constants.CLIPBOARD_CATEGORY_ID)
@@ -138,6 +169,9 @@ class CategoryMenu : View() {
                     EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, category, find<Header>().textFieldSearch.text)))
                     find<MainView>().root.center = find<NoteListView>().root
                 }
+
+
+
             }
         }
         separator {
@@ -174,6 +208,9 @@ class CategoryMenu : View() {
                         onMouseClicked = EventHandler {
                             EventBus.getDefault().post(ShowEditCategoryEvent(null))
                         }
+                    }
+                    region {
+                        prefWidth = 20.0
                     }
                 }
 

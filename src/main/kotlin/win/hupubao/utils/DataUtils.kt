@@ -7,8 +7,10 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import win.hupubao.beans.Category
+import win.hupubao.beans.Config
 import win.hupubao.constants.Constants
 import win.hupubao.sql.Categories
+import win.hupubao.sql.Configs
 import win.hupubao.sql.Notes
 import java.sql.Connection
 
@@ -21,7 +23,7 @@ object DataUtils {
         Database.connect("jdbc:sqlite:$databaseDir", driver = "org.sqlite.JDBC")
         TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE // Or Connection.TRANSACTION_READ_UNCOMMITTED
         transaction {
-            SchemaUtils.create(Notes, Categories)
+            SchemaUtils.create(Notes, Categories, Configs)
 
             if (Category.findById(Constants.DEFAULT_CATEGORY_ID) == null) {
                 Category.new(Constants.DEFAULT_CATEGORY_ID, init = {
@@ -48,6 +50,15 @@ object DataUtils {
                     sort = Constants.CLIPBOARD_CATEGORY_ID
                 })
             }
+
+            if (Config.count() == 0) {
+                Config.new(init = {
+                    startup = true
+                    keepTop = true
+                    mainWinHotkey = "2+41"
+                    watchingClipboard = true
+                })
+            }
         }
     }
 
@@ -59,4 +70,7 @@ object DataUtils {
         }
         return sortNum
     }
+
+
+
 }

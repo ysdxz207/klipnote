@@ -1,6 +1,15 @@
 package win.hupubao.beans
 
-class Config {
+import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
+import win.hupubao.sql.Configs
 
-    var startup: Boolean? = null
+class Config(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<Config>(Configs)
+
+    var startup by Configs.startup
+    var keepTop by Configs.keepTop
+    var watchingClipboard by Configs.watchingClipboard
+    var mainWinHotkey by Configs.mainWinHotkey
 }

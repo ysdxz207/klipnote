@@ -42,6 +42,7 @@ class NoteListCell<T> : ListCell<T>() {
             graphic = null
         } else {
             val note = t as Note
+            val noteCategory = transaction { note.category }
 
             graphic = borderpane {
                 onHover {
@@ -189,7 +190,7 @@ class NoteListCell<T> : ListCell<T>() {
                                 })
 
                                 // 重新加载列表
-                                EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, null, find<Header>().textFieldSearch.text)))
+                                EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, noteCategory, find<Header>().textFieldSearch.text)))
 
                             }
                         }

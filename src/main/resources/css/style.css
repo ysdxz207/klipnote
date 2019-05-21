@@ -1,4 +1,5 @@
 
+
 .list-cell-category {
     -fx-pref-height: 40px;
     -fx-font-size: 18px;
@@ -55,7 +56,6 @@
 .btn-category-save:hover {
     -fx-background-color: #8ef1af;
 }
-
 
 /*scroll-bar*/
 .scroll-bar:horizontal .track,
