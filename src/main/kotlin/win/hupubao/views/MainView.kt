@@ -7,7 +7,6 @@ import org.jnativehook.NativeHookException
 import org.joda.time.DateTime
 import tornadofx.*
 import win.hupubao.beans.Category
-import win.hupubao.beans.Config
 import win.hupubao.beans.Note
 import win.hupubao.beans.params.NotesParam
 import win.hupubao.components.CategoryMenu
@@ -68,8 +67,8 @@ class MainView : View("Klipnote") {
             val logger = Logger.getLogger(GlobalScreen::class.java.getPackage().name)
             logger.level = Level.OFF
 
-// Don't forget to disable the parent handlers.
-            logger.setUseParentHandlers(false)
+            // Don't forget to disable the parent handlers.
+            logger.useParentHandlers = false
             GlobalScreen.registerNativeHook()
         } catch (ex: NativeHookException) {
             System.err.println("There was a problem registering the native hook.")

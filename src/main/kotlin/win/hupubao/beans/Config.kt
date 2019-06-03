@@ -11,5 +11,6 @@ class Config(id: EntityID<Int>) : IntEntity(id) {
     var startup by Configs.startup
     var keepTop by Configs.keepTop
     var watchingClipboard by Configs.watchingClipboard
+    var mainWinHotkeyModifier by Configs.mainWinHotkeyModifier
     var mainWinHotkey by Configs.mainWinHotkey
 }

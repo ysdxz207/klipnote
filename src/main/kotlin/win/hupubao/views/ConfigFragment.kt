@@ -1,41 +1,26 @@
 package win.hupubao.views
 
-import javafx.scene.control.Button
-import javafx.scene.control.ButtonBar
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
+import javafx.scene.input.KeyCode
 import org.greenrobot.eventbus.EventBus
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jnativehook.NativeInputEvent
 import tornadofx.*
-import win.hupubao.beans.Config
 import win.hupubao.components.CategoryMenu
-import java.awt.event.KeyEvent
+import win.hupubao.utils.AppUtils
+import win.hupubao.utils.KeyCodeUtils
 
 
 class ConfigFragment : Fragment("设置") {
     private val mainView: MainView by inject()
     private val categoryMenu: CategoryMenu by inject()
 
-    private lateinit var textFieldCategoryName: TextField
+    private lateinit var textfieldHotkey: TextField
     private lateinit var checkboxStartup: CheckBox
     private lateinit var checkboxKeepTop: CheckBox
     private lateinit var checkboxCtrl: CheckBox
     private lateinit var checkboxShift: CheckBox
     private lateinit var checkboxAlt: CheckBox
-    private lateinit var btnSave: Button
-    var configs: Config
-    var ctrl = false
-    var shift = false
-    var alt = false
-
-    init {
-        configs = transaction { Config.all().limit(1).toList()[0] }
-        val key = configs.mainWinHotkey.split("+").first().toInt()
-        ctrl = NativeInputEvent.CTRL_L_MASK and key == NativeInputEvent.CTRL_L_MASK
-        shift = NativeInputEvent.SHIFT_L_MASK and key == NativeInputEvent.SHIFT_L_MASK
-        alt = NativeInputEvent.ALT_L_MASK and key == NativeInputEvent.ALT_L_MASK
-    }
 
     override val root = borderpane {
 
@@ -47,13 +32,36 @@ class ConfigFragment : Fragment("设置") {
 
             fieldset("选项") {
                 field {
-                    checkboxStartup = checkbox ("开机启动"){
-                        isSelected = configs.startup
+                    checkboxStartup = checkbox("开机启动") {
+                        isSelected = AppUtils.config.startup
+
+                        selectedProperty().addListener(ChangeListener { _, _, _ ->
+                            transaction {
+                                AppUtils.config.startup = checkboxStartup.isSelected
+                            }
+                            AppUtils.refreshConfig()
+                            // 处理开机启动
+                            if (!(checkboxStartup.isSelected && AppUtils.checkBootup())) {
+                                AppUtils.toogleBootup()
+                            }
+                        })
                     }
                 }
                 field {
-                    checkboxKeepTop = checkbox ("窗口保持置顶"){
-                        isSelected = configs.keepTop
+                    checkboxKeepTop = checkbox("窗口保持置顶") {
+                        isSelected = AppUtils.config.keepTop
+
+
+
+                        selectedProperty().addListener(ChangeListener { _, _, _ ->
+                            transaction {
+                                AppUtils.config.keepTop = checkboxKeepTop.isSelected
+                            }
+                            AppUtils.refreshConfig()
+                            // 触发加载分类列表事件
+                            EventBus.getDefault().post(LoadCategoriesEvent(categoryMenu.listViewCategories))
+
+                        })
                     }
                 }
             }
@@ -64,47 +72,92 @@ class ConfigFragment : Fragment("设置") {
 
             fieldset("快捷键设置") {
                 field("显示/隐藏主界面") {
-                    checkboxCtrl = checkbox ("Ctrl+"){
-                        isSelected = ctrl
+                    checkboxCtrl = checkbox("Ctrl+") {
+                        isSelected = AppUtils.config.mainWinHotkeyModifier == KeyCode.CONTROL.name
+                        selectedProperty().addListener(ChangeListener { _, _, _ ->
+                            val keyList = AppUtils.config.mainWinHotkeyModifier.split("+").toMutableList()
+                            transaction {
+                                AppUtils.config.mainWinHotkeyModifier = if (checkboxCtrl.isSelected) {
+                                    keyList.add(KeyCode.CONTROL.name)
+                                    keyList.joinToString(separator = "+")
+                                } else {
+                                    keyList.remove(KeyCode.CONTROL.name)
+                                    keyList.joinToString(separator = "+")
+                                }
+                            }
+                            AppUtils.refreshConfig()
+
+                        })
                     }
-                    checkboxShift = checkbox ("Shift+"){
-                        isSelected = shift
+                    checkboxShift = checkbox("Shift+") {
+                        isSelected = AppUtils.config.mainWinHotkeyModifier == KeyCode.SHIFT.name
+                        selectedProperty().addListener(ChangeListener { _, _, _ ->
+                            val keyList = AppUtils.config.mainWinHotkeyModifier.split("+").toMutableList()
+                            transaction {
+                                AppUtils.config.mainWinHotkeyModifier = if (checkboxShift.isSelected) {
+                                    keyList.add(KeyCode.SHIFT.name)
+                                    keyList.joinToString(separator = "+")
+                                } else {
+                                    keyList.remove(KeyCode.SHIFT.name)
+                                    keyList.joinToString(separator = "+")
+                                }
+                            }
+                            AppUtils.refreshConfig()
+
+                        })
                     }
-                    checkboxAlt = checkbox ("Alt+"){
-                        isSelected = alt
+                    checkboxAlt = checkbox("Alt+") {
+                        isSelected = AppUtils.config.mainWinHotkeyModifier == KeyCode.ALT.name
+                        selectedProperty().addListener(ChangeListener { _, _, _ ->
+                            val keyList = AppUtils.config.mainWinHotkeyModifier.split("+").toMutableList()
+                            transaction {
+                                AppUtils.config.mainWinHotkeyModifier = if (checkboxAlt.isSelected) {
+                                    keyList.add(KeyCode.ALT.name)
+                                    keyList.joinToString(separator = "+")
+                                } else {
+                                    keyList.remove(KeyCode.ALT.name)
+                                    keyList.joinToString(separator = "+")
+                                }
+                            }
+                            AppUtils.refreshConfig()
+
+                        })
                     }
 
-                    textFieldCategoryName = textfield {
+                    textfieldHotkey = textfield {
                         style {
                             maxWidth = 300.px
                             prefHeight = 36.px
                             fontSize = 18.px
                         }
 
+                        isEditable = false
 
-                        val key = configs.mainWinHotkey.split("+").last().toInt()
-                        text = KeyEvent.getKeyText(key)
+                        text = AppUtils.config.mainWinHotkey
+
+                        setOnKeyReleased { keyEvent ->
+                            if (keyEvent.code == KeyCode.CONTROL ||
+                                    keyEvent.code == KeyCode.SHIFT ||
+                                    keyEvent.code == KeyCode.WINDOWS ||
+                                    keyEvent.code == KeyCode.ALT) {
+                                return@setOnKeyReleased
+                            }
+
+                            println(keyEvent.code.name)
+
+                            if (KeyCodeUtils.convertToCKCode(keyEvent.code) == 0) {
+                                text = "不支持此键"
+                                return@setOnKeyReleased
+                            }
+                            text = keyEvent.code.name
+
+                            transaction {
+                                AppUtils.config.mainWinHotkey = text
+                            }
+
+                            AppUtils.refreshConfig()
+                        }
                     }
-                }
-            }
-        }
-
-        bottom = buttonbar {
-            paddingBottom = 16.0
-            paddingLeft = 10.0
-            paddingRight = 20.0
-
-            btnSave = button("保存") {
-                addClass("btn-category-save")
-                ButtonBar.setButtonData(this, ButtonBar.ButtonData.RIGHT)
-                action {
-                    transaction {
-                        configs.startup = checkboxStartup.isSelected
-                        configs.keepTop = checkboxKeepTop.isSelected
-                    }
-                    close()
-                    // 触发加载分类列表事件
-                    EventBus.getDefault().post(LoadCategoriesEvent(categoryMenu.listViewCategories))
                 }
             }
         }

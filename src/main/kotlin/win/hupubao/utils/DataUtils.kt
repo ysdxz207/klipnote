@@ -55,7 +55,8 @@ object DataUtils {
                 Config.new(init = {
                     startup = true
                     keepTop = true
-                    mainWinHotkey = "2+41"
+                    mainWinHotkeyModifier = "CONTROL"
+                    mainWinHotkey = "`"
                     watchingClipboard = true
                 })
             }
