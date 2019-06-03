@@ -14,8 +14,6 @@ class GlobalKeyListener : NativeKeyListener {
         val needShift = AppUtils.config.mainWinHotkeyModifier.contains(KeyCode.SHIFT.name)
         val needAlt = AppUtils.config.mainWinHotkeyModifier.contains(KeyCode.ALT.name)
 
-        val keycode = KeyCode.getKeyCode(AppUtils.config.mainWinHotkey)
-
         if (needCtr && e.modifiers and NativeKeyEvent.CTRL_L_MASK != NativeKeyEvent.CTRL_L_MASK
                 && e.modifiers and NativeKeyEvent.CTRL_R_MASK != NativeKeyEvent.CTRL_R_MASK) {
             return
@@ -31,7 +29,7 @@ class GlobalKeyListener : NativeKeyListener {
             return
         }
 
-        if (e.keyCode == KeyCodeUtils.convertToCKCode(keycode)) {
+        if (e.keyCode == KeyCodeUtils.getCodeFromKey(AppUtils.config.mainWinHotkey)) {
             AppUtils.showOrHideMainWin()
         }
     }

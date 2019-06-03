@@ -8,7 +8,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
 import win.hupubao.components.CategoryMenu
 import win.hupubao.utils.AppUtils
-import win.hupubao.utils.KeyCodeUtils
 
 
 class ConfigFragment : Fragment("设置") {
@@ -145,10 +144,6 @@ class ConfigFragment : Fragment("设置") {
 
                             println(keyEvent.code.name)
 
-                            if (KeyCodeUtils.convertToCKCode(keyEvent.code) == 0) {
-                                text = "不支持此键"
-                                return@setOnKeyReleased
-                            }
                             text = keyEvent.code.name
 
                             transaction {
