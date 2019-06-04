@@ -11,11 +11,8 @@ import win.hupubao.listener.EventListeners
 import win.hupubao.utils.AppUtils
 import win.hupubao.views.ConfigFragment
 import win.hupubao.views.MainView
-import java.awt.*
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
-import javax.imageio.ImageIO
-import javax.swing.SwingUtilities
+import java.awt.GraphicsEnvironment
+import java.awt.TrayIcon
 
 class App : App() {
     private val iconPath = "/icon/icon.png"
@@ -45,6 +42,7 @@ class App : App() {
 
 
     init {
+        importStylesheet("/css/style.css")
         EventBus.getDefault().register(EventListeners())
     }
 
@@ -65,53 +63,29 @@ class App : App() {
         Platform.setImplicitExit(false)
 
         // Create tray icon
-        SwingUtilities.invokeLater { createTrayIcon() }
-    }
+        trayicon(resources.stream(iconPath)) {
+            setOnMouseClicked(fxThread = true) {
+                AppUtils.showOrHideMainWin()
+            }
 
-    fun createTrayIcon() {
-        // Initialize AWT Toolkit
-        Toolkit.getDefaultToolkit()
+            menu("klipnote") {
 
-        // Load icon
-        val icon = ImageIO.read(resources.url(iconPath))
+                item("设置") {
 
-        // Create tray icon, assign icons and actions
-        trayIcon = TrayIcon(icon).apply {
-            // Show app on tray icon click
-            addMouseListener(object : MouseAdapter() {
-                override fun mouseClicked(e: MouseEvent) {
-                    if (e.button == MouseEvent.BUTTON1 && e.clickCount == 1) {
-                        AppUtils.showOrHideMainWin()
-                    }
-                }
-            })
-
-            // Add a menu item to show the app and one to hide
-            popupMenu = PopupMenu().apply {
-
-                add(MenuItem("设置").apply {
-                    addActionListener {
+                    setOnAction(fxThread = true) {
                         AppUtils.showMainWin()
                         Platform.runLater {
                             ConfigFragment().openWindow(modality = Modality.APPLICATION_MODAL, resizable = false)
                         }
                     }
-                })
-                add(MenuItem("退出").apply {
-                    addActionListener {
-                        Platform.runLater {
-                            Platform.exit()
-                            System.exit(0)
-                        }
+                }
+                item("退出") {
+                    setOnAction(fxThread = true) {
+                        Platform.exit()
+                        System.exit(0)
                     }
-                })
+                }
             }
-
-            // Add the tray icon to the system tray
-            SystemTray.getSystemTray().add(this)
         }
-
     }
-
-
 }

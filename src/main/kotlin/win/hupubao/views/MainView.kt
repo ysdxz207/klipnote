@@ -46,14 +46,12 @@ class MainView : View("Klipnote") {
     init {
         currentStage?.isResizable = false
 
-        importStylesheet("/css/style.css")
-
-
         startWatchingClipboard()
 
         // 触发加载笔记列表事件
         EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, null, header.textFieldSearch.text)))
 
+        // 注册快捷键
         AppUtils.registHotkey()
     }
 

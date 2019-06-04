@@ -16,6 +16,9 @@ object AppUtils {
 
     var config = transaction {  Config.all().limit(1).toList()[0] }
 
+    /**
+     * 显示或隐藏主窗口
+     */
     fun showOrHideMainWin() {
         Platform.runLater {
             if (FX.primaryStage.isShowing) {
@@ -26,6 +29,9 @@ object AppUtils {
         }
     }
 
+    /**
+     * 显示主窗口
+     */
     fun showMainWin() {
         Platform.runLater {
             if (!FX.primaryStage.isShowing) {
@@ -37,6 +43,9 @@ object AppUtils {
         }
     }
 
+    /**
+     * 隐藏主窗口
+     */
     fun hideMainWin() {
         Platform.runLater {
             if (FX.primaryStage.isShowing) {
@@ -45,6 +54,9 @@ object AppUtils {
         }
     }
 
+    /**
+     * 在【开机启动】【开机不启动】之间切换
+     */
     fun toogleBootup(): Boolean {
         if (checkBootup()) {
             Runtime.getRuntime().exec(arrayOf("cmd", "/c", "reg", "delete", REG_STARTUP_KEY, "/v", APP_NAME, "/f")).waitFor(500L, TimeUnit.MILLISECONDS)
@@ -54,14 +66,23 @@ object AppUtils {
         return checkBootup()
     }
 
+    /**
+     * 检查是否已开启【开机启动】
+     */
     fun checkBootup(): Boolean {
         return Runtime.getRuntime().exec(arrayOf("cmd", "/c", "reg", "query", REG_STARTUP_KEY, "/v", APP_NAME)).waitFor() == 0
     }
 
+    /**
+     * 刷新配置:从数据库加载到内存
+     */
     fun refreshConfig() {
         config = transaction {  Config.all().limit(1).toList()[0] }
     }
 
+    /**
+     * 注册快捷键
+     */
     fun registHotkey() {
         val config = AppUtils.config
         var modifier = 0
@@ -75,6 +96,7 @@ object AppUtils {
             modifier += JIntellitype.MOD_ALT
         }
 
+        // 取消快捷键注册
         JIntellitype.getInstance().unregisterHotKey(SHOW_KEY_MARK)
 
         //第一步：注册热键，第一个参数表示该热键的标识，第二个参数表示组合键，如果没有则为0，第三个参数为定义的主要热键

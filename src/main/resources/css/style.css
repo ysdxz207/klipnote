@@ -12,16 +12,6 @@
 }
 
 
-/*.list-cell:even {
-    -fx-background-color: white;
-}*/
-
-/*
-.list-cell:filled:hover {
-    -fx-background-color: #ffafeb;
-    -fx-text-fill: white;
-}*/
-
 .list-cell-note {
     -fx-background-color: white;
     -fx-font-size: 18px;

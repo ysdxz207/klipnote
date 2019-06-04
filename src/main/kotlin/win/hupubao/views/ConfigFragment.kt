@@ -12,7 +12,6 @@ import win.hupubao.utils.KeyCodeUtils
 
 
 class ConfigFragment : Fragment("设置") {
-    private val mainView: MainView by inject()
     private val categoryMenu: CategoryMenu by inject()
 
     private lateinit var textfieldHotkey: TextField
