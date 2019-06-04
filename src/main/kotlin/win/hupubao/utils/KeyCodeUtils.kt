@@ -11,7 +11,7 @@ import java.awt.event.KeyEvent
  */
 object KeyCodeUtils {
 
-    
+
     enum class KeyEventCode(val character: String, val keyEvent: Int, val keyCode: KeyCode) {
 
 
@@ -70,7 +70,7 @@ object KeyCodeUtils {
         LEFT("LEFT", KeyEvent.VK_LEFT, KeyCode.LEFT),
         RIGHT("RIGHT", KeyEvent.VK_RIGHT, KeyCode.RIGHT),
         ESCAPE("ESCAPE", KeyEvent.VK_ESCAPE, KeyCode.ESCAPE),
-        BACK_QUOTE("BACK_QUOTE", KeyEvent.VK_BACK_QUOTE, KeyCode.BACK_QUOTE),
+        BACK_QUOTE("`", KeyEvent.VK_BACK_QUOTE, KeyCode.BACK_QUOTE),
         BACK_SPACE("BACK_SPACE", KeyEvent.VK_BACK_SPACE, KeyCode.BACK_SPACE),
         TAB("TAB", KeyEvent.VK_TAB, KeyCode.TAB),
         CAPS_LOCK("CAPS_LOCK", KeyEvent.VK_CAPS_LOCK, KeyCode.CAPS),
@@ -91,11 +91,19 @@ object KeyCodeUtils {
         OPEN_BRACKET("[", KeyEvent.VK_OPEN_BRACKET, KeyCode.OPEN_BRACKET),
         CLOSE_BRACKET("]", KeyEvent.VK_CLOSE_BRACKET, KeyCode.CLOSE_BRACKET),
         BACK_SLASH("\\", KeyEvent.VK_BACK_SLASH, KeyCode.BACK_SLASH),
+        CONTROL("Ctrl", KeyEvent.VK_CONTROL, KeyCode.CONTROL),
+        SHIFT("Shift", KeyEvent.VK_SHIFT, KeyCode.SHIFT),
+        ALT("Alt", KeyEvent.VK_ALT, KeyCode.ALT),
         UNKNOWN("UNKNOWN KEY", KeyEvent.VK_UNDEFINED, KeyCode.UNDEFINED)
     }
 
 
     fun getKeyEventCodeFromKey(key: String): KeyEventCode {
-        return KeyEventCode.values().find { it.character == key }?: KeyEventCode.UNKNOWN
+        return KeyEventCode.values().find { it.character == key } ?: KeyEventCode.UNKNOWN
+    }
+
+    fun getKeyFromKeyCode(keyCode: KeyCode): String {
+        val keyEventCode = KeyEventCode.values().find { it.keyCode == keyCode }
+        return keyEventCode?.character ?: "不支持此键"
     }
 }

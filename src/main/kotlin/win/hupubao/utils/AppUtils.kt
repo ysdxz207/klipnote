@@ -1,5 +1,6 @@
 package win.hupubao.utils
 
+import com.melloware.jintellitype.JIntellitype
 import javafx.application.Platform
 import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
@@ -11,6 +12,7 @@ object AppUtils {
     val REG_STARTUP_KEY = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
     val APP_NAME = "klipnote"
     val APP_FULL_PATH = File(javaClass.protectionDomain.codeSource.location.toURI()).path
+    private val SHOW_KEY_MARK = 1
 
     var config = transaction {  Config.all().limit(1).toList()[0] }
 
@@ -58,5 +60,34 @@ object AppUtils {
 
     fun refreshConfig() {
         config = transaction {  Config.all().limit(1).toList()[0] }
+    }
+
+    fun registHotkey() {
+        val config = AppUtils.config
+        var modifier = 0
+        if (config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.CONTROL.character)) {
+            modifier += JIntellitype.MOD_CONTROL
+        }
+        if (config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.SHIFT.character)) {
+            modifier += JIntellitype.MOD_SHIFT
+        }
+        if (config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.ALT.character)) {
+            modifier += JIntellitype.MOD_ALT
+        }
+
+        JIntellitype.getInstance().unregisterHotKey(SHOW_KEY_MARK)
+
+        //第一步：注册热键，第一个参数表示该热键的标识，第二个参数表示组合键，如果没有则为0，第三个参数为定义的主要热键
+        JIntellitype.getInstance().registerHotKey(SHOW_KEY_MARK,
+                modifier,
+                KeyCodeUtils.getKeyEventCodeFromKey(config.mainWinHotkey).keyEvent)
+
+
+        //第二步：添加热键监听器
+        JIntellitype.getInstance().addHotKeyListener { markCode: Int ->
+            when (markCode) {
+                SHOW_KEY_MARK -> AppUtils.showOrHideMainWin()
+            }
+        }
     }
 }
