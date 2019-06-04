@@ -33,6 +33,12 @@ class ConfigFragment : Fragment("设置") {
             fieldset("选项") {
                 field {
                     checkboxStartup = checkbox("开机启动") {
+                        val bootup = AppUtils.checkBootup()
+                        if (AppUtils.config.startup != bootup) {
+                            transaction {
+                                AppUtils.config.startup = bootup
+                            }
+                        }
                         isSelected = AppUtils.config.startup
 
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
@@ -73,53 +79,56 @@ class ConfigFragment : Fragment("设置") {
             fieldset("快捷键设置") {
                 field("显示/隐藏主界面") {
                     checkboxCtrl = checkbox("Ctrl+") {
-                        isSelected = AppUtils.config.mainWinHotkeyModifier == KeyCode.CONTROL.name
+                        isSelected = AppUtils.config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.CONTROL.character)
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
                             val keyList = AppUtils.config.mainWinHotkeyModifier.split("+").toMutableList()
                             transaction {
                                 AppUtils.config.mainWinHotkeyModifier = if (checkboxCtrl.isSelected) {
-                                    keyList.add(KeyCode.CONTROL.name)
+                                    keyList.add(KeyCodeUtils.KeyEventCode.CONTROL.character)
                                     keyList.joinToString(separator = "+")
                                 } else {
-                                    keyList.remove(KeyCode.CONTROL.name)
+                                    keyList.remove(KeyCodeUtils.KeyEventCode.CONTROL.character)
                                     keyList.joinToString(separator = "+")
                                 }
                             }
                             AppUtils.refreshConfig()
+                            AppUtils.registHotkey()
 
                         })
                     }
                     checkboxShift = checkbox("Shift+") {
-                        isSelected = AppUtils.config.mainWinHotkeyModifier == KeyCode.SHIFT.name
+                        isSelected = AppUtils.config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.SHIFT.character)
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
                             val keyList = AppUtils.config.mainWinHotkeyModifier.split("+").toMutableList()
                             transaction {
                                 AppUtils.config.mainWinHotkeyModifier = if (checkboxShift.isSelected) {
-                                    keyList.add(KeyCode.SHIFT.name)
+                                    keyList.add(KeyCodeUtils.KeyEventCode.SHIFT.character)
                                     keyList.joinToString(separator = "+")
                                 } else {
-                                    keyList.remove(KeyCode.SHIFT.name)
+                                    keyList.remove(KeyCodeUtils.KeyEventCode.SHIFT.character)
                                     keyList.joinToString(separator = "+")
                                 }
                             }
                             AppUtils.refreshConfig()
+                            AppUtils.registHotkey()
 
                         })
                     }
                     checkboxAlt = checkbox("Alt+") {
-                        isSelected = AppUtils.config.mainWinHotkeyModifier == KeyCode.ALT.name
+                        isSelected = AppUtils.config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.ALT.character)
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
                             val keyList = AppUtils.config.mainWinHotkeyModifier.split("+").toMutableList()
                             transaction {
                                 AppUtils.config.mainWinHotkeyModifier = if (checkboxAlt.isSelected) {
-                                    keyList.add(KeyCode.ALT.name)
+                                    keyList.add(KeyCodeUtils.KeyEventCode.ALT.character)
                                     keyList.joinToString(separator = "+")
                                 } else {
-                                    keyList.remove(KeyCode.ALT.name)
+                                    keyList.remove(KeyCodeUtils.KeyEventCode.ALT.character)
                                     keyList.joinToString(separator = "+")
                                 }
                             }
                             AppUtils.refreshConfig()
+                            AppUtils.registHotkey()
 
                         })
                     }
@@ -143,19 +152,14 @@ class ConfigFragment : Fragment("设置") {
                                 return@setOnKeyReleased
                             }
 
-                            println(keyEvent.code.name)
-
-                            if (KeyCodeUtils.convertToCKCode(keyEvent.code) == 0) {
-                                text = "不支持此键"
-                                return@setOnKeyReleased
-                            }
-                            text = keyEvent.code.name
+                            text = KeyCodeUtils.getKeyFromKeyCode(keyEvent.code)
 
                             transaction {
                                 AppUtils.config.mainWinHotkey = text
                             }
 
                             AppUtils.refreshConfig()
+                            AppUtils.registHotkey()
                         }
                     }
                 }

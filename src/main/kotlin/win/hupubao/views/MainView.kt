@@ -2,8 +2,6 @@ package win.hupubao.views
 
 import org.greenrobot.eventbus.EventBus
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jnativehook.GlobalScreen
-import org.jnativehook.NativeHookException
 import org.joda.time.DateTime
 import tornadofx.*
 import win.hupubao.beans.Category
@@ -14,12 +12,10 @@ import win.hupubao.components.Header
 import win.hupubao.components.NoteListView
 import win.hupubao.constants.Constants
 import win.hupubao.listener.ClipboardChangedListener
-import win.hupubao.listener.GlobalKeyListener
+import win.hupubao.utils.AppUtils
 import win.hupubao.utils.ClipboardHelper
 import win.hupubao.utils.DataUtils
 import java.awt.datatransfer.DataFlavor
-import java.util.logging.Level
-import java.util.logging.Logger
 
 
 /**
@@ -58,28 +54,10 @@ class MainView : View("Klipnote") {
         // 触发加载笔记列表事件
         EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, null, header.textFieldSearch.text)))
 
-        registHotkey()
+        AppUtils.registHotkey()
     }
 
-    private fun registHotkey() {
-        try {
-            // Get the logger for "org.jnativehook" and set the level to off.
-            val logger = Logger.getLogger(GlobalScreen::class.java.getPackage().name)
-            logger.level = Level.OFF
 
-            // Don't forget to disable the parent handlers.
-            logger.useParentHandlers = false
-            GlobalScreen.registerNativeHook()
-        } catch (ex: NativeHookException) {
-            System.err.println("There was a problem registering the native hook.")
-            System.err.println(ex.message)
-
-            System.exit(1)
-        }
-
-
-        GlobalScreen.addNativeKeyListener(GlobalKeyListener())
-    }
 
 
     fun startWatchingClipboard() {
