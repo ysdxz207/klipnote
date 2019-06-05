@@ -12,13 +12,20 @@ import win.hupubao.constants.Constants
 import win.hupubao.sql.Categories
 import win.hupubao.sql.Configs
 import win.hupubao.sql.Notes
+import java.io.File
 import java.sql.Connection
+import java.sql.SQLException
+import java.sql.DatabaseMetaData
+import java.sql.DriverManager
+
 
 object DataUtils {
 
     private val databaseDir = "${System.getProperty("user.home")}/klipnote/klipnote.db"
 
     fun initData() {
+
+        createNewDatabase()
 
         Database.connect("jdbc:sqlite:$databaseDir", driver = "org.sqlite.JDBC")
         TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE // Or Connection.TRANSACTION_READ_UNCOMMITTED
@@ -55,12 +62,36 @@ object DataUtils {
                 Config.new(init = {
                     startup = true
                     keepTop = true
-                    mainWinHotkeyModifier = "CONTROL"
+                    mainWinHotkeyModifier = "Ctrl"
                     mainWinHotkey = "`"
                     watchingClipboard = true
                 })
             }
         }
+    }
+
+    fun createNewDatabase() {
+
+        val dir = File(databaseDir).parentFile
+        if (!dir.exists()) {
+            dir.mkdirs()
+        }
+
+        val url = "jdbc:sqlite:$databaseDir"
+
+        try {
+            DriverManager.getConnection(url).use { conn ->
+                if (conn != null) {
+                    val meta = conn.metaData
+                    println("The driver name is " + meta.driverName)
+                    println("A new database has been created.")
+                }
+
+            }
+        } catch (e: SQLException) {
+            println(e.message)
+        }
+
     }
 
     fun getCategorySortNum(): Int {
@@ -71,7 +102,6 @@ object DataUtils {
         }
         return sortNum
     }
-
 
 
 }
