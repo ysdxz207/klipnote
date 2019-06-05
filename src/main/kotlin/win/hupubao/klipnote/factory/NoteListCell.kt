@@ -149,7 +149,7 @@ class NoteListCell<T> : ListCell<T>() {
                                         //收藏
                                         note.category = starCategory
                                     }
-                                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, starCategory, find<Header>().textFieldSearch.text)))
+                                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
                                 }
 
                                 // 重新加载列表
@@ -179,7 +179,7 @@ class NoteListCell<T> : ListCell<T>() {
                                     "移动到【回收站】"
                                 }
 
-                                confirm(header = "", content = "笔记将被$displayName\n确定删除笔记吗？", actionFn = {
+                                confirm(header = "", content = "笔记将被$displayName\n确定删除笔记吗？", owner = FX.primaryStage, actionFn = {
                                     transaction {
                                         if (deleteForever) {
                                             note.delete()
@@ -190,7 +190,7 @@ class NoteListCell<T> : ListCell<T>() {
                                 })
 
                                 // 重新加载列表
-                                EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, noteCategory, find<Header>().textFieldSearch.text)))
+                                EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
 
                             }
                         }

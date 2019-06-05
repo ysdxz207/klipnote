@@ -44,7 +44,8 @@ class CategoryListCell<T> : ListCell<T>() {
             graphic = borderpane {
 
                 onMouseClicked = EventHandler {
-                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, category, find<Header>().textFieldSearch.text)))
+                    find<CategoryMenu>().selectedCategory = category
+                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
                     find<MainView>().root.center = find<NoteListView>().root
                 }
 
@@ -95,7 +96,7 @@ class CategoryListCell<T> : ListCell<T>() {
 
                         onMouseClicked = EventHandler {
 
-                            confirm(header = "", content = "分类下笔记将被移动到【回收站】\n确定删除分类吗？", actionFn = {
+                            confirm(header = "", content = "分类下笔记将被移动到【回收站】\n确定删除分类吗？", owner = FX.primaryStage, actionFn = {
                                 transaction {
                                     category.delete()
 

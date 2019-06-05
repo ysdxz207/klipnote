@@ -3,9 +3,10 @@ package win.hupubao.klipnote.utils
 import com.melloware.jintellitype.JIntellitype
 import javafx.application.Platform
 import org.jetbrains.exposed.sql.transactions.transaction
-import tornadofx.FX
+import tornadofx.*
 import win.hupubao.klipnote.beans.Category
 import win.hupubao.klipnote.beans.Config
+import win.hupubao.klipnote.constants.Constants
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -16,6 +17,9 @@ object AppUtils {
     private val SHOW_KEY_MARK = 1
 
     var config = transaction {  Config.all().limit(1).toList()[0] }
+    val categoryRecycle = transaction { Category.findById(Constants.RECYCLE_CATEGORY_ID) }
+    val categoryStar = transaction { Category.findById(Constants.STAR_CATEGORY_ID) }
+    val categoryClipboard = transaction { Category.findById(Constants.CLIPBOARD_CATEGORY_ID) }
 
     /**
      * 显示或隐藏主窗口

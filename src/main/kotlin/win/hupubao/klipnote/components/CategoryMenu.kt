@@ -22,6 +22,7 @@ import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.factory.CategoryListCell
 import win.hupubao.klipnote.listener.ClipboardChangedListener
+import win.hupubao.klipnote.utils.AppUtils
 import win.hupubao.klipnote.views.LoadCategoriesEvent
 import win.hupubao.klipnote.views.LoadNotesEvent
 import win.hupubao.klipnote.views.MainView
@@ -63,12 +64,8 @@ class CategoryMenu : View() {
                 paddingLeft = 36.0
 
                 action {
-                    var category: Category? = null
-                    transaction {
-                        category = Category.findById(Constants.RECYCLE_CATEGORY_ID)
-                    }
-                    selectedCategory = category
-                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, category, find<Header>().textFieldSearch.text)))
+                    selectedCategory = AppUtils.categoryRecycle
+                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
                     find<MainView>().root.center = find<NoteListView>().root
                 }
             }
@@ -100,13 +97,11 @@ class CategoryMenu : View() {
                 paddingLeft = 36.0
 
                 action {
+                    selectedCategory = AppUtils.categoryStar
+
                     val notesParam = NotesParam()
                     notesParam.pagination = find<NoteListView>().paginationNotes
-                    transaction {
-                        notesParam.category = Category.findById(Constants.STAR_CATEGORY_ID)
-                    }
                     notesParam.searchText = find<Header>().textFieldSearch.text
-                    selectedCategory = notesParam.category
                     EventBus.getDefault().post(LoadNotesEvent(notesParam))
                     find<MainView>().root.center = find<NoteListView>().root
                 }
@@ -165,12 +160,8 @@ class CategoryMenu : View() {
                 paddingLeft = 36.0
 
                 onMouseClicked = EventHandler {
-                    var category: Category? = null
-                    transaction {
-                        category = Category.findById(Constants.CLIPBOARD_CATEGORY_ID)
-                    }
-                    selectedCategory = category
-                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, category, find<Header>().textFieldSearch.text)))
+                    selectedCategory = AppUtils.categoryClipboard
+                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
                     find<MainView>().root.center = find<NoteListView>().root
                 }
 

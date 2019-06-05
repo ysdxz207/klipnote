@@ -62,7 +62,7 @@ class Header : View("My View") {
                     }
 
                     textProperty().addListener(ChangeListener { _, _, newValue ->
-                        EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, null, newValue)))
+                        EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, newValue)))
                     })
                 }
             }

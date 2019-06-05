@@ -80,48 +80,65 @@ class NoteEditView : View() {
             }
 
             fieldset {
-                buttonSave = button("保存") {
-                    style {
-                        prefHeight = 42.px
-                        prefWidth = 110.px
-                        fontSize = 18.px
-                        backgroundColor += Paint.valueOf("#05BBAF")
-                        textFill = Color.WHITE
-                        cursor = Cursor.HAND
+                hbox {
+                    buttonSave = button("保存") {
+                        style {
+                            prefHeight = 42.px
+                            prefWidth = 110.px
+                            fontSize = 18.px
+                            backgroundColor += Paint.valueOf("#05BBAF")
+                            textFill = Color.WHITE
+                            cursor = Cursor.HAND
+                        }
+
+                        action {
+                            if (comboBoxCategory.selectedItem == null) {
+                                transaction {
+                                    comboBoxCategory.selectionModel.select(Category.findById(Constants.DEFAULT_CATEGORY_ID))
+                                }
+                            }
+                            transaction {
+                                if (labelId.text == null || labelId.text.isEmpty()) {
+                                    Note.new {
+                                        title = textFieldTitle.text
+                                        content = textAreaContent.text
+                                        category = comboBoxCategory.selectedItem!!
+                                        originCategory = comboBoxCategory.selectedItem!!
+                                        createTime = DateTime.now()
+                                    }
+                                } else {
+                                    val note = Note.findById(labelId.text.toInt())
+                                    note?.title = textFieldTitle.text
+                                    note?.content = textAreaContent.text
+                                    note?.category = comboBoxCategory.selectedItem!!
+                                    note?.originCategory = comboBoxCategory.selectedItem!!
+                                }
+
+                                EventBus.getDefault().post(LoadNotesEvent(NotesParam(tornadofx.find<NoteListView>().paginationNotes, tornadofx.find<Header>().textFieldSearch.text)))
+                                tornadofx.find<MainView>().root.center = tornadofx.find<NoteListView>().root
+                            }
+
+                        }
+
                     }
 
-                    action {
-                        if (comboBoxCategory.selectedItem == null) {
-                            transaction {
-                                comboBoxCategory.selectionModel.select(Category.findById(Constants.DEFAULT_CATEGORY_ID))
-                            }
-                        }
-                        transaction {
-                            if (labelId.text == null || labelId.text.isEmpty()) {
-                                Note.new {
-                                    title = textFieldTitle.text
-                                    content = textAreaContent.text
-                                    category = comboBoxCategory.selectedItem!!
-                                    originCategory = comboBoxCategory.selectedItem!!
-                                    createTime = DateTime.now()
-                                }
-                            } else {
-                                val note = Note.findById(labelId.text.toInt())
-                                note?.title = textFieldTitle.text
-                                note?.content = textAreaContent.text
-                                note?.category = comboBoxCategory.selectedItem!!
-                            }
+                    region {
+                        prefWidth = 20.0
+                    }
 
-                            EventBus.getDefault().post(LoadNotesEvent(NotesParam(tornadofx.find<NoteListView>().paginationNotes, null, tornadofx.find<Header>().textFieldSearch.text)))
+                    button("取消") {
+                        style {
+                            prefHeight = 42.px
+                            prefWidth = 110.px
+                            fontSize = 18.px
+                            backgroundColor += Paint.valueOf("#A9A9A9")
+                            textFill = Color.WHITE
+                            cursor = Cursor.HAND
+                        }
+                        action {
+                            EventBus.getDefault().post(LoadNotesEvent(NotesParam(tornadofx.find<NoteListView>().paginationNotes, tornadofx.find<Header>().textFieldSearch.text)))
                             tornadofx.find<MainView>().root.center = tornadofx.find<NoteListView>().root
                         }
-
-                    }
-
-                }
-                button("取消") {
-                    action {
-                        EventBus.getDefault().post(LoadNotesEvent(NotesParam(tornadofx.find<NoteListView>().paginationNotes, null, tornadofx.find<Header>().textFieldSearch.text)))
                     }
                 }
             }

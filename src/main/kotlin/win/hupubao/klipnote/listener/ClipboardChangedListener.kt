@@ -20,7 +20,7 @@ object ClipboardChangedListener : ClipboardOwner {
     override fun lostOwnership(c: Clipboard, t: Transferable) {
 
         try {
-            Thread.sleep(200)
+            Thread.sleep(1000)
             regainOwnership(c.getContents(this))
         } catch (e: Exception) {
             e.printStackTrace()
