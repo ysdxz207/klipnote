@@ -46,17 +46,14 @@ class App : App() {
         EventBus.getDefault().register(EventListeners())
     }
 
+
     override fun start(stage: Stage) {
         if (parameters.named["devmode"] == "true") {
             reloadStylesheetsOnFocus()
             reloadViewsOnFocus()
         }
         stage.icons += resources.image(iconPath)
-
         super.start(stage)
-        // 窗口居中显示
-        stage.scene.window.centerOnScreen()
-        
 
         // Don't exit on window close (Optional)
         Platform.setImplicitExit(false)

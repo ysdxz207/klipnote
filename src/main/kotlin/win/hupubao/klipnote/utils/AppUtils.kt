@@ -40,12 +40,11 @@ object AppUtils {
      */
     fun showMainWin() {
         Platform.runLater {
-            FX.primaryStage.isIconified = false
+            FX.primaryStage.isAlwaysOnTop = config.keepTop
             if (!FX.primaryStage.isShowing) {
                 FX.primaryStage.show()
             }
             FX.primaryStage.toFront()
-            FX.primaryStage.isAlwaysOnTop = config.keepTop
         }
     }
 

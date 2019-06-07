@@ -1,7 +1,11 @@
 package win.hupubao.klipnote.components
 
+import javafx.event.EventHandler
 import javafx.geometry.Pos
+import javafx.scene.Cursor
 import javafx.scene.control.TextField
+import javafx.scene.image.Image
+import javafx.scene.input.MouseButton
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
@@ -9,6 +13,8 @@ import javafx.scene.text.Font
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
 import win.hupubao.klipnote.beans.params.NotesParam
+import win.hupubao.klipnote.listener.MouseDragListener
+import win.hupubao.klipnote.utils.AppUtils
 import win.hupubao.klipnote.views.LoadNotesEvent
 
 class Header : View("My View") {
@@ -23,11 +29,40 @@ class Header : View("My View") {
         maxWidth = Double.POSITIVE_INFINITY
 
         borderpane {
-            prefHeight = 52.0
+            prefHeight = 80.0
             hgrow = Priority.ALWAYS
             maxWidth = Double.POSITIVE_INFINITY
             style {
                 backgroundColor += Color.valueOf("#353535")
+            }
+
+            top = hbox {
+                alignment = Pos.CENTER_RIGHT
+                style {
+                    backgroundColor += Color.valueOf("#222222")
+                    prefHeight = 32.px
+                    cursor = Cursor.MOVE
+                }
+
+                MouseDragListener(FX.primaryStage).enableDrag(this)
+
+                hbox {
+                    alignment = Pos.CENTER
+
+                    imageview {
+                        image = Image("icon/close.png")
+                        cursor = Cursor.HAND
+
+                        onMouseClicked = EventHandler {
+                            if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
+                                AppUtils.hideMainWin()
+                            }
+                        }
+                    }
+                    region {
+                        prefWidth = 8.0
+                    }
+                }
             }
 
             left = hbox {

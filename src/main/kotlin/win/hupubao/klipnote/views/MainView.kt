@@ -1,5 +1,6 @@
 package win.hupubao.klipnote.views
 
+import javafx.stage.StageStyle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.javafx.JavaFx
@@ -57,8 +58,10 @@ class MainView : View("Klipnote") {
         currentStage?.isResizable = false
         currentStage?.width = App.windowSize.width
         currentStage?.height = App.windowSize.height
-        FX.primaryStage.isAlwaysOnTop = AppUtils.config.keepTop
-
+        currentStage?.minWidth = App.windowSize.width
+        currentStage?.minHeight = App.windowSize.height
+        currentStage?.isAlwaysOnTop = AppUtils.config.keepTop
+        currentStage?.initStyle(StageStyle.UNDECORATED)
 
         startWatchingClipboard()
 
