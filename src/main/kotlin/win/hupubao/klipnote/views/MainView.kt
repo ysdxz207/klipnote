@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import sun.misc.BASE64Encoder
 import tornadofx.*
+import win.hupubao.klipnote.App
 import win.hupubao.klipnote.beans.Category
 import win.hupubao.klipnote.beans.Note
 import win.hupubao.klipnote.beans.params.NotesParam
@@ -38,7 +39,6 @@ class MainView : View("Klipnote") {
 
     override val root = borderpane {
 
-
         DataUtils.initData()
 
         // header
@@ -55,6 +55,8 @@ class MainView : View("Klipnote") {
 
     init {
         currentStage?.isResizable = false
+        currentStage?.width = App.windowSize.width
+        currentStage?.height = App.windowSize.height
         FX.primaryStage.isAlwaysOnTop = AppUtils.config.keepTop
 
 

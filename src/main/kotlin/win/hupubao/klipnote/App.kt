@@ -53,9 +53,6 @@ class App : App() {
         }
         stage.icons += resources.image(iconPath)
 
-
-        stage.minWidth = windowSize.width
-        stage.minHeight = windowSize.height
         super.start(stage)
         // 窗口居中显示
         stage.scene.window.centerOnScreen()
