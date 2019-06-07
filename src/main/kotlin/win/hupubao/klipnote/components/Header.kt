@@ -17,7 +17,7 @@ import win.hupubao.klipnote.listener.MouseDragListener
 import win.hupubao.klipnote.utils.AppUtils
 import win.hupubao.klipnote.views.LoadNotesEvent
 
-class Header : View("My View") {
+class Header : View("header") {
 
     private val noteListView: NoteListView by inject()
 
