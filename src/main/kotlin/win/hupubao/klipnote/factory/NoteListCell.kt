@@ -56,6 +56,7 @@ class NoteListCell<T> : ListCell<T>() {
 
                 left = hbox {
                     prefWidth = windowSize.width - windowSize.Lwidth - 200.0
+                    alignment = Pos.CENTER_LEFT
                     style {
                         cursor = Cursor.HAND
                     }

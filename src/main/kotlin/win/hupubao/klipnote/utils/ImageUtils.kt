@@ -7,6 +7,7 @@ import win.hupubao.klipnote.beans.Note
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
+import kotlin.math.max
 
 /**
  *
@@ -26,13 +27,13 @@ object ImageUtils {
         return ImageUtils.getImageFromNote(note, 0)
     }
 
-    fun getBufferedImageFromNote(note: Note, height: Int): BufferedImage {
+    fun getBufferedImageFromNote(note: Note, size: Int): BufferedImage {
         if (note.content == null) {
             return BufferedImage(400, 300, BufferedImage.TYPE_CUSTOM)
         }
         var bufferedImage = ImageIO.read(ByteArrayInputStream(BASE64Decoder().decodeBuffer(note.content!!.replace(BASE64_HEADER, ""))))
-        if (height > 0) {
-            bufferedImage = ImageUtils.resize(bufferedImage, height)
+        if (size > 0) {
+            bufferedImage = ImageUtils.resize(bufferedImage, size)
         }
         return bufferedImage
     }
@@ -43,16 +44,24 @@ object ImageUtils {
 
 
     /**
-     * 按宽度比例缩放
+     * 按比例缩放
      */
-    fun resize(img: BufferedImage, height: Int): BufferedImage {
-        if (height > img.width) {
+    fun resize(img: BufferedImage, size: Int): BufferedImage {
+
+        val width: Int
+        val height: Int
+        val maxValue = max(img.width, img.height)
+
+        if (maxValue < size) {
             return img
         }
-        val scale = height.div(img.width.toDouble())
-        val width = (img.width * scale).toInt()
+
+        val scale = size.div(maxValue.toDouble())
+
+        width = (img.width * scale).toInt()
+        height = (img.height * scale).toInt()
         val tmp = img.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH)
-        val resized = BufferedImage(height, height, BufferedImage.TYPE_INT_ARGB)
+        val resized = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         val g2d = resized.createGraphics()
         g2d.drawImage(tmp, 0, 0, null)
         g2d.dispose()
