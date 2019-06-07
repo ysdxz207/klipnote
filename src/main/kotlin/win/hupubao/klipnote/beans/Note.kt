@@ -13,6 +13,7 @@ class Note(id: EntityID<Int>) : IntEntity(id) {
     var createTime by Notes.createTime
     var category by Category referencedOn Notes.category
     var originCategory by Category referencedOn Notes.originCategory
+    var type by Notes.type
 
     override fun toString(): String {
         return title.toString()

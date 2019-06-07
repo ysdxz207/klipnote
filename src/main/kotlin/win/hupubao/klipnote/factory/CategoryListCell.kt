@@ -6,6 +6,7 @@ import javafx.scene.Cursor
 import javafx.scene.control.ContentDisplay
 import javafx.scene.control.ListCell
 import javafx.scene.image.Image
+import javafx.scene.input.MouseButton
 import org.greenrobot.eventbus.EventBus
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -15,6 +16,7 @@ import win.hupubao.klipnote.beans.Category
 import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.components.CategoryMenu
 import win.hupubao.klipnote.components.Header
+import win.hupubao.klipnote.components.NoteEditView
 import win.hupubao.klipnote.components.NoteListView
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.sql.Notes
@@ -44,9 +46,25 @@ class CategoryListCell<T> : ListCell<T>() {
             graphic = borderpane {
 
                 onMouseClicked = EventHandler {
-                    find<CategoryMenu>().selectedCategory = category
-                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
-                    find<MainView>().root.center = find<NoteListView>().root
+                    if (it.clickCount == 1
+                            && it.button == MouseButton.PRIMARY) {
+
+                        find<CategoryMenu>().selectedCategory = category
+                        EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
+                        find<MainView>().root.center = find<NoteListView>().root
+                    }
+
+                    if (it.clickCount == 1
+                            && it.button == MouseButton.SECONDARY) {
+                        contextmenu {
+                            item("添加笔记") {
+                                action {
+                                    val noteEditView = NoteEditView(null)
+                                    find<MainView>().root.center = noteEditView.root
+                                }
+                            }
+                        }
+                    }
                 }
 
                 left = hbox {
@@ -102,7 +120,7 @@ class CategoryListCell<T> : ListCell<T>() {
 
                                     val recycleCategory = Category.findById(Constants.RECYCLE_CATEGORY_ID)!!
 
-                                    Notes.update({Notes.category eq category.id}) {
+                                    Notes.update({ Notes.category eq category.id }) {
                                         it[Notes.category] = recycleCategory.id
                                     }
                                 }

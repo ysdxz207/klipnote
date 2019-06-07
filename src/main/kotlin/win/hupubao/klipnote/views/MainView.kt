@@ -1,5 +1,9 @@
 package win.hupubao.klipnote.views
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.javafx.JavaFx
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -12,10 +16,12 @@ import win.hupubao.klipnote.components.CategoryMenu
 import win.hupubao.klipnote.components.Header
 import win.hupubao.klipnote.components.NoteListView
 import win.hupubao.klipnote.constants.Constants
+import win.hupubao.klipnote.enums.NoteType
 import win.hupubao.klipnote.listener.ClipboardChangedListener
 import win.hupubao.klipnote.utils.AppUtils
 import win.hupubao.klipnote.utils.ClipboardHelper
 import win.hupubao.klipnote.utils.DataUtils
+import win.hupubao.klipnote.utils.ImageUtils
 import java.awt.datatransfer.DataFlavor
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -51,6 +57,7 @@ class MainView : View("Klipnote") {
         currentStage?.isResizable = false
         FX.primaryStage.isAlwaysOnTop = AppUtils.config.keepTop
 
+
         startWatchingClipboard()
 
         // 触发加载笔记列表事件
@@ -67,36 +74,39 @@ class MainView : View("Klipnote") {
             if (!ClipboardHelper.isBySet) {
 
                 try {
-                    transaction {
+                    GlobalScope.launch(Dispatchers.JavaFx) {
+                        transaction {
                             val categoryClipboard = Category.findById(Constants.CLIPBOARD_CATEGORY_ID)!!
-                        if (it.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                            val strVal = it.getTransferData(DataFlavor.stringFlavor).toString()
-                            Note.new {
-                                title = if (strVal.length > 20) {
-                                    strVal.replace("\n", "").substring(0, 20)
-                                } else {
-                                    strVal
+                            if (it.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                                val strVal = it.getTransferData(DataFlavor.stringFlavor).toString()
+                                Note.new {
+                                    title = if (strVal.length > 20) {
+                                        strVal.replace("\n", "").substring(0, 20)
+                                    } else {
+                                        strVal
+                                    }
+                                    content = strVal
+                                    category = categoryClipboard
+                                    originCategory = categoryClipboard
+                                    type = NoteType.TEXT.name
+                                    createTime = DateTime.now()
                                 }
-                                content = strVal
-                                category = categoryClipboard
-                                originCategory = categoryClipboard
-                                createTime = DateTime.now()
-                            }
-                        } else if (it.isDataFlavorSupported(DataFlavor.imageFlavor)) {
-                            val imageVal = it.getTransferData(DataFlavor.imageFlavor) as BufferedImage
-                            val byteArrayOutputStream = ByteArrayOutputStream()
-                            ImageIO.write(imageVal, "png", byteArrayOutputStream)
-                            val imageBase64 = BASE64Encoder().encode(byteArrayOutputStream.toByteArray())
-                            Note.new {
-                                title = ""
-                                content = "data:image/png;base64,$imageBase64"
-                                category = categoryClipboard
-                                originCategory = categoryClipboard
-                                createTime = DateTime.now()
+                            } else if (it.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+                                val imageVal = it.getTransferData(DataFlavor.imageFlavor) as BufferedImage
+                                val byteArrayOutputStream = ByteArrayOutputStream()
+                                ImageIO.write(imageVal, "png", byteArrayOutputStream)
+                                val imageBase64 = BASE64Encoder().encode(byteArrayOutputStream.toByteArray())
+                                Note.new {
+                                    title = ""
+                                    content = ImageUtils.BASE64_HEADER + imageBase64
+                                    category = categoryClipboard
+                                    originCategory = categoryClipboard
+                                    type = NoteType.IMAGE.name
+                                    createTime = DateTime.now()
+                                }
+                            } else {
                             }
                         }
-
-
                         // 重新加载笔记列表
                         EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, header.textFieldSearch.text)))
                     }

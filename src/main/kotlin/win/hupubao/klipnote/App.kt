@@ -52,12 +52,14 @@ class App : App() {
             reloadViewsOnFocus()
         }
         stage.icons += resources.image(iconPath)
-        super.start(stage)
+
 
         stage.minWidth = windowSize.width
         stage.minHeight = windowSize.height
+        super.start(stage)
         // 窗口居中显示
         stage.scene.window.centerOnScreen()
+        
 
         // Don't exit on window close (Optional)
         Platform.setImplicitExit(false)

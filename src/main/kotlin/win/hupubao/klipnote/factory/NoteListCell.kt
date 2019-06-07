@@ -20,6 +20,8 @@ import win.hupubao.klipnote.components.Header
 import win.hupubao.klipnote.components.NoteEditView
 import win.hupubao.klipnote.components.NoteListView
 import win.hupubao.klipnote.constants.Constants
+import win.hupubao.klipnote.enums.NoteType
+import win.hupubao.klipnote.utils.ImageUtils
 import win.hupubao.klipnote.views.AddToClipboardEvent
 import win.hupubao.klipnote.views.LoadNotesEvent
 import win.hupubao.klipnote.views.MainView
@@ -42,7 +44,6 @@ class NoteListCell<T> : ListCell<T>() {
             graphic = null
         } else {
             val note = t as Note
-            val noteCategory = transaction { note.category }
 
             graphic = borderpane {
                 onHover {
@@ -54,35 +55,43 @@ class NoteListCell<T> : ListCell<T>() {
                 }
 
                 left = hbox {
+                    prefWidth = windowSize.width - windowSize.Lwidth - 200.0
+                    style {
+                        cursor = Cursor.HAND
+                    }
 
-                    label {
-                        text = t.toString()
-                        prefWidth = windowSize.width - windowSize.Lwidth - 200.0
-                        textFill = Paint.valueOf("#000000")
-                        vgrow = Priority.ALWAYS
-                        maxHeight = Double.POSITIVE_INFINITY
-
-                        style {
-                            cursor = Cursor.HAND
+                    tooltip {
+                        text = if (note.type == NoteType.IMAGE.name) {
+                            "左键点击复制图片"
+                        } else {
+                            "左键点击复制笔记内容。"
                         }
+                    }
 
+                    onMouseClicked = EventHandler {
 
+                        if (it.clickCount == 1
+                                && it.button == MouseButton.PRIMARY) {
 
-                        tooltip {
-                            text = "左键点击复制笔记内容。"
+                            // 添加到剪贴板
+                            EventBus.getDefault().post(AddToClipboardEvent(note))
+                            return@EventHandler
                         }
+                    }
+                    if (note.type == NoteType.TEXT.name) {
+                        label {
+                            text = note.title
 
-                        onMouseClicked = EventHandler {
+                            textFill = Paint.valueOf("#000000")
+                            vgrow = Priority.ALWAYS
+                            maxHeight = Double.POSITIVE_INFINITY
 
-                            if (it.clickCount == 1
-                                    && it.button == MouseButton.PRIMARY) {
 
-                                // 添加到剪贴板
-                                EventBus.getDefault().post(AddToClipboardEvent(note.content))
-                                return@EventHandler
-                            }
                         }
-
+                    } else if (note.type == NoteType.IMAGE.name) {
+                        imageview {
+                            image = ImageUtils.getImageFromNote(note, 40)
+                        }
                     }
 
 
@@ -103,15 +112,7 @@ class NoteListCell<T> : ListCell<T>() {
 
                         onMouseClicked = EventHandler {
                             if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
-                                val noteEditView = NoteEditView()
-
-                                noteEditView.labelId.text = note.id.value.toString()
-                                noteEditView.labelTime.text = note.createTime.toString("yyyy-MM-dd HH:mm:ss")
-                                noteEditView.textFieldTitle.text = note.title
-                                transaction {
-                                    noteEditView.comboBoxCategory.selectionModel.select(note.category)
-                                }
-                                noteEditView.textAreaContent.text = note.content
+                                val noteEditView = NoteEditView(note)
                                 find<MainView>().root.center = noteEditView.root
                             }
                         }
@@ -151,8 +152,6 @@ class NoteListCell<T> : ListCell<T>() {
                                     }
                                     EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
                                 }
-
-                                // 重新加载列表
                             }
                         }
                     }

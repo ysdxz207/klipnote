@@ -16,10 +16,11 @@ object AppUtils {
     val APP_FULL_PATH = File(javaClass.protectionDomain.codeSource.location.toURI()).path
     private val SHOW_KEY_MARK = 1
 
-    var config = transaction {  Config.all().limit(1).toList()[0] }
+    var config = transaction { Config.all().limit(1).toList()[0] }
     val categoryRecycle = transaction { Category.findById(Constants.RECYCLE_CATEGORY_ID) }
     val categoryStar = transaction { Category.findById(Constants.STAR_CATEGORY_ID) }
     val categoryClipboard = transaction { Category.findById(Constants.CLIPBOARD_CATEGORY_ID) }
+    val categoryDefault = transaction { Category.findById(Constants.DEFAULT_CATEGORY_ID) }
 
     /**
      * 显示或隐藏主窗口
@@ -39,11 +40,11 @@ object AppUtils {
      */
     fun showMainWin() {
         Platform.runLater {
+            FX.primaryStage.isIconified = false
             if (!FX.primaryStage.isShowing) {
                 FX.primaryStage.show()
-                FX.primaryStage.toFront()
             }
-
+            FX.primaryStage.toFront()
             FX.primaryStage.isAlwaysOnTop = config.keepTop
         }
     }
@@ -82,7 +83,7 @@ object AppUtils {
      * 刷新配置:从数据库加载到内存
      */
     fun refreshConfig() {
-        config = transaction {  Config.all().limit(1).toList()[0] }
+        config = transaction { Config.all().limit(1).toList()[0] }
     }
 
     /**

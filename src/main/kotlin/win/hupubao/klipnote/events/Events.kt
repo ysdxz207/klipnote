@@ -2,6 +2,7 @@ package win.hupubao.klipnote.views
 
 import javafx.scene.control.ListView
 import win.hupubao.klipnote.beans.Category
+import win.hupubao.klipnote.beans.Note
 import win.hupubao.klipnote.beans.params.NotesParam
 
 /**
@@ -20,4 +21,4 @@ class ShowEditCategoryEvent(val category: Category?)
 /**
  * 添加到剪贴板
  */
-class AddToClipboardEvent(val text: String)
+class AddToClipboardEvent(val note: Note)

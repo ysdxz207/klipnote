@@ -19,14 +19,19 @@ import win.hupubao.klipnote.beans.Category
 import win.hupubao.klipnote.beans.Note
 import win.hupubao.klipnote.components.CategoryMenu
 import win.hupubao.klipnote.constants.Constants
+import win.hupubao.klipnote.enums.NoteType
 import win.hupubao.klipnote.factory.NoteListCell
 import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.sql.Notes
 import win.hupubao.klipnote.utils.Alert
 import win.hupubao.klipnote.utils.ClipboardHelper
+import win.hupubao.klipnote.utils.image.TransferableImage
 import win.hupubao.klipnote.views.*
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
+import java.awt.datatransfer.Transferable
+
+
 
 /**
  * 事件监听器
@@ -61,7 +66,7 @@ class EventListeners {
             if (category == null) {
                 transaction {
                     category = Category.findById(Constants.DEFAULT_CATEGORY_ID)
-                    listViewCategories.selectionModel.select(0)
+                    listViewCategories.selectionModel.select(category)
                 }
             }
 
@@ -85,6 +90,9 @@ class EventListeners {
              * 设置分类背景色
              */
             when (category?.id?.value) {
+                Constants.DEFAULT_CATEGORY_ID -> {
+                    listViewCategories.selectionModel.select(0)
+                }
                 Constants.STAR_CATEGORY_ID -> {
                     categoryMenu.buttonCategoryStar.style {
                         backgroundColor += Paint.valueOf("#fbaee0")
@@ -175,7 +183,14 @@ class EventListeners {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAddToClipboardEvent(event: AddToClipboardEvent) {
         ClipboardHelper.isBySet = true
-        Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(event.text), null)
+
+        var content: Transferable? = null
+        if (event.note.type == NoteType.TEXT.name) {
+            content = StringSelection(event.note.content)
+        } else if (event.note.type == NoteType.IMAGE.name) {
+            content = TransferableImage(event.note)
+        }
+        Toolkit.getDefaultToolkit().systemClipboard.setContents(content, null)
         Alert.show("复制成功", 600L)
     }
 }
