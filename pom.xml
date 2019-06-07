@@ -152,7 +152,7 @@
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
-                            <mainClass>win.hupubao.App</mainClass>
+                            <mainClass>win.hupubao.klipnote.App</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
