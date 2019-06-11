@@ -24,11 +24,13 @@ class ImageViewFragment : Fragment() {
     }
 
     override fun onDock() {
-        super.onDock()
         currentStage?.isFullScreen = true
+        super.onDock()
     }
+
 
     init {
         currentStage?.isResizable = false
+
     }
 }

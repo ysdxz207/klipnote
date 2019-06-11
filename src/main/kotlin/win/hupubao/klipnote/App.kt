@@ -12,11 +12,9 @@ import win.hupubao.klipnote.utils.AppUtils
 import win.hupubao.klipnote.views.ConfigFragment
 import win.hupubao.klipnote.views.MainView
 import java.awt.GraphicsEnvironment
-import java.awt.TrayIcon
 
 class App : App() {
     private val iconPath = "/icon/icon.png"
-    private lateinit var trayIcon: TrayIcon
 
     override val primaryView = MainView::class
 

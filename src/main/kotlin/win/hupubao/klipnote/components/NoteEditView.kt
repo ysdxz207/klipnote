@@ -80,7 +80,7 @@ class NoteEditView(noteInfo: Note?) : View() {
 
 
                     transaction {
-                        selectionModel.select(noteInfo?.category?:find<CategoryMenu>().selectedCategory)
+                        selectionModel.select(noteInfo?.category ?: find<CategoryMenu>().selectedCategory)
                     }
                 }
             }
