@@ -146,7 +146,9 @@ class NoteListCell<T> : ListCell<T>() {
                                     val starCategory = Category.findById(Constants.STAR_CATEGORY_ID)!!
                                     if (note.category.equals(starCategory)) {
                                         // 取消收藏
-                                        note.category = note.originCategory
+                                        confirm(header = "", content = "确定取消收藏吗？", owner = FX.primaryStage, actionFn = {
+                                            note.category = note.originCategory
+                                        })
                                     } else {
                                         //收藏
                                         note.category = starCategory
