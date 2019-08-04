@@ -1,16 +1,30 @@
 package win.hupubao.klipnote.utils
 
+import me.liuwj.ktorm.database.Database
+import me.liuwj.ktorm.database.TransactionManager
+import me.liuwj.ktorm.dsl.insert
+import me.liuwj.ktorm.entity.createEntity
+import me.liuwj.ktorm.entity.findById
+import me.liuwj.ktorm.logging.ConsoleLogger
+import me.liuwj.ktorm.logging.LogLevel
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
-import win.hupubao.klipnote.beans.Category
+import win.hupubao.klipnote.beans.Categories
 import win.hupubao.klipnote.beans.Config
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.sql.Categories
+import win.hupubao.klipnote.sql.Categories.name
+import win.hupubao.klipnote.sql.Categories.sort
 import win.hupubao.klipnote.sql.Configs
+import win.hupubao.klipnote.sql.Configs.keepTop
+import win.hupubao.klipnote.sql.Configs.mainWinHotkey
+import win.hupubao.klipnote.sql.Configs.mainWinHotkeyModifier
+import win.hupubao.klipnote.sql.Configs.startup
+import win.hupubao.klipnote.sql.Configs.watchingClipboard
 import win.hupubao.klipnote.sql.Notes
 import java.io.File
 import java.sql.Connection
@@ -21,37 +35,42 @@ import java.sql.SQLException
 object DataUtils {
 
     private val databaseDir = "${System.getProperty("user.home")}/klipnote/klipnote.db"
+    private val username = "root"
+    private val password = "*DFj8/!127i"
 
     fun initData() {
 
         createNewDatabase()
 
-        Database.connect("jdbc:sqlite:$databaseDir", driver = "org.sqlite.JDBC")
-        TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE // Or Connection.TRANSACTION_READ_UNCOMMITTED
-        transaction {
-            SchemaUtils.create(Notes, Categories, Configs)
+        Database.connect(url = "jdbc:sqlite:$databaseDir",
+                driver = "org.sqlite.JDBC",
+                user = username,
+                password = password,
+                logger = ConsoleLogger(threshold = LogLevel.INFO))
 
-            if (Category.findById(Constants.DEFAULT_CATEGORY_ID) == null) {
-                Category.new(Constants.DEFAULT_CATEGORY_ID, init = {
-                    name = "默认分类"
-                    sort = Int.MAX_VALUE
-                })
+
+            if (Categories.findById(Constants.DEFAULT_CATEGORY_ID) == null) {
+                Categories.insert {
+                    it.id to Constants.DEFAULT_CATEGORY_ID
+                    it.name to "默认分类"
+                    it.sort to Int.MAX_VALUE
+                }
 
             }
-            if (Category.findById(Constants.RECYCLE_CATEGORY_ID) == null) {
-                Category.new(Constants.RECYCLE_CATEGORY_ID, init = {
+            if (Categories.findById(Constants.RECYCLE_CATEGORY_ID) == null) {
+                Categories.new(Constants.RECYCLE_CATEGORY_ID, init = {
                     name = "回收站"
                     sort = Constants.RECYCLE_CATEGORY_ID
                 })
             }
-            if (Category.findById(Constants.STAR_CATEGORY_ID) == null) {
-                Category.new(Constants.STAR_CATEGORY_ID, init = {
+            if (Categories.findById(Constants.STAR_CATEGORY_ID) == null) {
+                Categories.new(Constants.STAR_CATEGORY_ID, init = {
                     name = "收藏"
                     sort = Constants.STAR_CATEGORY_ID
                 })
             }
-            if (Category.findById(Constants.CLIPBOARD_CATEGORY_ID) == null) {
-                Category.new(Constants.CLIPBOARD_CATEGORY_ID, init = {
+            if (Categories.findById(Constants.CLIPBOARD_CATEGORY_ID) == null) {
+                Categories.new(Constants.CLIPBOARD_CATEGORY_ID, init = {
                     name = "粘贴板"
                     sort = Constants.CLIPBOARD_CATEGORY_ID
                 })
@@ -66,7 +85,6 @@ object DataUtils {
                     watchingClipboard = true
                 })
             }
-        }
     }
 
     fun createNewDatabase() {

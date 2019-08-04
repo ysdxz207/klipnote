@@ -150,9 +150,13 @@ class EventListeners {
 
                     listViewNotes.asyncItems {
                         transaction {
-                            query.orderBy(Notes.createTime to SortOrder.DESC)
+                            val start = System.currentTimeMillis()
+                            val list = query.orderBy(Notes.createTime to SortOrder.DESC)
                                     .limit(Constants.PAGE_SIZE, pageIndex * Constants.PAGE_SIZE)
                                     .toMutableList()
+                            val end = System.currentTimeMillis()
+                            println("耗时：" + (end - start))
+                            list
                         }
                     }
                     listViewNotes

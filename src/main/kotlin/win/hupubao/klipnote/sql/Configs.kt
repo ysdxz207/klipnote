@@ -1,11 +1,17 @@
 package win.hupubao.klipnote.sql
 
-import org.jetbrains.exposed.dao.IntIdTable
+import me.liuwj.ktorm.schema.Table
+import me.liuwj.ktorm.schema.boolean
+import me.liuwj.ktorm.schema.int
+import me.liuwj.ktorm.schema.varchar
 
-object Configs: IntIdTable() {
-    var startup = bool("startup")
-    var keepTop = bool("keep_top")
-    var watchingClipboard = bool("watching_clipboard")
-    var mainWinHotkeyModifier = varchar("main_win_hotkey_modifier", length = 32)
-    var mainWinHotkey = varchar("main_win_hotkey", length = 32)
+
+object Configs : Table<Nothing>("configs") {
+
+    val id by int("id").primaryKey()
+    val startup by boolean("startup")
+    val keepTop by boolean("keepTop")
+    val watchingClipboard by boolean("watching_clipboard")
+    val mainWinHotkeyModifier by varchar("main_win_hotkey_modifier")
+    val mainWinHotkey by varchar("main_win_hotkey")
 }

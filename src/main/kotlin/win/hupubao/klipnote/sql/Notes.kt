@@ -1,12 +1,13 @@
 package win.hupubao.klipnote.sql
 
-import org.jetbrains.exposed.dao.IntIdTable
+import me.liuwj.ktorm.schema.*
 
-object Notes: IntIdTable() {
-    var title = varchar("title", length = 256).nullable()
-    var content = text("content").nullable()
-    var createTime = datetime("create_time")
-    var category = reference("category", Categories)
-    var originCategory = reference("origin_category", Categories)
-    var type = varchar("type", length = 32)
+object Notes: Table<Nothing>("notes") {
+    val id by int("id").primaryKey()
+    val title by varchar("title")
+    val content by text("content")
+    val createTime by datetime("create_time")
+    val category by int("category")
+    val originCategory by int("origin_category")
+    val type by varchar("type")
 }
