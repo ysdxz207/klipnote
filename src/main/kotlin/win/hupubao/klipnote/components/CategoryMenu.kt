@@ -12,31 +12,35 @@ import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
+import me.liuwj.ktorm.dsl.all
+import me.liuwj.ktorm.entity.findById
+import me.liuwj.ktorm.entity.findList
 import org.greenrobot.eventbus.EventBus
-import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
+import tornadofx.Stylesheet.Companion.button
 import win.hupubao.klipnote.App.Companion.windowSize
-import win.hupubao.klipnote.beans.Category
-import win.hupubao.klipnote.beans.Config
 import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.factory.CategoryListCell
 import win.hupubao.klipnote.listener.ClipboardChangedListener
+import win.hupubao.klipnote.sql.Categories
+import win.hupubao.klipnote.sql.Configs
 import win.hupubao.klipnote.utils.AppUtils
 import win.hupubao.klipnote.views.LoadCategoriesEvent
 import win.hupubao.klipnote.views.LoadNotesEvent
 import win.hupubao.klipnote.views.MainView
 import win.hupubao.klipnote.views.ShowEditCategoryEvent
+import java.util.*
 
 /**
  * 左侧分类菜单栏
  */
 class CategoryMenu : View() {
-    lateinit var listViewCategories: ListView<Category>
+    lateinit var listViewCategories: ListView<Categories>
     lateinit var buttonCategoryStar: Button
     lateinit var buttonCategoryRecycle: Button
     lateinit var buttonCategoryClipboard: BorderPane
-    var selectedCategory: Category? = transaction { Category.findById(Constants.DEFAULT_CATEGORY_ID) }
+    var selectedCategory: Categories? = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
 
     override val root = vbox {
         maxWidth = windowSize.Lwidth
@@ -134,14 +138,11 @@ class CategoryMenu : View() {
                     alignment = Pos.CENTER
                     val switchButton = SwitchButton()
                     // 读取配置
-                    var config: Config? = null
-                    transaction {
-                        config = Config.all().limit(1).toList()[0]
-                        switchButton.switchedOnProperty().value = config?.watchingClipboard
-                    }
+                    var config: Configs? = Configs.findList {  }.toList()[0]
+                        switchButton.switchedOnProperty().value = config.watchingClipboard
                     switchButton.switchedOnProperty().addListener(ChangeListener { observable, oldValue, newValue ->
                         ClipboardChangedListener.watching = newValue
-                        transaction { config?.watchingClipboard = newValue }
+                         config?.watchingClipboard = newValue
                     })
                     add(switchButton)
                     region {
@@ -231,7 +232,7 @@ class CategoryMenu : View() {
                 vgrow = Priority.ALWAYS
                 maxHeight = Double.POSITIVE_INFINITY
                 setCellFactory {
-                    CategoryListCell<Category>()
+                    CategoryListCell<Categories>()
                 }
 
 

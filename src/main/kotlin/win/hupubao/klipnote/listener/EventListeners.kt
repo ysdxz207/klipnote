@@ -8,15 +8,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
+import me.liuwj.ktorm.dsl.*
+import me.liuwj.ktorm.entity.findById
+import me.liuwj.ktorm.entity.findList
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
-import win.hupubao.klipnote.beans.Category
-import win.hupubao.klipnote.beans.Note
 import win.hupubao.klipnote.components.CategoryMenu
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.enums.NoteType
@@ -30,7 +27,8 @@ import win.hupubao.klipnote.views.*
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.Transferable
-
+import java.util.*
+import javax.swing.SortOrder
 
 
 /**
@@ -45,9 +43,7 @@ class EventListeners {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoadCategoriesEvent(event: LoadCategoriesEvent) {
         event.listView.asyncItems {
-            transaction {
-                Category.find { Categories.id greaterEq EntityID(Constants.DEFAULT_CATEGORY_ID, Categories) }.sortedByDescending { it.sort }.toMutableList()
-            }
+            Categories.findList { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }.sortedByDescending { it.sort }.toMutableList()
         }
     }
 
@@ -64,10 +60,8 @@ class EventListeners {
             var category = categoryMenu.selectedCategory ?: listViewCategories.selectedItem
             // 默认选中默认分类
             if (category == null) {
-                transaction {
-                    category = Category.findById(Constants.DEFAULT_CATEGORY_ID)
-                    listViewCategories.selectionModel.select(category)
-                }
+                category = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
+                listViewCategories.selectionModel.select(category)
             }
 
             /**
@@ -89,7 +83,7 @@ class EventListeners {
             /**
              * 设置分类背景色
              */
-            when (category?.id?.value) {
+            when (category?.id?.toInt()) {
                 Constants.DEFAULT_CATEGORY_ID -> {
                     listViewCategories.selectionModel.select(0)
                 }
@@ -123,45 +117,42 @@ class EventListeners {
             }
 
 
-            transaction {
-                val query = Note.find {
-                    Notes.title like "%${notesParam.searchText}%" and (Notes.category eq category!!.id)
+            val query = Notes.findList {
+                Notes.title like "%${notesParam.searchText}%" and (Notes.category eq category!!.id)
+            }
+
+            // 获取笔记显示页数
+            val count = query.count()
+            notesParam.pagination?.pageCount = when {
+                count == 0 -> 1
+                count % Constants.PAGE_SIZE == 0 -> count / Constants.PAGE_SIZE
+                else -> count / Constants.PAGE_SIZE + 1
+            }
+
+            // 组装列表及数据
+            notesParam.pagination?.setPageFactory { pageIndex ->
+                val listViewNotes = ListView<Notes>()
+                listViewNotes.setCellFactory {
+                    NoteListCell<Notes>()
                 }
 
-                // 获取笔记显示页数
-                val count = query.count()
-                notesParam.pagination?.pageCount = when {
-                    count == 0 -> 1
-                    count % Constants.PAGE_SIZE == 0 -> count / Constants.PAGE_SIZE
-                    else -> count / Constants.PAGE_SIZE + 1
+
+                listViewNotes.style {
+                    backgroundInsets += box(0.px)
                 }
 
-                // 组装列表及数据
-                notesParam.pagination?.setPageFactory { pageIndex ->
-                    val listViewNotes = ListView<Note>()
-                    listViewNotes.setCellFactory {
-                        NoteListCell<Note>()
-                    }
+                listViewNotes.asyncItems {
+                    val start = System.currentTimeMillis()
 
-
-                    listViewNotes.style {
-                        backgroundInsets += box(0.px)
-                    }
-
-                    listViewNotes.asyncItems {
-                        transaction {
-                            val start = System.currentTimeMillis()
-                            val list = query.orderBy(Notes.createTime to SortOrder.DESC)
-                                    .limit(Constants.PAGE_SIZE, pageIndex * Constants.PAGE_SIZE)
-                                    .toMutableList()
-                            val end = System.currentTimeMillis()
-                            println("耗时：" + (end - start))
-                            list
-                        }
-                    }
-                    listViewNotes
-
+                    val list = query.orderBy(Notes.createTime to SortOrder.DESC)
+                            .limit(Constants.PAGE_SIZE, pageIndex * Constants.PAGE_SIZE)
+                            .toMutableList()
+                    val end = System.currentTimeMillis()
+                    println("耗时：" + (end - start))
+                    list
                 }
+                listViewNotes
+
             }
 
         }
@@ -174,7 +165,7 @@ class EventListeners {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onShowEditCategoryEvent(event: ShowEditCategoryEvent) {
-        val params = hashMapOf<String, Category>()
+        val params = hashMapOf<String, Categories>()
         if (event.category != null) {
             params["category"] = event.category
         }

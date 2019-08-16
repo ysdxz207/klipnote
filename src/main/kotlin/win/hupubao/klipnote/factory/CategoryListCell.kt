@@ -7,6 +7,9 @@ import javafx.scene.control.ContentDisplay
 import javafx.scene.control.ListCell
 import javafx.scene.image.Image
 import javafx.scene.input.MouseButton
+import me.liuwj.ktorm.dsl.delete
+import me.liuwj.ktorm.dsl.eq
+import me.liuwj.ktorm.dsl.update
 import org.greenrobot.eventbus.EventBus
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -19,11 +22,13 @@ import win.hupubao.klipnote.components.Header
 import win.hupubao.klipnote.components.NoteEditView
 import win.hupubao.klipnote.components.NoteListView
 import win.hupubao.klipnote.constants.Constants
+import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.sql.Notes
 import win.hupubao.klipnote.views.LoadCategoriesEvent
 import win.hupubao.klipnote.views.LoadNotesEvent
 import win.hupubao.klipnote.views.MainView
 import win.hupubao.klipnote.views.ShowEditCategoryEvent
+import java.util.*
 
 
 class CategoryListCell<T> : ListCell<T>() {
@@ -42,7 +47,7 @@ class CategoryListCell<T> : ListCell<T>() {
             graphic = null
         } else {
 
-            val category = t as Category
+            val category = t as Categories
             graphic = borderpane {
 
                 onMouseClicked = EventHandler {
@@ -118,7 +123,7 @@ class CategoryListCell<T> : ListCell<T>() {
                                 transaction {
                                     category.delete()
 
-                                    val recycleCategory = Category.findById(Constants.RECYCLE_CATEGORY_ID)!!
+                                    val recycleCategory = Categoreis.findById(Constants.RECYCLE_CATEGORY_ID)!!
 
                                     Notes.update({ Notes.category eq category.id }) {
                                         it[Notes.category] = recycleCategory.id
