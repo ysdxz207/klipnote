@@ -1,22 +1,13 @@
 package win.hupubao.klipnote.utils
 
 import me.liuwj.ktorm.database.Database
-import me.liuwj.ktorm.database.TransactionManager
-import me.liuwj.ktorm.dsl.insert
-import me.liuwj.ktorm.entity.createEntity
+import me.liuwj.ktorm.dsl.*
 import me.liuwj.ktorm.entity.findById
 import me.liuwj.ktorm.logging.ConsoleLogger
 import me.liuwj.ktorm.logging.LogLevel
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.max
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.TransactionManager
-import org.jetbrains.exposed.sql.transactions.transaction
-import win.hupubao.klipnote.beans.Categories
-import win.hupubao.klipnote.beans.Config
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.sql.Categories
+import win.hupubao.klipnote.sql.Categories.id
 import win.hupubao.klipnote.sql.Categories.name
 import win.hupubao.klipnote.sql.Categories.sort
 import win.hupubao.klipnote.sql.Configs
@@ -25,9 +16,7 @@ import win.hupubao.klipnote.sql.Configs.mainWinHotkey
 import win.hupubao.klipnote.sql.Configs.mainWinHotkeyModifier
 import win.hupubao.klipnote.sql.Configs.startup
 import win.hupubao.klipnote.sql.Configs.watchingClipboard
-import win.hupubao.klipnote.sql.Notes
 import java.io.File
-import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 
@@ -49,42 +38,45 @@ object DataUtils {
                 logger = ConsoleLogger(threshold = LogLevel.INFO))
 
 
-            if (Categories.findById(Constants.DEFAULT_CATEGORY_ID) == null) {
-                Categories.insert {
-                    it.id to Constants.DEFAULT_CATEGORY_ID
-                    it.name to "默认分类"
-                    it.sort to Int.MAX_VALUE
-                }
-
-            }
-            if (Categories.findById(Constants.RECYCLE_CATEGORY_ID) == null) {
-                Categories.new(Constants.RECYCLE_CATEGORY_ID, init = {
-                    name = "回收站"
-                    sort = Constants.RECYCLE_CATEGORY_ID
-                })
-            }
-            if (Categories.findById(Constants.STAR_CATEGORY_ID) == null) {
-                Categories.new(Constants.STAR_CATEGORY_ID, init = {
-                    name = "收藏"
-                    sort = Constants.STAR_CATEGORY_ID
-                })
-            }
-            if (Categories.findById(Constants.CLIPBOARD_CATEGORY_ID) == null) {
-                Categories.new(Constants.CLIPBOARD_CATEGORY_ID, init = {
-                    name = "粘贴板"
-                    sort = Constants.CLIPBOARD_CATEGORY_ID
-                })
+        if (Categories.findById(Constants.DEFAULT_CATEGORY_ID) == null) {
+            Categories.insert {
+                it.id to Constants.DEFAULT_CATEGORY_ID
+                it.name to "默认分类"
+                it.sort to Int.MAX_VALUE
             }
 
-            if (Config.count() == 0) {
-                Config.new(init = {
-                    startup = true
-                    keepTop = true
-                    mainWinHotkeyModifier = "Ctrl"
-                    mainWinHotkey = "`"
-                    watchingClipboard = true
-                })
+        }
+        if (Categories.findById(Constants.RECYCLE_CATEGORY_ID) == null) {
+            Categories.insert {
+                id to Constants.RECYCLE_CATEGORY_ID
+                name to "回收站"
+                sort to Constants.RECYCLE_CATEGORY_ID
             }
+        }
+        if (Categories.findById(Constants.STAR_CATEGORY_ID) == null) {
+            Categories.insert {
+                id to Constants.STAR_CATEGORY_ID
+                name to "收藏"
+                sort to Constants.STAR_CATEGORY_ID
+            }
+        }
+        if (Categories.findById(Constants.CLIPBOARD_CATEGORY_ID) == null) {
+            Categories.insert {
+                id to Constants.CLIPBOARD_CATEGORY_ID
+                name to "粘贴板"
+                sort to Constants.CLIPBOARD_CATEGORY_ID
+            }
+        }
+
+        if (Configs.count() == 0) {
+            Configs.insert {
+                startup to true
+                keepTop to true
+                mainWinHotkeyModifier to "Ctrl"
+                mainWinHotkey to "`"
+                watchingClipboard to true
+            }
+        }
     }
 
     fun createNewDatabase() {
@@ -113,9 +105,11 @@ object DataUtils {
 
     fun getCategorySortNum(): Int {
         var sortNum = 0
-        transaction {
-            val n = Categories.slice(Categories.sort, Categories.sort.max()).select { Categories.sort neq Int.MAX_VALUE }.last()
-            sortNum = (n.getOrNull(Categories.sort) ?: 0) + 1
+        val n = Categories.select(max(Categories.sort)).where { Categories.sort notEq Int.MAX_VALUE }.map { Categories.sort }[0]
+        if (n == null) {
+            sortNum = 1
+        } else {
+//            sortNum = n + 1
         }
         return sortNum
     }

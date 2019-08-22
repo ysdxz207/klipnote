@@ -3,7 +3,7 @@ package win.hupubao.klipnote.utils
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import sun.misc.BASE64Decoder
-import win.hupubao.klipnote.beans.Note
+import win.hupubao.klipnote.entity.Note
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO

@@ -2,7 +2,7 @@ package win.hupubao.klipnote.views
 
 import javafx.scene.paint.Color
 import tornadofx.*
-import win.hupubao.klipnote.beans.Note
+import win.hupubao.klipnote.entity.Note
 import win.hupubao.klipnote.utils.ImageUtils
 
 

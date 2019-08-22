@@ -9,6 +9,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
 import me.liuwj.ktorm.dsl.*
+import me.liuwj.ktorm.entity.createEntity
 import me.liuwj.ktorm.entity.findById
 import me.liuwj.ktorm.entity.findList
 import org.greenrobot.eventbus.Subscribe
@@ -16,9 +17,11 @@ import org.greenrobot.eventbus.ThreadMode
 import tornadofx.*
 import win.hupubao.klipnote.components.CategoryMenu
 import win.hupubao.klipnote.constants.Constants
+import win.hupubao.klipnote.entity.Category
 import win.hupubao.klipnote.enums.NoteType
 import win.hupubao.klipnote.factory.NoteListCell
 import win.hupubao.klipnote.sql.Categories
+import win.hupubao.klipnote.entity.Note
 import win.hupubao.klipnote.sql.Notes
 import win.hupubao.klipnote.utils.Alert
 import win.hupubao.klipnote.utils.ClipboardHelper
@@ -27,7 +30,6 @@ import win.hupubao.klipnote.views.*
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.Transferable
-import java.util.*
 import javax.swing.SortOrder
 
 
@@ -43,7 +45,7 @@ class EventListeners {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoadCategoriesEvent(event: LoadCategoriesEvent) {
         event.listView.asyncItems {
-            Categories.findList { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }.sortedByDescending { it.sort }.toMutableList()
+            Categories.select().where { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.desc()).map { Categories.createEntity(it) }
         }
     }
 
@@ -83,7 +85,7 @@ class EventListeners {
             /**
              * 设置分类背景色
              */
-            when (category?.id?.toInt()) {
+            when (category?.id) {
                 Constants.DEFAULT_CATEGORY_ID -> {
                     listViewCategories.selectionModel.select(0)
                 }
@@ -117,9 +119,8 @@ class EventListeners {
             }
 
 
-            val query = Notes.findList {
-                Notes.title like "%${notesParam.searchText}%" and (Notes.category eq category!!.id)
-            }
+            val query = Notes.select().where { Notes.title like "%${notesParam.searchText}%" and (Notes.category eq category!!.id) }
+
 
             // 获取笔记显示页数
             val count = query.count()
@@ -131,9 +132,9 @@ class EventListeners {
 
             // 组装列表及数据
             notesParam.pagination?.setPageFactory { pageIndex ->
-                val listViewNotes = ListView<Notes>()
+                val listViewNotes = ListView<Note>()
                 listViewNotes.setCellFactory {
-                    NoteListCell<Notes>()
+                    NoteListCell<Note>()
                 }
 
 
@@ -144,8 +145,9 @@ class EventListeners {
                 listViewNotes.asyncItems {
                     val start = System.currentTimeMillis()
 
-                    val list = query.orderBy(Notes.createTime to SortOrder.DESC)
+                    val list = query.orderBy(Notes.createTime.desc())
                             .limit(Constants.PAGE_SIZE, pageIndex * Constants.PAGE_SIZE)
+                            .map { Notes.createEntity(it) }
                             .toMutableList()
                     val end = System.currentTimeMillis()
                     println("耗时：" + (end - start))
@@ -165,7 +167,7 @@ class EventListeners {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onShowEditCategoryEvent(event: ShowEditCategoryEvent) {
-        val params = hashMapOf<String, Categories>()
+        val params = hashMapOf<String, Category>()
         if (event.category != null) {
             params["category"] = event.category
         }

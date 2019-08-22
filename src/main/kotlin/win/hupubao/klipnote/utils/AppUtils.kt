@@ -2,11 +2,15 @@ package win.hupubao.klipnote.utils
 
 import com.melloware.jintellitype.JIntellitype
 import javafx.application.Platform
-import org.jetbrains.exposed.sql.transactions.transaction
+import me.liuwj.ktorm.dsl.limit
+import me.liuwj.ktorm.dsl.select
+import me.liuwj.ktorm.entity.createEntity
+import me.liuwj.ktorm.entity.findById
 import tornadofx.*
-import win.hupubao.klipnote.beans.Category
-import win.hupubao.klipnote.beans.Config
 import win.hupubao.klipnote.constants.Constants
+import win.hupubao.klipnote.entity.Config
+import win.hupubao.klipnote.sql.Categories
+import win.hupubao.klipnote.sql.Configs
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -16,11 +20,11 @@ object AppUtils {
     val APP_FULL_PATH = File(javaClass.protectionDomain.codeSource.location.toURI()).path
     private val SHOW_KEY_MARK = 1
 
-    var config = transaction { Config.all().limit(1).toList()[0] }
-    val categoryRecycle = transaction { Category.findById(Constants.RECYCLE_CATEGORY_ID) }
-    val categoryStar = transaction { Category.findById(Constants.STAR_CATEGORY_ID) }
-    val categoryClipboard = transaction { Category.findById(Constants.CLIPBOARD_CATEGORY_ID) }
-    val categoryDefault = transaction { Category.findById(Constants.DEFAULT_CATEGORY_ID) }
+    var config: Config = Configs.select().limit(0, 1).map { Configs.createEntity(it) }[0]
+    val categoryRecycle = Categories.findById(Constants.RECYCLE_CATEGORY_ID)
+    val categoryStar = Categories.findById(Constants.STAR_CATEGORY_ID)
+    val categoryClipboard = Categories.findById(Constants.CLIPBOARD_CATEGORY_ID)
+    val categoryDefault = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
 
     /**
      * 显示或隐藏主窗口
@@ -82,7 +86,7 @@ object AppUtils {
      * 刷新配置:从数据库加载到内存
      */
     fun refreshConfig() {
-        config = transaction { Config.all().limit(1).toList()[0] }
+        config = Configs.select().limit(0, 1).map { Configs.createEntity(it) }[0]
     }
 
     /**

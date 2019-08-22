@@ -1,13 +1,13 @@
 package win.hupubao.klipnote.utils.image
 
-import win.hupubao.klipnote.sql.Notes
+import win.hupubao.klipnote.entity.Note
 import win.hupubao.klipnote.utils.ImageUtils
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.awt.datatransfer.UnsupportedFlavorException
 import java.io.IOException
 
-internal class TransferableImage(var note: Notes) : Transferable {
+internal class TransferableImage(var note: Note) : Transferable {
 
     @Throws(UnsupportedFlavorException::class, IOException::class)
     override fun getTransferData(flavor: DataFlavor): Any {

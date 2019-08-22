@@ -7,28 +7,25 @@ import javafx.scene.control.ContentDisplay
 import javafx.scene.control.ListCell
 import javafx.scene.image.Image
 import javafx.scene.input.MouseButton
-import me.liuwj.ktorm.dsl.delete
 import me.liuwj.ktorm.dsl.eq
 import me.liuwj.ktorm.dsl.update
+import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import tornadofx.*
 import win.hupubao.klipnote.App
-import win.hupubao.klipnote.beans.Category
 import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.components.CategoryMenu
 import win.hupubao.klipnote.components.Header
 import win.hupubao.klipnote.components.NoteEditView
 import win.hupubao.klipnote.components.NoteListView
 import win.hupubao.klipnote.constants.Constants
+import win.hupubao.klipnote.entity.Category
 import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.sql.Notes
 import win.hupubao.klipnote.views.LoadCategoriesEvent
 import win.hupubao.klipnote.views.LoadNotesEvent
 import win.hupubao.klipnote.views.MainView
 import win.hupubao.klipnote.views.ShowEditCategoryEvent
-import java.util.*
 
 
 class CategoryListCell<T> : ListCell<T>() {
@@ -47,7 +44,7 @@ class CategoryListCell<T> : ListCell<T>() {
             graphic = null
         } else {
 
-            val category = t as Categories
+            val category = t as Category
             graphic = borderpane {
 
                 onMouseClicked = EventHandler {
@@ -75,7 +72,7 @@ class CategoryListCell<T> : ListCell<T>() {
                 left = hbox {
                     alignment = Pos.CENTER
                     label {
-                        text = t.toString()
+                        text = category.name
                         prefWidth = windowSize.Lwidth - 110.0
                     }
                 }
@@ -91,7 +88,7 @@ class CategoryListCell<T> : ListCell<T>() {
                             text = "编辑分类"
                         }
 
-                        if (category.id.value == Constants.DEFAULT_CATEGORY_ID) {
+                        if (category.id == Constants.DEFAULT_CATEGORY_ID) {
                             hide()
                         }
 
@@ -113,21 +110,24 @@ class CategoryListCell<T> : ListCell<T>() {
                             text = "删除分类"
                         }
 
-                        if (category.id.value == Constants.DEFAULT_CATEGORY_ID) {
+                        if (category.id == Constants.DEFAULT_CATEGORY_ID) {
                             hide()
                         }
 
                         onMouseClicked = EventHandler {
 
                             confirm(header = "", content = "分类下笔记将被移动到【回收站】\n确定删除分类吗？", owner = FX.primaryStage, actionFn = {
-                                transaction {
-                                    category.delete()
+                                category.delete()
 
-                                    val recycleCategory = Categoreis.findById(Constants.RECYCLE_CATEGORY_ID)!!
+                                val recycleCategory = Categories.findById(Constants.RECYCLE_CATEGORY_ID)!!
 
-                                    Notes.update({ Notes.category eq category.id }) {
-                                        it[Notes.category] = recycleCategory.id
+                                Notes.update {
+
+                                    Notes.category to recycleCategory
+                                    where {
+                                        Notes.category eq category.id
                                     }
+
                                 }
                                 EventBus.getDefault().post(LoadCategoriesEvent(find(CategoryMenu::class).listViewCategories))
                             })

@@ -5,14 +5,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
+import me.liuwj.ktorm.dsl.insert
+import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 import sun.misc.BASE64Encoder
 import tornadofx.*
 import win.hupubao.klipnote.App
-import win.hupubao.klipnote.beans.Category
-import win.hupubao.klipnote.beans.Note
 import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.components.CategoryMenu
 import win.hupubao.klipnote.components.Header
@@ -20,6 +18,13 @@ import win.hupubao.klipnote.components.NoteListView
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.enums.NoteType
 import win.hupubao.klipnote.listener.ClipboardChangedListener
+import win.hupubao.klipnote.sql.Categories
+import win.hupubao.klipnote.sql.Notes
+import win.hupubao.klipnote.sql.Notes.category
+import win.hupubao.klipnote.sql.Notes.content
+import win.hupubao.klipnote.sql.Notes.createTime
+import win.hupubao.klipnote.sql.Notes.originCategory
+import win.hupubao.klipnote.sql.Notes.type
 import win.hupubao.klipnote.utils.AppUtils
 import win.hupubao.klipnote.utils.ClipboardHelper
 import win.hupubao.klipnote.utils.DataUtils
@@ -27,6 +32,7 @@ import win.hupubao.klipnote.utils.ImageUtils
 import java.awt.datatransfer.DataFlavor
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
+import java.time.LocalDateTime
 import javax.imageio.ImageIO
 
 
@@ -80,38 +86,36 @@ class MainView : View("Klipnote") {
 
                 try {
                     GlobalScope.launch(Dispatchers.JavaFx) {
-                        transaction {
-                            val categoryClipboard = Category.findById(Constants.CLIPBOARD_CATEGORY_ID)!!
+                            val categoryClipboard = Categories.findById(Constants.CLIPBOARD_CATEGORY_ID)!!
                             if (it.isDataFlavorSupported(DataFlavor.stringFlavor)) {
                                 val strVal = it.getTransferData(DataFlavor.stringFlavor).toString()
-                                Note.new {
-                                    title = if (strVal.length > 20) {
+                                Notes.insert {
+                                    title to if (strVal.length > 20) {
                                         strVal.replace("\n", "").substring(0, 20)
                                     } else {
                                         strVal
                                     }
-                                    content = strVal
-                                    category = categoryClipboard
-                                    originCategory = categoryClipboard
-                                    type = NoteType.TEXT.name
-                                    createTime = DateTime.now()
+                                    content to strVal
+                                    category to categoryClipboard
+                                    originCategory to categoryClipboard
+                                    type to NoteType.TEXT.name
+                                    createTime to LocalDateTime.now()
                                 }
                             } else if (it.isDataFlavorSupported(DataFlavor.imageFlavor)) {
                                 val imageVal = it.getTransferData(DataFlavor.imageFlavor) as BufferedImage
                                 val byteArrayOutputStream = ByteArrayOutputStream()
                                 ImageIO.write(imageVal, "png", byteArrayOutputStream)
                                 val imageBase64 = BASE64Encoder().encode(byteArrayOutputStream.toByteArray())
-                                Note.new {
-                                    title = ""
-                                    content = ImageUtils.BASE64_HEADER + imageBase64
-                                    category = categoryClipboard
-                                    originCategory = categoryClipboard
-                                    type = NoteType.IMAGE.name
-                                    createTime = DateTime.now()
+                                Notes.insert {
+                                    title to ""
+                                    content to ImageUtils.BASE64_HEADER + imageBase64
+                                    category to categoryClipboard
+                                    originCategory to categoryClipboard
+                                    type to NoteType.IMAGE.name
+                                    createTime to LocalDateTime.now()
                                 }
                             } else {
                             }
-                        }
                         // 重新加载笔记列表
                         EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, header.textFieldSearch.text)))
                     }

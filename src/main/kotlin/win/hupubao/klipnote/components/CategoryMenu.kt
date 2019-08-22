@@ -13,6 +13,7 @@ import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import me.liuwj.ktorm.dsl.all
+import me.liuwj.ktorm.entity.findAll
 import me.liuwj.ktorm.entity.findById
 import me.liuwj.ktorm.entity.findList
 import org.greenrobot.eventbus.EventBus
@@ -21,6 +22,8 @@ import tornadofx.Stylesheet.Companion.button
 import win.hupubao.klipnote.App.Companion.windowSize
 import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.constants.Constants
+import win.hupubao.klipnote.entity.Category
+import win.hupubao.klipnote.entity.Config
 import win.hupubao.klipnote.factory.CategoryListCell
 import win.hupubao.klipnote.listener.ClipboardChangedListener
 import win.hupubao.klipnote.sql.Categories
@@ -36,11 +39,11 @@ import java.util.*
  * 左侧分类菜单栏
  */
 class CategoryMenu : View() {
-    lateinit var listViewCategories: ListView<Categories>
+    lateinit var listViewCategories: ListView<Category>
     lateinit var buttonCategoryStar: Button
     lateinit var buttonCategoryRecycle: Button
     lateinit var buttonCategoryClipboard: BorderPane
-    var selectedCategory: Categories? = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
+    var selectedCategory: Category? = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
 
     override val root = vbox {
         maxWidth = windowSize.Lwidth
@@ -138,8 +141,8 @@ class CategoryMenu : View() {
                     alignment = Pos.CENTER
                     val switchButton = SwitchButton()
                     // 读取配置
-                    var config: Configs? = Configs.findList {  }.toList()[0]
-                        switchButton.switchedOnProperty().value = config.watchingClipboard
+                    val config: Config? = Configs.findAll()[0]
+                        switchButton.switchedOnProperty().value = config?.watchingClipboard
                     switchButton.switchedOnProperty().addListener(ChangeListener { observable, oldValue, newValue ->
                         ClipboardChangedListener.watching = newValue
                          config?.watchingClipboard = newValue
@@ -232,7 +235,7 @@ class CategoryMenu : View() {
                 vgrow = Priority.ALWAYS
                 maxHeight = Double.POSITIVE_INFINITY
                 setCellFactory {
-                    CategoryListCell<Categories>()
+                    CategoryListCell<Category>()
                 }
 
 

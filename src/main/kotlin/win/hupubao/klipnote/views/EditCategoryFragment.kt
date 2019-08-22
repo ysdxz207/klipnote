@@ -4,11 +4,14 @@ import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.TextField
+import me.liuwj.ktorm.dsl.insert
 import org.greenrobot.eventbus.EventBus
-import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
-import win.hupubao.klipnote.beans.Category
 import win.hupubao.klipnote.components.CategoryMenu
+import win.hupubao.klipnote.entity.Category
+import win.hupubao.klipnote.sql.Categories
+import win.hupubao.klipnote.sql.Categories.name
+import win.hupubao.klipnote.sql.Categories.sort
 import win.hupubao.klipnote.utils.DataUtils
 import win.hupubao.klipnote.utils.StringUtils
 
@@ -57,16 +60,14 @@ class EditCategoryFragment : Fragment("编辑分类") {
                 isDisable = true
                 ButtonBar.setButtonData(this, ButtonBar.ButtonData.RIGHT)
                 action {
-                    transaction {
-                        if (category == null) {
-                            Category.new {
-                                name = textFieldCategoryName.text
-                                sort = DataUtils.getCategorySortNum()
-                            }
-                        } else {
-                            // 更新分类数据
-                            category.name = textFieldCategoryName.text
+                    if (category == null) {
+                        Categories.insert {
+                            name to textFieldCategoryName.text
+                            sort to DataUtils.getCategorySortNum()
                         }
+                    } else {
+                        // 更新分类数据
+                        category.name = textFieldCategoryName.text
                     }
                     close()
                     // 触发加载分类列表事件

@@ -4,7 +4,6 @@ import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
 import org.greenrobot.eventbus.EventBus
-import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
 import win.hupubao.klipnote.components.CategoryMenu
 import win.hupubao.klipnote.utils.AppUtils
@@ -34,16 +33,12 @@ class ConfigFragment : Fragment("设置") {
                     checkboxStartup = checkbox("开机启动") {
                         val bootup = AppUtils.checkBootup()
                         if (AppUtils.config.startup != bootup) {
-                            transaction {
-                                AppUtils.config.startup = bootup
-                            }
+                            AppUtils.config.startup = bootup
                         }
                         isSelected = AppUtils.config.startup
 
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
-                            transaction {
-                                AppUtils.config.startup = checkboxStartup.isSelected
-                            }
+                            AppUtils.config.startup = checkboxStartup.isSelected
                             AppUtils.refreshConfig()
                             // 处理开机启动
                             if (!(checkboxStartup.isSelected && AppUtils.checkBootup())) {
@@ -59,9 +54,7 @@ class ConfigFragment : Fragment("设置") {
 
 
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
-                            transaction {
-                                AppUtils.config.keepTop = checkboxKeepTop.isSelected
-                            }
+                            AppUtils.config.keepTop = checkboxKeepTop.isSelected
                             AppUtils.refreshConfig()
                             // 触发加载分类列表事件
                             EventBus.getDefault().post(LoadCategoriesEvent(categoryMenu.listViewCategories))
@@ -81,14 +74,12 @@ class ConfigFragment : Fragment("设置") {
                         isSelected = AppUtils.config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.CONTROL.character)
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
                             val keyList = AppUtils.config.mainWinHotkeyModifier.split("+").toMutableList()
-                            transaction {
-                                AppUtils.config.mainWinHotkeyModifier = if (checkboxCtrl.isSelected) {
-                                    keyList.add(KeyCodeUtils.KeyEventCode.CONTROL.character)
-                                    keyList.joinToString(separator = "+")
-                                } else {
-                                    keyList.remove(KeyCodeUtils.KeyEventCode.CONTROL.character)
-                                    keyList.joinToString(separator = "+")
-                                }
+                            AppUtils.config.mainWinHotkeyModifier = if (checkboxCtrl.isSelected) {
+                                keyList.add(KeyCodeUtils.KeyEventCode.CONTROL.character)
+                                keyList.joinToString(separator = "+")
+                            } else {
+                                keyList.remove(KeyCodeUtils.KeyEventCode.CONTROL.character)
+                                keyList.joinToString(separator = "+")
                             }
                             AppUtils.refreshConfig()
                             AppUtils.registHotkey()
@@ -99,14 +90,12 @@ class ConfigFragment : Fragment("设置") {
                         isSelected = AppUtils.config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.SHIFT.character)
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
                             val keyList = AppUtils.config.mainWinHotkeyModifier.split("+").toMutableList()
-                            transaction {
-                                AppUtils.config.mainWinHotkeyModifier = if (checkboxShift.isSelected) {
-                                    keyList.add(KeyCodeUtils.KeyEventCode.SHIFT.character)
-                                    keyList.joinToString(separator = "+")
-                                } else {
-                                    keyList.remove(KeyCodeUtils.KeyEventCode.SHIFT.character)
-                                    keyList.joinToString(separator = "+")
-                                }
+                            AppUtils.config.mainWinHotkeyModifier = if (checkboxShift.isSelected) {
+                                keyList.add(KeyCodeUtils.KeyEventCode.SHIFT.character)
+                                keyList.joinToString(separator = "+")
+                            } else {
+                                keyList.remove(KeyCodeUtils.KeyEventCode.SHIFT.character)
+                                keyList.joinToString(separator = "+")
                             }
                             AppUtils.refreshConfig()
                             AppUtils.registHotkey()
@@ -117,14 +106,12 @@ class ConfigFragment : Fragment("设置") {
                         isSelected = AppUtils.config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.ALT.character)
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
                             val keyList = AppUtils.config.mainWinHotkeyModifier.split("+").toMutableList()
-                            transaction {
-                                AppUtils.config.mainWinHotkeyModifier = if (checkboxAlt.isSelected) {
-                                    keyList.add(KeyCodeUtils.KeyEventCode.ALT.character)
-                                    keyList.joinToString(separator = "+")
-                                } else {
-                                    keyList.remove(KeyCodeUtils.KeyEventCode.ALT.character)
-                                    keyList.joinToString(separator = "+")
-                                }
+                            AppUtils.config.mainWinHotkeyModifier = if (checkboxAlt.isSelected) {
+                                keyList.add(KeyCodeUtils.KeyEventCode.ALT.character)
+                                keyList.joinToString(separator = "+")
+                            } else {
+                                keyList.remove(KeyCodeUtils.KeyEventCode.ALT.character)
+                                keyList.joinToString(separator = "+")
                             }
                             AppUtils.refreshConfig()
                             AppUtils.registHotkey()
@@ -153,9 +140,7 @@ class ConfigFragment : Fragment("设置") {
 
                             text = KeyCodeUtils.getKeyFromKeyCode(keyEvent.code)
 
-                            transaction {
-                                AppUtils.config.mainWinHotkey = text
-                            }
+                            AppUtils.config.mainWinHotkey = text
 
                             AppUtils.refreshConfig()
                             AppUtils.registHotkey()

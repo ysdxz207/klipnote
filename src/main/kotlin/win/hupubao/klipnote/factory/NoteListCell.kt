@@ -9,18 +9,18 @@ import javafx.scene.image.Image
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Paint
+import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
-import org.jetbrains.exposed.sql.transactions.transaction
 import tornadofx.*
 import win.hupubao.klipnote.App
-import win.hupubao.klipnote.beans.Category
-import win.hupubao.klipnote.beans.Note
 import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.components.Header
 import win.hupubao.klipnote.components.NoteEditView
 import win.hupubao.klipnote.components.NoteListView
 import win.hupubao.klipnote.constants.Constants
+import win.hupubao.klipnote.entity.Note
 import win.hupubao.klipnote.enums.NoteType
+import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.utils.ImageUtils
 import win.hupubao.klipnote.views.AddToClipboardEvent
 import win.hupubao.klipnote.views.LoadNotesEvent
@@ -124,7 +124,7 @@ class NoteListCell<T> : ListCell<T>() {
 
                     imageview {
                         alignment = Pos.CENTER_RIGHT
-                        if (transaction { note.category.id.value } == Constants.STAR_CATEGORY_ID) {
+                        if (note.category.id == Constants.STAR_CATEGORY_ID) {
                             image = Image("icon/note/note_star.png")
                             tooltip {
                                 text = "取消收藏"
@@ -142,19 +142,17 @@ class NoteListCell<T> : ListCell<T>() {
                         onMouseClicked = EventHandler {
                             if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
 
-                                transaction {
-                                    val starCategory = Category.findById(Constants.STAR_CATEGORY_ID)!!
-                                    if (note.category.equals(starCategory)) {
-                                        // 取消收藏
-                                        confirm(header = "", content = "确定取消收藏吗？", owner = FX.primaryStage, actionFn = {
-                                            note.category = note.originCategory
-                                        })
-                                    } else {
-                                        //收藏
-                                        note.category = starCategory
-                                    }
-                                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
+                                val starCategory = Categories.findById(Constants.STAR_CATEGORY_ID)!!
+                                if (note.category == starCategory) {
+                                    // 取消收藏
+                                    confirm(header = "", content = "确定取消收藏吗？", owner = FX.primaryStage, actionFn = {
+                                        note.category = note.originCategory
+                                    })
+                                } else {
+                                    //收藏
+                                    note.category = starCategory
                                 }
+                                EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
                             }
                         }
                     }
@@ -174,7 +172,7 @@ class NoteListCell<T> : ListCell<T>() {
 
                         onMouseClicked = EventHandler {
                             if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
-                                val deleteForever = transaction { note.category.id.value == Constants.RECYCLE_CATEGORY_ID }
+                                val deleteForever = note.category.id == Constants.RECYCLE_CATEGORY_ID
                                 val displayName = if (deleteForever) {
                                     "【永久删除】"
                                 } else {
@@ -182,12 +180,10 @@ class NoteListCell<T> : ListCell<T>() {
                                 }
 
                                 confirm(header = "", content = "笔记将被$displayName\n确定删除笔记吗？", owner = FX.primaryStage, actionFn = {
-                                    transaction {
-                                        if (deleteForever) {
-                                            note.delete()
-                                        } else {
-                                            note.category = Category.findById(Constants.RECYCLE_CATEGORY_ID)!!
-                                        }
+                                    if (deleteForever) {
+                                        note.delete()
+                                    } else {
+                                        note.category = Categories.findById(Constants.RECYCLE_CATEGORY_ID)!!
                                     }
                                 })
 
