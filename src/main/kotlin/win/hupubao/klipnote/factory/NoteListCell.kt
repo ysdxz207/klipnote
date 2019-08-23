@@ -13,17 +13,14 @@ import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
 import win.hupubao.klipnote.App
-import win.hupubao.klipnote.beans.params.NotesParam
-import win.hupubao.klipnote.components.Header
 import win.hupubao.klipnote.components.NoteEditView
-import win.hupubao.klipnote.components.NoteListView
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.entity.Note
 import win.hupubao.klipnote.enums.NoteType
+import win.hupubao.klipnote.events.AddToClipboardEvent
+import win.hupubao.klipnote.events.LoadNotesEvent
 import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.utils.ImageUtils
-import win.hupubao.klipnote.views.AddToClipboardEvent
-import win.hupubao.klipnote.views.LoadNotesEvent
 import win.hupubao.klipnote.views.MainView
 
 
@@ -152,7 +149,7 @@ class NoteListCell<T> : ListCell<T>() {
                                     //收藏
                                     note.category = starCategory
                                 }
-                                EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
+                                EventBus.getDefault().post(LoadNotesEvent())
                             }
                         }
                     }
@@ -188,7 +185,7 @@ class NoteListCell<T> : ListCell<T>() {
                                 })
 
                                 // 重新加载列表
-                                EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
+                                EventBus.getDefault().post(LoadNotesEvent())
 
                             }
                         }

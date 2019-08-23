@@ -12,10 +12,9 @@ import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
-import win.hupubao.klipnote.beans.params.NotesParam
+import win.hupubao.klipnote.events.LoadNotesEvent
 import win.hupubao.klipnote.listener.MouseDragListener
 import win.hupubao.klipnote.utils.AppUtils
-import win.hupubao.klipnote.views.LoadNotesEvent
 
 class Header : View("header") {
 
@@ -97,7 +96,7 @@ class Header : View("header") {
                     }
 
                     textProperty().addListener(ChangeListener { _, _, newValue ->
-                        EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, newValue)))
+                        EventBus.getDefault().post(LoadNotesEvent())
                     })
                 }
             }

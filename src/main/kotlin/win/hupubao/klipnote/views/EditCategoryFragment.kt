@@ -9,6 +9,7 @@ import org.greenrobot.eventbus.EventBus
 import tornadofx.*
 import win.hupubao.klipnote.components.CategoryMenu
 import win.hupubao.klipnote.entity.Category
+import win.hupubao.klipnote.events.LoadCategoriesEvent
 import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.sql.Categories.name
 import win.hupubao.klipnote.sql.Categories.sort

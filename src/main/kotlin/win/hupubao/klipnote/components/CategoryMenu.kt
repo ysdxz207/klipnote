@@ -12,28 +12,23 @@ import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
-import me.liuwj.ktorm.dsl.all
 import me.liuwj.ktorm.entity.findAll
 import me.liuwj.ktorm.entity.findById
-import me.liuwj.ktorm.entity.findList
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
-import tornadofx.Stylesheet.Companion.button
 import win.hupubao.klipnote.App.Companion.windowSize
-import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.entity.Category
 import win.hupubao.klipnote.entity.Config
+import win.hupubao.klipnote.events.LoadCategoriesEvent
+import win.hupubao.klipnote.events.LoadNotesEvent
+import win.hupubao.klipnote.events.ShowEditCategoryEvent
 import win.hupubao.klipnote.factory.CategoryListCell
 import win.hupubao.klipnote.listener.ClipboardChangedListener
 import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.sql.Configs
 import win.hupubao.klipnote.utils.AppUtils
-import win.hupubao.klipnote.views.LoadCategoriesEvent
-import win.hupubao.klipnote.views.LoadNotesEvent
 import win.hupubao.klipnote.views.MainView
-import win.hupubao.klipnote.views.ShowEditCategoryEvent
-import java.util.*
 
 /**
  * 左侧分类菜单栏
@@ -72,7 +67,7 @@ class CategoryMenu : View() {
 
                 action {
                     selectedCategory = AppUtils.categoryRecycle
-                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
+                    EventBus.getDefault().post(LoadNotesEvent())
                     find<MainView>().root.center = find<NoteListView>().root
                 }
             }
@@ -106,10 +101,7 @@ class CategoryMenu : View() {
                 action {
                     selectedCategory = AppUtils.categoryStar
 
-                    val notesParam = NotesParam()
-                    notesParam.pagination = find<NoteListView>().paginationNotes
-                    notesParam.searchText = find<Header>().textFieldSearch.text
-                    EventBus.getDefault().post(LoadNotesEvent(notesParam))
+                    EventBus.getDefault().post(LoadNotesEvent())
                     find<MainView>().root.center = find<NoteListView>().root
                 }
             }
@@ -165,7 +157,7 @@ class CategoryMenu : View() {
 
                 onMouseClicked = EventHandler {
                     selectedCategory = AppUtils.categoryClipboard
-                    EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
+                    EventBus.getDefault().post(LoadNotesEvent())
                     find<MainView>().root.center = find<NoteListView>().root
                 }
 

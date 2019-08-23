@@ -1,7 +1,6 @@
-package win.hupubao.klipnote.views
+package win.hupubao.klipnote.events
 
 import javafx.scene.control.ListView
-import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.entity.Category
 import win.hupubao.klipnote.entity.Note
 
@@ -12,7 +11,7 @@ class LoadCategoriesEvent(val listView: ListView<Category>)
 /**
  * 加载笔记列表事件
  */
-class LoadNotesEvent(val notesParam: NotesParam)
+class LoadNotesEvent()
 /**
  * 打开编辑分类框事件
  */

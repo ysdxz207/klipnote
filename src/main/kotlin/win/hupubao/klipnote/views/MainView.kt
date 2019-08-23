@@ -11,12 +11,12 @@ import org.greenrobot.eventbus.EventBus
 import sun.misc.BASE64Encoder
 import tornadofx.*
 import win.hupubao.klipnote.App
-import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.components.CategoryMenu
 import win.hupubao.klipnote.components.Header
 import win.hupubao.klipnote.components.NoteListView
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.enums.NoteType
+import win.hupubao.klipnote.events.LoadNotesEvent
 import win.hupubao.klipnote.listener.ClipboardChangedListener
 import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.sql.Notes
@@ -32,7 +32,6 @@ import win.hupubao.klipnote.utils.ImageUtils
 import java.awt.datatransfer.DataFlavor
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
-import java.time.LocalDateTime
 import javax.imageio.ImageIO
 
 
@@ -72,7 +71,7 @@ class MainView : View("Klipnote") {
         startWatchingClipboard()
 
         // 触发加载笔记列表事件
-        EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, header.textFieldSearch.text)))
+        EventBus.getDefault().post(LoadNotesEvent())
 
         // 注册快捷键
         AppUtils.registHotkey()
@@ -96,10 +95,10 @@ class MainView : View("Klipnote") {
                                         strVal
                                     }
                                     content to strVal
-                                    category to categoryClipboard
-                                    originCategory to categoryClipboard
+                                    category to categoryClipboard.id
+                                    originCategory to categoryClipboard.id
                                     type to NoteType.TEXT.name
-                                    createTime to LocalDateTime.now()
+                                    createTime to System.currentTimeMillis()
                                 }
                             } else if (it.isDataFlavorSupported(DataFlavor.imageFlavor)) {
                                 val imageVal = it.getTransferData(DataFlavor.imageFlavor) as BufferedImage
@@ -112,12 +111,12 @@ class MainView : View("Klipnote") {
                                     category to categoryClipboard
                                     originCategory to categoryClipboard
                                     type to NoteType.IMAGE.name
-                                    createTime to LocalDateTime.now()
+                                    createTime to System.currentTimeMillis()
                                 }
                             } else {
                             }
                         // 重新加载笔记列表
-                        EventBus.getDefault().post(LoadNotesEvent(NotesParam(noteListView.paginationNotes, header.textFieldSearch.text)))
+                        EventBus.getDefault().post(LoadNotesEvent())
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

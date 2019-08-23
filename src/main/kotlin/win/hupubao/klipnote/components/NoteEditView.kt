@@ -16,11 +16,12 @@ import me.liuwj.ktorm.entity.findById
 import me.liuwj.ktorm.entity.findList
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
-import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.entity.Category
 import win.hupubao.klipnote.entity.Note
 import win.hupubao.klipnote.enums.NoteType
+import win.hupubao.klipnote.events.AddToClipboardEvent
+import win.hupubao.klipnote.events.LoadNotesEvent
 import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.sql.Notes
 import win.hupubao.klipnote.sql.Notes.category
@@ -28,16 +29,12 @@ import win.hupubao.klipnote.sql.Notes.createTime
 import win.hupubao.klipnote.sql.Notes.originCategory
 import win.hupubao.klipnote.sql.Notes.type
 import win.hupubao.klipnote.utils.ImageUtils
-import win.hupubao.klipnote.views.AddToClipboardEvent
 import win.hupubao.klipnote.views.ImageViewFragment
-import win.hupubao.klipnote.views.LoadNotesEvent
 import win.hupubao.klipnote.views.MainView
-import java.time.LocalDateTime
 
 
 class NoteEditView(noteInfo: Note?) : View() {
 
-    lateinit var labelId: Label
     lateinit var textFieldTitle: TextField
     lateinit var textAreaContent: TextArea
     lateinit var labelTime: Label
@@ -49,9 +46,6 @@ class NoteEditView(noteInfo: Note?) : View() {
             prefWidth = 8.0
         }
 
-        labelId = label {
-            hide()
-        }
 
         form {
             fieldset {
@@ -80,7 +74,7 @@ class NoteEditView(noteInfo: Note?) : View() {
                         fontSize = 16.px
                     }
                     asyncItems {
-                        Categories.findList { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }.toMutableList()
+                        Categories.findList { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }
                     }
                     selectionModel.select(noteInfo?.category ?: find<CategoryMenu>().selectedCategory)
                 }
@@ -154,24 +148,24 @@ class NoteEditView(noteInfo: Note?) : View() {
                                 return@action
                             }
 
-                            if (labelId.text == null || labelId.text.isEmpty()) {
+                            if (noteInfo == null ) {
                                 Notes.insert {
                                     title to  textFieldTitle.text
                                     content to textAreaContent.text
-                                    category to comboBoxCategory.selectedItem!!
-                                    originCategory to comboBoxCategory.selectedItem!!
+                                    category to comboBoxCategory.selectedItem?.id
+                                    originCategory to comboBoxCategory.selectedItem?.id
                                     type to NoteType.TEXT.name
-                                    createTime to LocalDateTime.now()
+                                    createTime to System.currentTimeMillis()
                                 }
                             } else {
-                                val note = Notes.findById(labelId.text.toInt())
-                                note?.title = textFieldTitle.text
-                                note?.content = textAreaContent.text
-                                note?.category = comboBoxCategory.selectedItem!!
-                                note?.originCategory = comboBoxCategory.selectedItem!!
+                                noteInfo.title = textFieldTitle.text
+                                noteInfo.content = textAreaContent.text
+                                noteInfo.category = comboBoxCategory.selectedItem!!
+                                noteInfo.originCategory = comboBoxCategory.selectedItem!!
+                                noteInfo.flushChanges()
                             }
 
-                            EventBus.getDefault().post(LoadNotesEvent(NotesParam(tornadofx.find<NoteListView>().paginationNotes, tornadofx.find<Header>().textFieldSearch.text)))
+                            EventBus.getDefault().post(LoadNotesEvent())
                             tornadofx.find<MainView>().root.center = tornadofx.find<NoteListView>().root
 
                         }
@@ -192,7 +186,7 @@ class NoteEditView(noteInfo: Note?) : View() {
                             cursor = Cursor.HAND
                         }
                         action {
-                            EventBus.getDefault().post(LoadNotesEvent(NotesParam(tornadofx.find<NoteListView>().paginationNotes, tornadofx.find<Header>().textFieldSearch.text)))
+                            EventBus.getDefault().post(LoadNotesEvent())
                             tornadofx.find<MainView>().root.center = tornadofx.find<NoteListView>().root
                         }
                     }

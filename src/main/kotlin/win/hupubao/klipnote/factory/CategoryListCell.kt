@@ -13,19 +13,17 @@ import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
 import win.hupubao.klipnote.App
-import win.hupubao.klipnote.beans.params.NotesParam
 import win.hupubao.klipnote.components.CategoryMenu
-import win.hupubao.klipnote.components.Header
 import win.hupubao.klipnote.components.NoteEditView
 import win.hupubao.klipnote.components.NoteListView
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.entity.Category
+import win.hupubao.klipnote.events.LoadCategoriesEvent
+import win.hupubao.klipnote.events.LoadNotesEvent
+import win.hupubao.klipnote.events.ShowEditCategoryEvent
 import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.sql.Notes
-import win.hupubao.klipnote.views.LoadCategoriesEvent
-import win.hupubao.klipnote.views.LoadNotesEvent
 import win.hupubao.klipnote.views.MainView
-import win.hupubao.klipnote.views.ShowEditCategoryEvent
 
 
 class CategoryListCell<T> : ListCell<T>() {
@@ -52,7 +50,7 @@ class CategoryListCell<T> : ListCell<T>() {
                             && it.button == MouseButton.PRIMARY) {
 
                         find<CategoryMenu>().selectedCategory = category
-                        EventBus.getDefault().post(LoadNotesEvent(NotesParam(find<NoteListView>().paginationNotes, find<Header>().textFieldSearch.text)))
+                        EventBus.getDefault().post(LoadNotesEvent())
                         find<MainView>().root.center = find<NoteListView>().root
                     }
 
@@ -123,7 +121,7 @@ class CategoryListCell<T> : ListCell<T>() {
 
                                 Notes.update {
 
-                                    Notes.category to recycleCategory
+                                    Notes.category to recycleCategory.id
                                     where {
                                         Notes.category eq category.id
                                     }

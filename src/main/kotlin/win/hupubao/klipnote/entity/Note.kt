@@ -7,7 +7,7 @@ interface Note : Entity<Note> {
     val id: Int
     var title : String
     var content: String?
-    var createTime: LocalDateTime
+    var createTime: Long
     var category: Category
     var originCategory: Category
     var type: String

@@ -2,7 +2,7 @@ package win.hupubao.klipnote.utils
 
 import me.liuwj.ktorm.database.Database
 import me.liuwj.ktorm.dsl.*
-import me.liuwj.ktorm.entity.findById
+import me.liuwj.ktorm.entity.*
 import me.liuwj.ktorm.logging.ConsoleLogger
 import me.liuwj.ktorm.logging.LogLevel
 import win.hupubao.klipnote.constants.Constants
@@ -17,8 +17,10 @@ import win.hupubao.klipnote.sql.Configs.mainWinHotkeyModifier
 import win.hupubao.klipnote.sql.Configs.startup
 import win.hupubao.klipnote.sql.Configs.watchingClipboard
 import java.io.File
+import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
+import kotlin.concurrent.thread
 
 
 object DataUtils {
@@ -29,20 +31,42 @@ object DataUtils {
 
     fun initData() {
 
-        createNewDatabase()
 
-        Database.connect(url = "jdbc:sqlite:$databaseDir",
-                driver = "org.sqlite.JDBC",
-                user = username,
-                password = password,
-                logger = ConsoleLogger(threshold = LogLevel.INFO))
+//        val database = Database.connect(url = "jdbc:sqlite:$databaseDir",
+//                driver = "org.sqlite.JDBC",
+//                user = username,
+//                password = password,
+//                logger = ConsoleLogger(threshold = LogLevel.INFO))
+
+        val conn = DriverManager.getConnection("jdbc:sqlite:$databaseDir", username, password)
+
+        Runtime.getRuntime().addShutdownHook(
+                thread(start = false) {
+                    // 进程退出时，关闭连接
+                    conn.close()
+                }
+        )
+
+        val database = Database.connect {
+            object : Connection by conn {
+                override fun close() {
+                    // 重写 close 方法，保持连接不关闭
+                }
+            }
+        }
+
+
+        // 判断表是否存在
+        database.invoke {
+
+        }
 
 
         if (Categories.findById(Constants.DEFAULT_CATEGORY_ID) == null) {
             Categories.insert {
                 it.id to Constants.DEFAULT_CATEGORY_ID
                 it.name to "默认分类"
-                it.sort to Int.MAX_VALUE
+                it.sort to Constants.DEFAULT_CATEGORY_SORT
             }
 
         }
@@ -77,39 +101,23 @@ object DataUtils {
                 watchingClipboard to true
             }
         }
+
+        val config = Configs.findById(1)
+
+        println(config)
     }
 
-    fun createNewDatabase() {
-
-        val dir = File(databaseDir).parentFile
-        if (!dir.exists()) {
-            dir.mkdirs()
-        }
-
-        val url = "jdbc:sqlite:$databaseDir"
-
-        try {
-            DriverManager.getConnection(url).use { conn ->
-                if (conn != null) {
-                    val meta = conn.metaData
-                    println("The driver name is " + meta.driverName)
-                    println("A new database has been created.")
-                }
-
-            }
-        } catch (e: SQLException) {
-            println(e.message)
-        }
-
-    }
 
     fun getCategorySortNum(): Int {
         var sortNum = 0
-        val n = Categories.select(max(Categories.sort)).where { Categories.sort notEq Int.MAX_VALUE }.map { Categories.sort }[0]
-        if (n == null) {
-            sortNum = 1
+        val n = Categories.asSequenceWithoutReferences()
+                .filter { it.sort notEq Constants.DEFAULT_CATEGORY_SORT }
+                .aggregateColumns { max(it.sort) }
+
+        sortNum = if (n == null) {
+            1
         } else {
-//            sortNum = n + 1
+            n + 1
         }
         return sortNum
     }

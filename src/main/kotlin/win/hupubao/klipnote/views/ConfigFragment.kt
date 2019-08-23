@@ -6,6 +6,7 @@ import javafx.scene.input.KeyCode
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
 import win.hupubao.klipnote.components.CategoryMenu
+import win.hupubao.klipnote.events.LoadCategoriesEvent
 import win.hupubao.klipnote.utils.AppUtils
 import win.hupubao.klipnote.utils.KeyCodeUtils
 

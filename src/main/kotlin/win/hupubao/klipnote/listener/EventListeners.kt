@@ -16,12 +16,18 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import tornadofx.*
 import win.hupubao.klipnote.components.CategoryMenu
+import win.hupubao.klipnote.components.Header
+import win.hupubao.klipnote.components.NoteListView
 import win.hupubao.klipnote.constants.Constants
 import win.hupubao.klipnote.entity.Category
 import win.hupubao.klipnote.enums.NoteType
 import win.hupubao.klipnote.factory.NoteListCell
 import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.entity.Note
+import win.hupubao.klipnote.events.AddToClipboardEvent
+import win.hupubao.klipnote.events.LoadCategoriesEvent
+import win.hupubao.klipnote.events.LoadNotesEvent
+import win.hupubao.klipnote.events.ShowEditCategoryEvent
 import win.hupubao.klipnote.sql.Notes
 import win.hupubao.klipnote.utils.Alert
 import win.hupubao.klipnote.utils.ClipboardHelper
@@ -45,7 +51,7 @@ class EventListeners {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoadCategoriesEvent(event: LoadCategoriesEvent) {
         event.listView.asyncItems {
-            Categories.select().where { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.desc()).map { Categories.createEntity(it) }
+            Categories.select().where { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
         }
     }
 
@@ -55,8 +61,8 @@ class EventListeners {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoadNotesEvent(event: LoadNotesEvent) {
         GlobalScope.launch(Dispatchers.JavaFx) {
-            val notesParam = event.notesParam
             val categoryMenu = find<CategoryMenu>()
+            val pagination = find<NoteListView>().paginationNotes
             val listViewCategories = categoryMenu.listViewCategories
 
             var category = categoryMenu.selectedCategory ?: listViewCategories.selectedItem
@@ -117,21 +123,18 @@ class EventListeners {
 
                 }
             }
+            val header = tornadofx.find<Header>()
 
-
-            val query = Notes.select().where { Notes.title like "%${notesParam.searchText}%" and (Notes.category eq category!!.id) }
-
+            val query = Notes.select().where { Notes.title like "%${header.textFieldSearch.text}%" and (Notes.category eq category!!.id) }
 
             // 获取笔记显示页数
             val count = query.count()
-            notesParam.pagination?.pageCount = when {
+            pagination.pageCount = when {
                 count == 0 -> 1
                 count % Constants.PAGE_SIZE == 0 -> count / Constants.PAGE_SIZE
                 else -> count / Constants.PAGE_SIZE + 1
             }
-
-            // 组装列表及数据
-            notesParam.pagination?.setPageFactory { pageIndex ->
+            pagination.setPageFactory { pageIndex ->
                 val listViewNotes = ListView<Note>()
                 listViewNotes.setCellFactory {
                     NoteListCell<Note>()
@@ -142,15 +145,18 @@ class EventListeners {
                     backgroundInsets += box(0.px)
                 }
 
+
                 listViewNotes.asyncItems {
                     val start = System.currentTimeMillis()
 
                     val list = query.orderBy(Notes.createTime.desc())
-                            .limit(Constants.PAGE_SIZE, pageIndex * Constants.PAGE_SIZE)
+                            .limit(pageIndex * Constants.PAGE_SIZE, (pageIndex + 1) * Constants.PAGE_SIZE)
                             .map { Notes.createEntity(it) }
-                            .toMutableList()
+
+
                     val end = System.currentTimeMillis()
                     println("耗时：" + (end - start))
+
                     list
                 }
                 listViewNotes
