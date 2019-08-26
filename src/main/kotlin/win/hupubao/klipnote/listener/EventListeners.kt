@@ -12,6 +12,7 @@ import me.liuwj.ktorm.dsl.*
 import me.liuwj.ktorm.entity.createEntity
 import me.liuwj.ktorm.entity.findById
 import me.liuwj.ktorm.entity.findList
+import me.liuwj.ktorm.schema.ColumnDeclaring
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import tornadofx.*
@@ -28,6 +29,7 @@ import win.hupubao.klipnote.events.AddToClipboardEvent
 import win.hupubao.klipnote.events.LoadCategoriesEvent
 import win.hupubao.klipnote.events.LoadNotesEvent
 import win.hupubao.klipnote.events.ShowEditCategoryEvent
+import win.hupubao.klipnote.sql.Categories.name
 import win.hupubao.klipnote.sql.Notes
 import win.hupubao.klipnote.utils.Alert
 import win.hupubao.klipnote.utils.ClipboardHelper
@@ -125,7 +127,14 @@ class EventListeners {
             }
             val header = tornadofx.find<Header>()
 
-            val query = Notes.select().where { Notes.title like "%${header.textFieldSearch.text}%" and (Notes.category eq category!!.id) }
+            val query = Notes.select().whereWithConditions {
+                it += Notes.category eq category!!.id
+                if (header.textFieldSearch.text.isNotBlank()) {
+                    it += Notes.title like "%${header.textFieldSearch.text}%"
+                }
+            }
+
+            pagination.pageFactory = null
 
             // 获取笔记显示页数
             val count = query.count()

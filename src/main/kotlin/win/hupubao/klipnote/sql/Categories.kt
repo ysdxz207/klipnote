@@ -16,4 +16,5 @@ object Categories : Table<Category>("categories") {
     val id by int("id").primaryKey().bindTo { it.id }
     val name by varchar("name").bindTo { it.name }
     val sort by int("sort").bindTo { it.sort }
+
 }

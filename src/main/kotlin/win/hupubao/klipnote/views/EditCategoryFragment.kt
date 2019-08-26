@@ -63,8 +63,8 @@ class EditCategoryFragment : Fragment("编辑分类") {
                 action {
                     if (category == null) {
                         Categories.insert {
-                            name to textFieldCategoryName.text
-                            sort to DataUtils.getCategorySortNum()
+                            it.name to textFieldCategoryName.text
+                            it.sort to DataUtils.getCategorySortNum()
                         }
                     } else {
                         // 更新分类数据

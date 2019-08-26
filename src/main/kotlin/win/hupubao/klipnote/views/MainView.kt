@@ -86,35 +86,39 @@ class MainView : View("Klipnote") {
                 try {
                     GlobalScope.launch(Dispatchers.JavaFx) {
                             val categoryClipboard = Categories.findById(Constants.CLIPBOARD_CATEGORY_ID)!!
-                            if (it.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                        when {
+                            it.isDataFlavorSupported(DataFlavor.stringFlavor) -> {
                                 val strVal = it.getTransferData(DataFlavor.stringFlavor).toString()
                                 Notes.insert {
-                                    title to if (strVal.length > 20) {
+                                    it.title to if (strVal.length > 20) {
                                         strVal.replace("\n", "").substring(0, 20)
                                     } else {
                                         strVal
                                     }
-                                    content to strVal
-                                    category to categoryClipboard.id
-                                    originCategory to categoryClipboard.id
-                                    type to NoteType.TEXT.name
-                                    createTime to System.currentTimeMillis()
+                                    it.content to strVal
+                                    it.category to categoryClipboard.id
+                                    it.originCategory to categoryClipboard.id
+                                    it.type to NoteType.TEXT.name
+                                    it.createTime to System.currentTimeMillis()
                                 }
-                            } else if (it.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+                            }
+                            it.isDataFlavorSupported(DataFlavor.imageFlavor) -> {
                                 val imageVal = it.getTransferData(DataFlavor.imageFlavor) as BufferedImage
                                 val byteArrayOutputStream = ByteArrayOutputStream()
                                 ImageIO.write(imageVal, "png", byteArrayOutputStream)
                                 val imageBase64 = BASE64Encoder().encode(byteArrayOutputStream.toByteArray())
                                 Notes.insert {
-                                    title to ""
-                                    content to ImageUtils.BASE64_HEADER + imageBase64
-                                    category to categoryClipboard
-                                    originCategory to categoryClipboard
-                                    type to NoteType.IMAGE.name
-                                    createTime to System.currentTimeMillis()
+                                    it.title to ""
+                                    it.content to ImageUtils.BASE64_HEADER + imageBase64
+                                    it.category to categoryClipboard.id
+                                    it.originCategory to categoryClipboard.id
+                                    it.type to NoteType.IMAGE.name
+                                    it.createTime to System.currentTimeMillis()
                                 }
-                            } else {
                             }
+                            else -> {
+                            }
+                        }
                         // 重新加载笔记列表
                         EventBus.getDefault().post(LoadNotesEvent())
                     }

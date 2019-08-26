@@ -150,12 +150,12 @@ class NoteEditView(noteInfo: Note?) : View() {
 
                             if (noteInfo == null ) {
                                 Notes.insert {
-                                    title to  textFieldTitle.text
-                                    content to textAreaContent.text
-                                    category to comboBoxCategory.selectedItem?.id
-                                    originCategory to comboBoxCategory.selectedItem?.id
-                                    type to NoteType.TEXT.name
-                                    createTime to System.currentTimeMillis()
+                                    it.title to  textFieldTitle.text
+                                    it.content to textAreaContent.text
+                                    it.category to comboBoxCategory.selectedItem?.id
+                                    it.originCategory to comboBoxCategory.selectedItem?.id
+                                    it.type to NoteType.TEXT.name
+                                    it.createTime to System.currentTimeMillis()
                                 }
                             } else {
                                 noteInfo.title = textFieldTitle.text

@@ -72,33 +72,33 @@ object DataUtils {
         }
         if (Categories.findById(Constants.RECYCLE_CATEGORY_ID) == null) {
             Categories.insert {
-                id to Constants.RECYCLE_CATEGORY_ID
-                name to "回收站"
-                sort to Constants.RECYCLE_CATEGORY_ID
+                it.id to Constants.RECYCLE_CATEGORY_ID
+                it.name to "回收站"
+                it.sort to Constants.RECYCLE_CATEGORY_ID
             }
         }
         if (Categories.findById(Constants.STAR_CATEGORY_ID) == null) {
             Categories.insert {
-                id to Constants.STAR_CATEGORY_ID
-                name to "收藏"
-                sort to Constants.STAR_CATEGORY_ID
+                it.id to Constants.STAR_CATEGORY_ID
+                it.name to "收藏"
+                it.sort to Constants.STAR_CATEGORY_ID
             }
         }
         if (Categories.findById(Constants.CLIPBOARD_CATEGORY_ID) == null) {
             Categories.insert {
-                id to Constants.CLIPBOARD_CATEGORY_ID
-                name to "粘贴板"
-                sort to Constants.CLIPBOARD_CATEGORY_ID
+                it.id to Constants.CLIPBOARD_CATEGORY_ID
+                it.name to "粘贴板"
+                it.sort to Constants.CLIPBOARD_CATEGORY_ID
             }
         }
 
         if (Configs.count() == 0) {
             Configs.insert {
-                startup to true
-                keepTop to true
-                mainWinHotkeyModifier to "Ctrl"
-                mainWinHotkey to "`"
-                watchingClipboard to true
+                it.startup to true
+                it.keepTop to true
+                it.mainWinHotkeyModifier to "Ctrl"
+                it.mainWinHotkey to "`"
+                it.watchingClipboard to true
             }
         }
 

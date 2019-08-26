@@ -140,14 +140,16 @@ class NoteListCell<T> : ListCell<T>() {
                             if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
 
                                 val starCategory = Categories.findById(Constants.STAR_CATEGORY_ID)!!
-                                if (note.category == starCategory) {
+                                if (note.category.id == Constants.STAR_CATEGORY_ID) {
                                     // 取消收藏
                                     confirm(header = "", content = "确定取消收藏吗？", owner = FX.primaryStage, actionFn = {
                                         note.category = note.originCategory
+                                        note.flushChanges()
                                     })
                                 } else {
                                     //收藏
                                     note.category = starCategory
+                                    note.flushChanges()
                                 }
                                 EventBus.getDefault().post(LoadNotesEvent())
                             }
@@ -181,6 +183,7 @@ class NoteListCell<T> : ListCell<T>() {
                                         note.delete()
                                     } else {
                                         note.category = Categories.findById(Constants.RECYCLE_CATEGORY_ID)!!
+                                        note.flushChanges()
                                     }
                                 })
 
