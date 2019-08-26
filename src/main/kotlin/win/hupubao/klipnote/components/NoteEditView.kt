@@ -24,10 +24,6 @@ import win.hupubao.klipnote.events.AddToClipboardEvent
 import win.hupubao.klipnote.events.LoadNotesEvent
 import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.sql.Notes
-import win.hupubao.klipnote.sql.Notes.category
-import win.hupubao.klipnote.sql.Notes.createTime
-import win.hupubao.klipnote.sql.Notes.originCategory
-import win.hupubao.klipnote.sql.Notes.type
 import win.hupubao.klipnote.utils.ImageUtils
 import win.hupubao.klipnote.views.ImageViewFragment
 import win.hupubao.klipnote.views.MainView
@@ -83,7 +79,7 @@ class NoteEditView(noteInfo: Note?) : View() {
             if (noteInfo != null && NoteType.IMAGE.name == noteInfo.type) {
                 fieldset {
                     imageview {
-                        val img = ImageUtils.getImageFromNote(noteInfo, 450)
+                        val img = ImageUtils.getImageFromBase64(noteInfo.description)
                         image = img
                         onMouseClicked = EventHandler {
                             if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
@@ -105,14 +101,15 @@ class NoteEditView(noteInfo: Note?) : View() {
 
                 }
             }
+
             if (noteInfo != null && NoteType.IMAGE.name == noteInfo.type) {
                 fieldset {
                     hbox {
                         button("复制图片") {
                             style {
-                                prefHeight = 42.px
-                                prefWidth = 110.px
-                                fontSize = 18.px
+                                prefHeight = 32.px
+                                prefWidth = 100.px
+                                fontSize = 14.px
                                 backgroundColor += Paint.valueOf("#FFB4A2")
                                 textFill = Color.WHITE
                                 cursor = Cursor.HAND
@@ -120,7 +117,27 @@ class NoteEditView(noteInfo: Note?) : View() {
 
                             action {
                                 // 添加到剪贴板
-                                EventBus.getDefault().post(AddToClipboardEvent(noteInfo))
+                                EventBus.getDefault().post(AddToClipboardEvent(noteInfo, true))
+                            }
+                        }
+
+                        region {
+                            prefWidth = 20.0
+                        }
+
+                        button("复制Base64") {
+                            style {
+                                prefHeight = 32.px
+                                prefWidth = 100.px
+                                fontSize = 14.px
+                                backgroundColor += Paint.valueOf("#5cb85c")
+                                textFill = Color.WHITE
+                                cursor = Cursor.HAND
+                            }
+
+                            action {
+                                // 添加到剪贴板
+                                EventBus.getDefault().post(AddToClipboardEvent(noteInfo, false))
                             }
                         }
                     }

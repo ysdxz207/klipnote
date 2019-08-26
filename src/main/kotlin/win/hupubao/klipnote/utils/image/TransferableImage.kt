@@ -13,7 +13,7 @@ internal class TransferableImage(var note: Note) : Transferable {
     override fun getTransferData(flavor: DataFlavor): Any {
 
         return if (flavor.equals(DataFlavor.imageFlavor)) {
-            ImageUtils.getBufferedImageFromNote(note)
+            ImageUtils.getBufferedImageFromBase64(note.content)
         } else {
             throw UnsupportedFlavorException(flavor)
         }

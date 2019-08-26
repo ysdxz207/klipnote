@@ -197,10 +197,10 @@ class EventListeners {
         ClipboardHelper.isBySet = true
 
         var content: Transferable? = null
-        if (event.note.type == NoteType.TEXT.name) {
-            content = StringSelection(event.note.content)
-        } else if (event.note.type == NoteType.IMAGE.name) {
+        if (event.note.type == NoteType.IMAGE.name && event.pic) {
             content = TransferableImage(event.note)
+        } else {
+            content = StringSelection(event.note.content)
         }
         Toolkit.getDefaultToolkit().systemClipboard.setContents(content, null)
         Alert.show("复制成功", 600L)

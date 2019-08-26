@@ -17,7 +17,7 @@ class ImageViewFragment : Fragment() {
         val note = params["note"]
         if (params.isNotEmpty() && note is Note) {
             center = imageview {
-                image = ImageUtils.getImageFromNote(note)
+                image = ImageUtils.getImageFromBase64(note.content)
                 tooltip("点击查看")
             }
         }

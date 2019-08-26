@@ -107,6 +107,12 @@ class MainView : View("Klipnote") {
                                 val byteArrayOutputStream = ByteArrayOutputStream()
                                 ImageIO.write(imageVal, "png", byteArrayOutputStream)
                                 val imageBase64 = BASE64Encoder().encode(byteArrayOutputStream.toByteArray())
+
+                                val imgDescription = ImageUtils.resize(imageVal, 450)
+                                val byteArrayOutputStreamDescription = ByteArrayOutputStream()
+                                ImageIO.write(imgDescription, "png", byteArrayOutputStreamDescription)
+                                val imageBase64Description = BASE64Encoder().encode(byteArrayOutputStreamDescription.toByteArray())
+
                                 Notes.insert {
                                     it.title to ""
                                     it.content to ImageUtils.BASE64_HEADER + imageBase64
@@ -114,6 +120,7 @@ class MainView : View("Klipnote") {
                                     it.originCategory to categoryClipboard.id
                                     it.type to NoteType.IMAGE.name
                                     it.createTime to System.currentTimeMillis()
+                                    it.description to ImageUtils.BASE64_HEADER + imageBase64Description
                                 }
                             }
                             else -> {

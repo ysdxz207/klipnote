@@ -16,4 +16,5 @@ object Notes: Table<Note>("notes") {
     val category by int("category").references(Categories) { it.category }
     val originCategory by int("origin_category").references(Categories) {it.originCategory}
     val type by varchar("type").bindTo { it.type }
+    val description by varchar("description").bindTo { it.description }
 }

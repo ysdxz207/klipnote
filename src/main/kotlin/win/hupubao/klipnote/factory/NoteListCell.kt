@@ -72,7 +72,7 @@ class NoteListCell<T> : ListCell<T>() {
                                 && it.button == MouseButton.PRIMARY) {
 
                             // 添加到剪贴板
-                            EventBus.getDefault().post(AddToClipboardEvent(note))
+                            EventBus.getDefault().post(AddToClipboardEvent(note, true))
                             return@EventHandler
                         }
                     }
@@ -88,7 +88,9 @@ class NoteListCell<T> : ListCell<T>() {
                         }
                     } else if (note.type == NoteType.IMAGE.name) {
                         imageview {
-                            image = ImageUtils.getImageFromNote(note, 40)
+                            fitHeight = 40.0
+                            isPreserveRatio = true
+                            image = ImageUtils.getImageFromBase64(note.description)
                         }
                     }
 

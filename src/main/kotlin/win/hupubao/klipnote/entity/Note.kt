@@ -10,4 +10,5 @@ interface Note : Entity<Note> {
     var category: Category
     var originCategory: Category
     var type: String
+    var description: String
 }

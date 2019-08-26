@@ -3,7 +3,6 @@ package win.hupubao.klipnote.utils
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import sun.misc.BASE64Decoder
-import win.hupubao.klipnote.entity.Note
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
@@ -19,27 +18,27 @@ object ImageUtils {
 
     val BASE64_HEADER = "data:image/png;base64,"
 
-    fun getImageFromNote(note: Note, height: Int): Image {
-        return SwingFXUtils.toFXImage(getBufferedImageFromNote(note, height), null)
+    fun getImageFromBase64(base64: String?, height: Int): Image {
+        return SwingFXUtils.toFXImage(getBufferedImageFromBase64(base64, height), null)
     }
 
-    fun getImageFromNote(note: Note): Image {
-        return ImageUtils.getImageFromNote(note, 0)
+    fun getImageFromBase64(base64: String?): Image {
+        return ImageUtils.getImageFromBase64(base64, 0)
     }
 
-    fun getBufferedImageFromNote(note: Note, size: Int): BufferedImage {
-        if (note.content == null) {
-            return BufferedImage(400, 300, BufferedImage.TYPE_CUSTOM)
+    fun getBufferedImageFromBase64(base64: String?, size: Int): BufferedImage {
+        if (base64 == null || base64.isBlank()) {
+            return BufferedImage(400, 300, BufferedImage.TYPE_BYTE_GRAY)
         }
-        var bufferedImage = ImageIO.read(ByteArrayInputStream(BASE64Decoder().decodeBuffer(note.content!!.replace(BASE64_HEADER, ""))))
+        var bufferedImage = ImageIO.read(ByteArrayInputStream(BASE64Decoder().decodeBuffer(base64.replace(BASE64_HEADER, ""))))
         if (size > 0) {
             bufferedImage = ImageUtils.resize(bufferedImage, size)
         }
         return bufferedImage
     }
 
-    fun getBufferedImageFromNote(note: Note): BufferedImage {
-        return ImageUtils.getBufferedImageFromNote(note, 0)
+    fun getBufferedImageFromBase64(base64: String?): BufferedImage {
+        return ImageUtils.getBufferedImageFromBase64(base64, 0)
     }
 
 
@@ -67,4 +66,6 @@ object ImageUtils {
         g2d.dispose()
         return resized
     }
+
+
 }

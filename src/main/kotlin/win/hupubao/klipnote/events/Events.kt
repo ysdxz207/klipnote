@@ -20,4 +20,4 @@ class ShowEditCategoryEvent(val category: Category?)
 /**
  * 添加到剪贴板
  */
-class AddToClipboardEvent(val note: Note)
+class AddToClipboardEvent(val note: Note, val pic: Boolean)
