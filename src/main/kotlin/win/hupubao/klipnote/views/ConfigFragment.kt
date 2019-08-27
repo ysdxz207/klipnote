@@ -45,6 +45,8 @@ class ConfigFragment : Fragment("设置") {
                             if (!(checkboxStartup.isSelected && AppUtils.checkBootup())) {
                                 AppUtils.toogleBootup()
                             }
+
+                            AppUtils.config.flushChanges()
                         })
                     }
                 }
@@ -56,6 +58,7 @@ class ConfigFragment : Fragment("设置") {
 
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
                             AppUtils.config.keepTop = checkboxKeepTop.isSelected
+                            AppUtils.config.flushChanges()
                             AppUtils.refreshConfig()
                             // 触发加载分类列表事件
                             EventBus.getDefault().post(LoadCategoriesEvent(categoryMenu.listViewCategories))
@@ -82,6 +85,8 @@ class ConfigFragment : Fragment("设置") {
                                 keyList.remove(KeyCodeUtils.KeyEventCode.CONTROL.character)
                                 keyList.joinToString(separator = "+")
                             }
+
+                            AppUtils.config.flushChanges()
                             AppUtils.refreshConfig()
                             AppUtils.registHotkey()
 
@@ -98,6 +103,7 @@ class ConfigFragment : Fragment("设置") {
                                 keyList.remove(KeyCodeUtils.KeyEventCode.SHIFT.character)
                                 keyList.joinToString(separator = "+")
                             }
+                            AppUtils.config.flushChanges()
                             AppUtils.refreshConfig()
                             AppUtils.registHotkey()
 
@@ -114,6 +120,7 @@ class ConfigFragment : Fragment("设置") {
                                 keyList.remove(KeyCodeUtils.KeyEventCode.ALT.character)
                                 keyList.joinToString(separator = "+")
                             }
+                            AppUtils.config.flushChanges()
                             AppUtils.refreshConfig()
                             AppUtils.registHotkey()
 
@@ -143,6 +150,7 @@ class ConfigFragment : Fragment("设置") {
 
                             AppUtils.config.mainWinHotkey = text
 
+                            AppUtils.config.flushChanges()
                             AppUtils.refreshConfig()
                             AppUtils.registHotkey()
                         }

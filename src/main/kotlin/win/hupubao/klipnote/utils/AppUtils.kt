@@ -25,17 +25,16 @@ object AppUtils {
     val categoryStar = Categories.findById(Constants.STAR_CATEGORY_ID)
     val categoryClipboard = Categories.findById(Constants.CLIPBOARD_CATEGORY_ID)
     val categoryDefault = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
+    private var firstHotKeyRegister = false
 
     /**
      * 显示或隐藏主窗口
      */
     fun showOrHideMainWin() {
-        Platform.runLater {
-            if (FX.primaryStage.isShowing) {
-                hideMainWin()
-            } else {
-                showMainWin()
-            }
+        if (FX.primaryStage.isShowing) {
+            hideMainWin()
+        } else {
+            showMainWin()
         }
     }
 
@@ -114,10 +113,13 @@ object AppUtils {
                 KeyCodeUtils.getKeyEventCodeFromKey(config.mainWinHotkey).keyEvent)
 
 
-        //第二步：添加热键监听器
-        JIntellitype.getInstance().addHotKeyListener { markCode: Int ->
-            when (markCode) {
-                SHOW_KEY_MARK -> AppUtils.showOrHideMainWin()
+        //第二步：添加热键监听器，只有第一次注册时需要添加
+        if (!firstHotKeyRegister) {
+            firstHotKeyRegister = true
+            JIntellitype.getInstance().addHotKeyListener { markCode: Int ->
+                when (markCode) {
+                    SHOW_KEY_MARK -> AppUtils.showOrHideMainWin()
+                }
             }
         }
     }

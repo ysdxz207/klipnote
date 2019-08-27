@@ -20,11 +20,6 @@ import win.hupubao.klipnote.events.LoadNotesEvent
 import win.hupubao.klipnote.listener.ClipboardChangedListener
 import win.hupubao.klipnote.sql.Categories
 import win.hupubao.klipnote.sql.Notes
-import win.hupubao.klipnote.sql.Notes.category
-import win.hupubao.klipnote.sql.Notes.content
-import win.hupubao.klipnote.sql.Notes.createTime
-import win.hupubao.klipnote.sql.Notes.originCategory
-import win.hupubao.klipnote.sql.Notes.type
 import win.hupubao.klipnote.utils.AppUtils
 import win.hupubao.klipnote.utils.ClipboardHelper
 import win.hupubao.klipnote.utils.DataUtils
@@ -85,7 +80,7 @@ class MainView : View("Klipnote") {
 
                 try {
                     GlobalScope.launch(Dispatchers.JavaFx) {
-                            val categoryClipboard = Categories.findById(Constants.CLIPBOARD_CATEGORY_ID)!!
+                        val categoryClipboard = Categories.findById(Constants.CLIPBOARD_CATEGORY_ID)!!
                         when {
                             it.isDataFlavorSupported(DataFlavor.stringFlavor) -> {
                                 val strVal = it.getTransferData(DataFlavor.stringFlavor).toString()
