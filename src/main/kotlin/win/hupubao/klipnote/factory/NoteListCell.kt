@@ -1,5 +1,6 @@
 package win.hupubao.klipnote.factory
 
+import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Cursor
