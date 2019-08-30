@@ -1,5 +1,20 @@
 package com.hupubao.klipnote.views
 
+import com.hupubao.klipnote.App
+import com.hupubao.klipnote.components.CategoryMenu
+import com.hupubao.klipnote.components.Header
+import com.hupubao.klipnote.components.NoteListView
+import com.hupubao.klipnote.constants.Constants
+import com.hupubao.klipnote.enums.NoteType
+import com.hupubao.klipnote.events.LoadCategoriesEvent
+import com.hupubao.klipnote.events.LoadNotesEvent
+import com.hupubao.klipnote.listener.ClipboardChangedListener
+import com.hupubao.klipnote.sql.Categories
+import com.hupubao.klipnote.sql.Notes
+import com.hupubao.klipnote.utils.AppUtils
+import com.hupubao.klipnote.utils.ClipboardHelper
+import com.hupubao.klipnote.utils.DataUtils
+import com.hupubao.klipnote.utils.ImageUtils
 import javafx.stage.StageStyle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -10,20 +25,6 @@ import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
 import sun.misc.BASE64Encoder
 import tornadofx.*
-import com.hupubao.klipnote.App
-import com.hupubao.klipnote.components.CategoryMenu
-import com.hupubao.klipnote.components.Header
-import com.hupubao.klipnote.components.NoteListView
-import com.hupubao.klipnote.constants.Constants
-import com.hupubao.klipnote.enums.NoteType
-import com.hupubao.klipnote.events.LoadNotesEvent
-import com.hupubao.klipnote.listener.ClipboardChangedListener
-import com.hupubao.klipnote.sql.Categories
-import com.hupubao.klipnote.sql.Notes
-import com.hupubao.klipnote.utils.AppUtils
-import com.hupubao.klipnote.utils.ClipboardHelper
-import com.hupubao.klipnote.utils.DataUtils
-import com.hupubao.klipnote.utils.ImageUtils
 import java.awt.datatransfer.DataFlavor
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -65,6 +66,8 @@ class MainView : View("Klipnote") {
 
         startWatchingClipboard()
 
+        // 触发加载分类列表事件
+        EventBus.getDefault().post(LoadCategoriesEvent(null))
         // 触发加载笔记列表事件
         EventBus.getDefault().post(LoadNotesEvent())
 

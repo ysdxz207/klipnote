@@ -6,7 +6,6 @@ import com.hupubao.klipnote.events.LoadCategoriesEvent
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.utils.DataUtils
 import com.hupubao.klipnote.utils.StringUtils
-import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonBar
@@ -71,14 +70,11 @@ class EditCategoryFragment : Fragment("编辑分类") {
                     } else {
                         // 更新分类数据
                         category!!.name = textFieldCategoryName.text
+                        category!!.flushChanges()
                     }
                     close()
                     // 触发加载分类列表事件
-                    EventBus.getDefault().post(LoadCategoriesEvent(categoryMenu.listViewCategories))
-                    Platform.runLater {
-                        // 选中新增分类
-                        categoryMenu.selectedCategory = category
-                    }
+                    EventBus.getDefault().post(LoadCategoriesEvent(category!!.id))
                 }
             }
         }

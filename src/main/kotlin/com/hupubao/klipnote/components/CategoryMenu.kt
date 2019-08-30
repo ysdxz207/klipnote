@@ -1,5 +1,17 @@
 package com.hupubao.klipnote.components
 
+import com.hupubao.klipnote.App.Companion.windowSize
+import com.hupubao.klipnote.constants.Constants
+import com.hupubao.klipnote.entity.Category
+import com.hupubao.klipnote.entity.Config
+import com.hupubao.klipnote.events.LoadNotesEvent
+import com.hupubao.klipnote.events.ShowEditCategoryEvent
+import com.hupubao.klipnote.factory.CategoryListCell
+import com.hupubao.klipnote.listener.ClipboardChangedListener
+import com.hupubao.klipnote.sql.Categories
+import com.hupubao.klipnote.sql.Configs
+import com.hupubao.klipnote.utils.AppUtils
+import com.hupubao.klipnote.views.MainView
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Cursor
@@ -16,19 +28,6 @@ import me.liuwj.ktorm.entity.findAll
 import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
-import com.hupubao.klipnote.App.Companion.windowSize
-import com.hupubao.klipnote.constants.Constants
-import com.hupubao.klipnote.entity.Category
-import com.hupubao.klipnote.entity.Config
-import com.hupubao.klipnote.events.LoadCategoriesEvent
-import com.hupubao.klipnote.events.LoadNotesEvent
-import com.hupubao.klipnote.events.ShowEditCategoryEvent
-import com.hupubao.klipnote.factory.CategoryListCell
-import com.hupubao.klipnote.listener.ClipboardChangedListener
-import com.hupubao.klipnote.sql.Categories
-import com.hupubao.klipnote.sql.Configs
-import com.hupubao.klipnote.utils.AppUtils
-import com.hupubao.klipnote.views.MainView
 
 /**
  * 左侧分类菜单栏
@@ -237,8 +236,7 @@ class CategoryMenu : View() {
                     backgroundInsets += box(0.px)
                 }
             }
-            // 触发加载分类列表事件
-            EventBus.getDefault().post(LoadCategoriesEvent(listViewCategories))
+
         }
     }
 }

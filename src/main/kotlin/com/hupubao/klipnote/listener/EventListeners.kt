@@ -19,6 +19,7 @@ import com.hupubao.klipnote.utils.ClipboardHelper
 import com.hupubao.klipnote.utils.image.TransferableImage
 import com.hupubao.klipnote.views.EditCategoryFragment
 import javafx.application.Platform
+import javafx.collections.FXCollections
 import javafx.scene.control.ListView
 import javafx.scene.paint.Paint
 import javafx.stage.Modality
@@ -50,8 +51,11 @@ class EventListeners {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoadCategoriesEvent(event: LoadCategoriesEvent) {
-        event.listView.asyncItems {
-            Categories.select().where { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
+        val categoryMenu = find(CategoryMenu::class)
+        val categoryList = Categories.select().where { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
+        categoryMenu.listViewCategories.items = FXCollections.observableArrayList(categoryList)
+        if (event.selectedCategorId != null) {
+            categoryMenu.listViewCategories.selectionModel.select(categoryList.findLast { it.id == event.selectedCategorId })
         }
     }
 

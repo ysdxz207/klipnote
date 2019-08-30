@@ -127,7 +127,7 @@ class CategoryListCell<T> : ListCell<T>() {
                                     }
 
                                 }
-                                EventBus.getDefault().post(LoadCategoriesEvent(find(CategoryMenu::class).listViewCategories))
+                                EventBus.getDefault().post(LoadCategoriesEvent(Constants.DEFAULT_CATEGORY_ID))
                             })
                         }
                     }

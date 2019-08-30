@@ -1,14 +1,14 @@
 package com.hupubao.klipnote.views
 
+import com.hupubao.klipnote.components.CategoryMenu
+import com.hupubao.klipnote.events.LoadCategoriesEvent
+import com.hupubao.klipnote.utils.AppUtils
+import com.hupubao.klipnote.utils.KeyCodeUtils
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
-import com.hupubao.klipnote.components.CategoryMenu
-import com.hupubao.klipnote.events.LoadCategoriesEvent
-import com.hupubao.klipnote.utils.AppUtils
-import com.hupubao.klipnote.utils.KeyCodeUtils
 
 
 class ConfigFragment : Fragment("设置") {
@@ -61,7 +61,7 @@ class ConfigFragment : Fragment("设置") {
                             AppUtils.config.flushChanges()
                             AppUtils.refreshConfig()
                             // 触发加载分类列表事件
-                            EventBus.getDefault().post(LoadCategoriesEvent(categoryMenu.listViewCategories))
+                            EventBus.getDefault().post(LoadCategoriesEvent(null))
 
                         })
                     }
