@@ -1,5 +1,6 @@
 package com.hupubao.klipnote.components
 
+import com.hupubao.klipnote.components.bean.ComboBoxCategory
 import com.hupubao.klipnote.constants.Constants
 import com.hupubao.klipnote.entity.Category
 import com.hupubao.klipnote.entity.Note
@@ -35,7 +36,7 @@ class NoteEditView(noteInfo: Note?) : View() {
     lateinit var textFieldTitle: TextField
     lateinit var textAreaContent: TextArea
     lateinit var labelTime: Label
-    lateinit var comboBoxCategory: ComboBox<Category>
+    lateinit var comboBoxCategory: ComboBox<ComboBoxCategory>
     lateinit var buttonSave: Button
 
     override val root = scrollpane {
@@ -71,7 +72,19 @@ class NoteEditView(noteInfo: Note?) : View() {
                         fontSize = 16.px
                     }
                     asyncItems {
+                        val list = mutableListOf<ComboBoxCategory>()
                         Categories.findList { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }
+                                .forEach { category: Category ->
+                                    run {
+                                        val comboBoxCategory = ComboBoxCategory()
+                                        comboBoxCategory.id = category.id
+                                        comboBoxCategory.name = category.name
+                                        comboBoxCategory.category = category
+                                        list.add(comboBoxCategory)
+                                    }
+                                }
+
+                        list
                     }
 
                     var selectCategory = find<CategoryMenu>().selectedCategory
@@ -79,7 +92,11 @@ class NoteEditView(noteInfo: Note?) : View() {
                         selectCategory = Categories.findById(noteInfo.category)
 
                     }
-                    selectionModel.select(selectCategory)
+                    val comboBoxCategory = ComboBoxCategory()
+                    comboBoxCategory.id = selectCategory!!.id
+                    comboBoxCategory.name = selectCategory.name
+                    comboBoxCategory.category = selectCategory
+                    selectionModel.select(comboBoxCategory)
                 }
             }
 
@@ -168,7 +185,12 @@ class NoteEditView(noteInfo: Note?) : View() {
 
                         action {
                             if (comboBoxCategory.selectedItem == null) {
-                                comboBoxCategory.selectionModel.select(Categories.findById(Constants.DEFAULT_CATEGORY_ID))
+                                val defaultCategory = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
+                                val cc = ComboBoxCategory()
+                                cc.id = defaultCategory!!.id
+                                cc.name = defaultCategory.name
+                                cc.category = defaultCategory
+                                comboBoxCategory.selectionModel.select(cc)
                             }
 
                             if (textFieldTitle.text == null && textAreaContent.text == null) {
@@ -187,8 +209,8 @@ class NoteEditView(noteInfo: Note?) : View() {
                             } else {
                                 noteInfo.title = textFieldTitle.text
                                 noteInfo.content = textAreaContent.text
-                                noteInfo.category = comboBoxCategory.selectedItem!!.id
-                                noteInfo.originCategory = comboBoxCategory.selectedItem!!.id
+                                noteInfo.category = comboBoxCategory.selectedItem!!.id!!
+                                noteInfo.originCategory = comboBoxCategory.selectedItem!!.id!!
                                 noteInfo.flushChanges()
                             }
 
