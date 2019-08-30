@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>win.hupubao</groupId>
+    <groupId>com.hupubao</groupId>
     <artifactId>klipnote</artifactId>
     <version>1.0.0-RELEASE</version>
     <description>Klipnote.</description>
@@ -139,7 +139,7 @@
                     <transformers>
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>win.hupubao.App</mainClass>
+                            <mainClass>com.hupubao.App</mainClass>
                         </transformer>
                     </transformers>
                     <minimizeJar>true</minimizeJar>
@@ -162,7 +162,7 @@
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
-                            <mainClass>win.hupubao.klipnote.App</mainClass>
+                            <mainClass>com.hupubao.klipnote.App</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
