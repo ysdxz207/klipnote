@@ -21,7 +21,7 @@ import kotlin.concurrent.thread
 
 object DataUtils {
 
-    private val databaseDir = "${System.getProperty("user.home")}/klipnote/klipnote_home.db"
+    private val databaseDir = "${System.getProperty("user.home")}/klipnote/klipnote.db"
     private val username = "root"
     private val password = "*DFj8/!127i"
 
