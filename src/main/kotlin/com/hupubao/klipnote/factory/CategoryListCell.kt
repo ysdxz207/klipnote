@@ -1,17 +1,5 @@
 package com.hupubao.klipnote.factory
 
-import javafx.event.EventHandler
-import javafx.geometry.Pos
-import javafx.scene.Cursor
-import javafx.scene.control.ContentDisplay
-import javafx.scene.control.ListCell
-import javafx.scene.image.Image
-import javafx.scene.input.MouseButton
-import me.liuwj.ktorm.dsl.eq
-import me.liuwj.ktorm.dsl.update
-import me.liuwj.ktorm.entity.findById
-import org.greenrobot.eventbus.EventBus
-import tornadofx.*
 import com.hupubao.klipnote.App
 import com.hupubao.klipnote.components.CategoryMenu
 import com.hupubao.klipnote.components.NoteEditView
@@ -24,6 +12,18 @@ import com.hupubao.klipnote.events.ShowEditCategoryEvent
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Notes
 import com.hupubao.klipnote.views.MainView
+import javafx.event.EventHandler
+import javafx.geometry.Pos
+import javafx.scene.Cursor
+import javafx.scene.control.ContentDisplay
+import javafx.scene.control.ListCell
+import javafx.scene.image.Image
+import javafx.scene.input.MouseButton
+import me.liuwj.ktorm.dsl.eq
+import me.liuwj.ktorm.dsl.update
+import me.liuwj.ktorm.entity.findById
+import org.greenrobot.eventbus.EventBus
+import tornadofx.*
 
 
 class CategoryListCell<T> : ListCell<T>() {
@@ -46,20 +46,20 @@ class CategoryListCell<T> : ListCell<T>() {
             graphic = borderpane {
 
                 onMouseClicked = EventHandler {
-                    if (it.clickCount == 1
-                            && it.button == MouseButton.PRIMARY) {
+                    if (it.clickCount == 1)
 
-                        find<CategoryMenu>().selectedCategory = category
-                        EventBus.getDefault().post(LoadNotesEvent())
-                        find<MainView>().root.center = find<NoteListView>().root
-                    }
+                    // 选择当前分类
+                    find<CategoryMenu>().selectedCategory = category
+                    EventBus.getDefault().post(LoadNotesEvent())
+                    find<MainView>().root.center = find<NoteListView>().root
+                    if (it.button == MouseButton.SECONDARY) {
 
-                    if (it.clickCount == 1
-                            && it.button == MouseButton.SECONDARY) {
+                        //弹出右键菜单
                         contextmenu {
                             item("添加笔记") {
                                 action {
-                                    val noteEditView = NoteEditView(null)
+                                    val noteEditView =
+                                            NoteEditView(null)
                                     find<MainView>().root.center = noteEditView.root
                                 }
                             }

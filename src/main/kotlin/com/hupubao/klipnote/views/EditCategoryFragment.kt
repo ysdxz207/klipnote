@@ -1,20 +1,20 @@
 package com.hupubao.klipnote.views
 
-import javafx.geometry.Pos
-import javafx.scene.control.Button
-import javafx.scene.control.ButtonBar
-import javafx.scene.control.TextField
-import me.liuwj.ktorm.dsl.insert
-import org.greenrobot.eventbus.EventBus
-import tornadofx.*
 import com.hupubao.klipnote.components.CategoryMenu
 import com.hupubao.klipnote.entity.Category
 import com.hupubao.klipnote.events.LoadCategoriesEvent
 import com.hupubao.klipnote.sql.Categories
-import com.hupubao.klipnote.sql.Categories.name
-import com.hupubao.klipnote.sql.Categories.sort
 import com.hupubao.klipnote.utils.DataUtils
 import com.hupubao.klipnote.utils.StringUtils
+import javafx.application.Platform
+import javafx.geometry.Pos
+import javafx.scene.control.Button
+import javafx.scene.control.ButtonBar
+import javafx.scene.control.TextField
+import me.liuwj.ktorm.dsl.insertAndGenerateKey
+import me.liuwj.ktorm.entity.findById
+import org.greenrobot.eventbus.EventBus
+import tornadofx.*
 
 
 class EditCategoryFragment : Fragment("编辑分类") {
@@ -28,7 +28,7 @@ class EditCategoryFragment : Fragment("编辑分类") {
         prefHeight = 180.0
         prefWidth = 400.0
 
-        val category = if (params.isEmpty()) {
+        var category = if (params.isEmpty()) {
             null
         } else {
             params["category"] as Category
@@ -62,17 +62,23 @@ class EditCategoryFragment : Fragment("编辑分类") {
                 ButtonBar.setButtonData(this, ButtonBar.ButtonData.RIGHT)
                 action {
                     if (category == null) {
-                        Categories.insert {
+                        val key = Categories.insertAndGenerateKey {
                             it.name to textFieldCategoryName.text
                             it.sort to DataUtils.getCategorySortNum()
                         }
+
+                        category = Categories.findById(key)
                     } else {
                         // 更新分类数据
-                        category.name = textFieldCategoryName.text
+                        category!!.name = textFieldCategoryName.text
                     }
                     close()
                     // 触发加载分类列表事件
                     EventBus.getDefault().post(LoadCategoriesEvent(categoryMenu.listViewCategories))
+                    Platform.runLater {
+                        // 选中新增分类
+                        categoryMenu.selectedCategory = category
+                    }
                 }
             }
         }

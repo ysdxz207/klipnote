@@ -1,5 +1,24 @@
 package com.hupubao.klipnote.listener
 
+import com.hupubao.klipnote.components.CategoryMenu
+import com.hupubao.klipnote.components.Header
+import com.hupubao.klipnote.components.NoteListView
+import com.hupubao.klipnote.constants.Constants
+import com.hupubao.klipnote.entity.Category
+import com.hupubao.klipnote.entity.Note
+import com.hupubao.klipnote.enums.NoteType
+import com.hupubao.klipnote.events.AddToClipboardEvent
+import com.hupubao.klipnote.events.LoadCategoriesEvent
+import com.hupubao.klipnote.events.LoadNotesEvent
+import com.hupubao.klipnote.events.ShowEditCategoryEvent
+import com.hupubao.klipnote.factory.NoteListCell
+import com.hupubao.klipnote.sql.Categories
+import com.hupubao.klipnote.sql.Notes
+import com.hupubao.klipnote.utils.Alert
+import com.hupubao.klipnote.utils.ClipboardHelper
+import com.hupubao.klipnote.utils.image.TransferableImage
+import com.hupubao.klipnote.views.EditCategoryFragment
+import javafx.application.Platform
 import javafx.scene.control.ListView
 import javafx.scene.paint.Paint
 import javafx.stage.Modality
@@ -11,38 +30,13 @@ import kotlinx.coroutines.launch
 import me.liuwj.ktorm.dsl.*
 import me.liuwj.ktorm.entity.createEntity
 import me.liuwj.ktorm.entity.findById
-import me.liuwj.ktorm.entity.findList
 import me.liuwj.ktorm.schema.ColumnDeclaring
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import tornadofx.*
-import com.hupubao.klipnote.components.CategoryMenu
-import com.hupubao.klipnote.components.Header
-import com.hupubao.klipnote.components.NoteListView
-import com.hupubao.klipnote.constants.Constants
-import com.hupubao.klipnote.entity.Category
-import com.hupubao.klipnote.enums.NoteType
-import com.hupubao.klipnote.factory.NoteListCell
-import com.hupubao.klipnote.sql.Categories
-import com.hupubao.klipnote.entity.Note
-import com.hupubao.klipnote.events.AddToClipboardEvent
-import com.hupubao.klipnote.events.LoadCategoriesEvent
-import com.hupubao.klipnote.events.LoadNotesEvent
-import com.hupubao.klipnote.events.ShowEditCategoryEvent
-import com.hupubao.klipnote.sql.Categories.name
-import com.hupubao.klipnote.sql.Notes
-import com.hupubao.klipnote.utils.Alert
-import com.hupubao.klipnote.utils.ClipboardHelper
-import com.hupubao.klipnote.utils.Loading
-import com.hupubao.klipnote.utils.image.TransferableImage
-import com.hupubao.klipnote.views.*
-import javafx.application.Platform
-import kotlinx.coroutines.delay
-import tornadofx.Stylesheet.Companion.pagination
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.Transferable
-import javax.swing.SortOrder
 
 
 /**
@@ -159,7 +153,6 @@ class EventListeners {
 
 
                 pagination.setPageFactory { pageIndex ->
-                    Loading.show()
                     val listViewNotes = ListView<Note>()
                     listViewNotes.setCellFactory {
                         NoteListCell<Note>()
@@ -176,6 +169,7 @@ class EventListeners {
                         val start = System.currentTimeMillis()
                         val query = Notes.select().where { conditions.combineConditions() }
 
+                        // 这里如果根据创建时间排序会超级慢，所以改为了根据主键排序
                         val list = query.orderBy(Notes.id.desc())
                                 .limit(pageIndex * Constants.PAGE_SIZE, (pageIndex + 1) * Constants.PAGE_SIZE)
                                 .map { Notes.createEntity(it) }
@@ -184,15 +178,11 @@ class EventListeners {
                         val end = System.currentTimeMillis()
                         println("列表耗时：" + (end - start))
 
-
-                            Loading.hide()
-
                         list
                     }
                     listViewNotes
 
                 }
-
 
 
             }

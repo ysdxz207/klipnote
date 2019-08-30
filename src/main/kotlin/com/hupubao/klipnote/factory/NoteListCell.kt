@@ -1,5 +1,15 @@
 package com.hupubao.klipnote.factory
 
+import com.hupubao.klipnote.App
+import com.hupubao.klipnote.components.NoteEditView
+import com.hupubao.klipnote.constants.Constants
+import com.hupubao.klipnote.entity.Note
+import com.hupubao.klipnote.enums.NoteType
+import com.hupubao.klipnote.events.AddToClipboardEvent
+import com.hupubao.klipnote.events.LoadNotesEvent
+import com.hupubao.klipnote.sql.Categories
+import com.hupubao.klipnote.utils.ImageUtils
+import com.hupubao.klipnote.views.MainView
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Cursor
@@ -12,16 +22,6 @@ import javafx.scene.paint.Paint
 import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
-import com.hupubao.klipnote.App
-import com.hupubao.klipnote.components.NoteEditView
-import com.hupubao.klipnote.constants.Constants
-import com.hupubao.klipnote.entity.Note
-import com.hupubao.klipnote.enums.NoteType
-import com.hupubao.klipnote.events.AddToClipboardEvent
-import com.hupubao.klipnote.events.LoadNotesEvent
-import com.hupubao.klipnote.sql.Categories
-import com.hupubao.klipnote.utils.ImageUtils
-import com.hupubao.klipnote.views.MainView
 
 
 class NoteListCell<T> : ListCell<T>() {

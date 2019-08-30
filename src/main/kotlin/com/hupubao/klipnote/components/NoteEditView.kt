@@ -1,5 +1,17 @@
 package com.hupubao.klipnote.components
 
+import com.hupubao.klipnote.constants.Constants
+import com.hupubao.klipnote.entity.Category
+import com.hupubao.klipnote.entity.Note
+import com.hupubao.klipnote.enums.NoteType
+import com.hupubao.klipnote.events.AddToClipboardEvent
+import com.hupubao.klipnote.events.LoadNotesEvent
+import com.hupubao.klipnote.sql.Categories
+import com.hupubao.klipnote.sql.Notes
+import com.hupubao.klipnote.utils.ImageUtils
+import com.hupubao.klipnote.views.ImageViewFragment
+import com.hupubao.klipnote.views.MainView
+import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.Cursor
 import javafx.scene.control.*
@@ -16,17 +28,6 @@ import me.liuwj.ktorm.entity.findById
 import me.liuwj.ktorm.entity.findList
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
-import com.hupubao.klipnote.constants.Constants
-import com.hupubao.klipnote.entity.Category
-import com.hupubao.klipnote.entity.Note
-import com.hupubao.klipnote.enums.NoteType
-import com.hupubao.klipnote.events.AddToClipboardEvent
-import com.hupubao.klipnote.events.LoadNotesEvent
-import com.hupubao.klipnote.sql.Categories
-import com.hupubao.klipnote.sql.Notes
-import com.hupubao.klipnote.utils.ImageUtils
-import com.hupubao.klipnote.views.ImageViewFragment
-import com.hupubao.klipnote.views.MainView
 
 
 class NoteEditView(noteInfo: Note?) : View() {
@@ -103,7 +104,10 @@ class NoteEditView(noteInfo: Note?) : View() {
                     prefHeight = 420.0
                     font = Font.font(16.0)
 
-                    text = noteInfo?.content
+                    Platform.runLater {
+
+                        text = noteInfo?.content
+                    }
 
                 }
             }
