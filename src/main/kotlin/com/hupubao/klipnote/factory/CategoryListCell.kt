@@ -3,7 +3,6 @@ package com.hupubao.klipnote.factory
 import com.hupubao.klipnote.App
 import com.hupubao.klipnote.components.CategoryMenu
 import com.hupubao.klipnote.components.NoteEditView
-import com.hupubao.klipnote.components.NoteListView
 import com.hupubao.klipnote.constants.Constants
 import com.hupubao.klipnote.entity.Category
 import com.hupubao.klipnote.events.LoadCategoriesEvent
@@ -51,7 +50,6 @@ class CategoryListCell<T> : ListCell<T>() {
                     // 选择当前分类
                     find<CategoryMenu>().selectedCategory = category
                     EventBus.getDefault().post(LoadNotesEvent())
-                    find<MainView>().root.center = find<NoteListView>().root
                     if (it.button == MouseButton.SECONDARY) {
 
                         //弹出右键菜单

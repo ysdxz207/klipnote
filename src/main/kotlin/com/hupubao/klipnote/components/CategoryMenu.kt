@@ -11,7 +11,6 @@ import com.hupubao.klipnote.listener.ClipboardChangedListener
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Configs
 import com.hupubao.klipnote.utils.AppUtils
-import com.hupubao.klipnote.views.MainView
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Cursor
@@ -67,7 +66,6 @@ class CategoryMenu : View() {
                 action {
                     selectedCategory = AppUtils.categoryRecycle
                     EventBus.getDefault().post(LoadNotesEvent())
-                    find<MainView>().root.center = find<NoteListView>().root
                 }
             }
         }
@@ -101,7 +99,6 @@ class CategoryMenu : View() {
                     selectedCategory = AppUtils.categoryStar
 
                     EventBus.getDefault().post(LoadNotesEvent())
-                    find<MainView>().root.center = find<NoteListView>().root
                 }
             }
         }
@@ -133,10 +130,11 @@ class CategoryMenu : View() {
                     val switchButton = SwitchButton()
                     // 读取配置
                     val config: Config? = Configs.findAll()[0]
-                        switchButton.switchedOnProperty().value = config?.watchingClipboard
+                    switchButton.switchedOnProperty().value = config?.watchingClipboard
                     switchButton.switchedOnProperty().addListener(ChangeListener { observable, oldValue, newValue ->
                         ClipboardChangedListener.watching = newValue
-                         config?.watchingClipboard = newValue
+                        config?.watchingClipboard = newValue
+                        config?.flushChanges()
                     })
                     add(switchButton)
                     region {
@@ -157,9 +155,7 @@ class CategoryMenu : View() {
                 onMouseClicked = EventHandler {
                     selectedCategory = AppUtils.categoryClipboard
                     EventBus.getDefault().post(LoadNotesEvent())
-                    find<MainView>().root.center = find<NoteListView>().root
                 }
-
 
 
             }
@@ -195,7 +191,7 @@ class CategoryMenu : View() {
                             cursor = Cursor.HAND
                         }
 
-                        onMouseClicked = EventHandler {
+                        onLeftClick {
                             EventBus.getDefault().post(ShowEditCategoryEvent(null))
                         }
                     }

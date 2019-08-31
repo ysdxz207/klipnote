@@ -18,6 +18,7 @@ import com.hupubao.klipnote.utils.Alert
 import com.hupubao.klipnote.utils.ClipboardHelper
 import com.hupubao.klipnote.utils.image.TransferableImage
 import com.hupubao.klipnote.views.EditCategoryFragment
+import com.hupubao.klipnote.views.MainView
 import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.scene.control.ListView
@@ -65,6 +66,8 @@ class EventListeners {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoadNotesEvent(event: LoadNotesEvent) {
         GlobalScope.launch(Dispatchers.JavaFx) {
+            // 切换界面
+            tornadofx.find<MainView>().root.center = tornadofx.find<NoteListView>().root
 
             val categoryMenu = find<CategoryMenu>()
             val pagination = find<NoteListView>().paginationNotes
@@ -130,6 +133,7 @@ class EventListeners {
             }
             val header = tornadofx.find<Header>()
 
+            val currentPageIndex = pagination.currentPageIndex
 
             pagination.pageFactory = null
 
@@ -188,6 +192,7 @@ class EventListeners {
 
                 }
 
+                pagination.currentPageIndex = currentPageIndex
 
             }
 
@@ -205,7 +210,7 @@ class EventListeners {
         if (event.category != null) {
             params["category"] = event.category
         }
-        find<EditCategoryFragment>(DefaultScope, params).openWindow(stageStyle = StageStyle.UTILITY, modality = Modality.WINDOW_MODAL, resizable = false)
+        find<EditCategoryFragment>(FX.defaultScope, params).openWindow(stageStyle = StageStyle.UTILITY, modality = Modality.WINDOW_MODAL, resizable = false)
     }
 
     /**

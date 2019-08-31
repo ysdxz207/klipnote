@@ -11,7 +11,6 @@ import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Notes
 import com.hupubao.klipnote.utils.ImageUtils
 import com.hupubao.klipnote.views.ImageViewFragment
-import com.hupubao.klipnote.views.MainView
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.Cursor
@@ -107,7 +106,7 @@ class NoteEditView(noteInfo: Note?) : View() {
                         image = img
                         onMouseClicked = EventHandler {
                             if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
-                                find<ImageViewFragment>(DefaultScope, hashMapOf("note" to noteInfo)).openWindow(stageStyle = StageStyle.UTILITY, modality = Modality.WINDOW_MODAL, resizable = false)
+                                find<ImageViewFragment>(FX.defaultScope, hashMapOf("note" to noteInfo)).openWindow(stageStyle = StageStyle.UTILITY, modality = Modality.WINDOW_MODAL, resizable = false)
                             }
                         }
                     }
@@ -215,7 +214,6 @@ class NoteEditView(noteInfo: Note?) : View() {
                             }
 
                             EventBus.getDefault().post(LoadNotesEvent())
-                            tornadofx.find<MainView>().root.center = tornadofx.find<NoteListView>().root
 
                         }
 
@@ -236,7 +234,6 @@ class NoteEditView(noteInfo: Note?) : View() {
                         }
                         action {
                             EventBus.getDefault().post(LoadNotesEvent())
-                            tornadofx.find<MainView>().root.center = tornadofx.find<NoteListView>().root
                         }
                     }
                 }

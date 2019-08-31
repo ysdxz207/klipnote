@@ -21,6 +21,7 @@ class NoteListView : View() {
 
             currentPageIndex = 0
 
+
         }
 
 
