@@ -44,26 +44,26 @@ class CategoryListCell<T> : ListCell<T>() {
             val category = t as Category
             graphic = borderpane {
 
+                //右键菜单
+                contextmenu {
+                    item("添加笔记") {
+                        action {
+                            val noteEditView =
+                                    NoteEditView(null)
+                            find<MainView>().root.center = noteEditView.root
+                        }
+                    }
+                }
+
                 onMouseClicked = EventHandler {
                     if (it.clickCount == 1)
 
                     // 选择当前分类
                     find<CategoryMenu>().selectedCategory = category
                     EventBus.getDefault().post(LoadNotesEvent())
-                    if (it.button == MouseButton.SECONDARY) {
-
-                        //弹出右键菜单
-                        contextmenu {
-                            item("添加笔记") {
-                                action {
-                                    val noteEditView =
-                                            NoteEditView(null)
-                                    find<MainView>().root.center = noteEditView.root
-                                }
-                            }
-                        }
-                    }
                 }
+
+
 
                 left = hbox {
                     alignment = Pos.CENTER

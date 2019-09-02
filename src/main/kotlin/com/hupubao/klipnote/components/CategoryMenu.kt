@@ -10,19 +10,25 @@ import com.hupubao.klipnote.factory.CategoryListCell
 import com.hupubao.klipnote.listener.ClipboardChangedListener
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Configs
+import com.hupubao.klipnote.sql.Notes
 import com.hupubao.klipnote.utils.AppUtils
+import com.hupubao.klipnote.views.MainView
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.control.Button
+import javafx.scene.control.ContextMenu
 import javafx.scene.control.ListView
 import javafx.scene.image.Image
+import javafx.scene.input.MouseButton
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
+import me.liuwj.ktorm.dsl.delete
+import me.liuwj.ktorm.dsl.eq
 import me.liuwj.ktorm.entity.findAll
 import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
@@ -36,7 +42,10 @@ class CategoryMenu : View() {
     lateinit var buttonCategoryStar: Button
     lateinit var buttonCategoryRecycle: Button
     lateinit var buttonCategoryClipboard: BorderPane
+
+
     var selectedCategory: Category? = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
+
 
     override val root = vbox {
         maxWidth = windowSize.Lwidth
@@ -67,8 +76,24 @@ class CategoryMenu : View() {
                     selectedCategory = AppUtils.categoryRecycle
                     EventBus.getDefault().post(LoadNotesEvent())
                 }
+
+
+                //右键菜单
+                contextmenu {
+                    item("清空回收站") {
+                        action {
+                            confirm(header = "", content = "清空回收站后将不能恢复，确认清空回收站？", owner = FX.primaryStage, actionFn = {
+                                Notes.delete { Notes.category eq Constants.RECYCLE_CATEGORY_ID }
+                                // 重新加载笔记列表
+                                EventBus.getDefault().post(LoadNotesEvent())
+                            })
+                        }
+                    }
+                }
+
             }
         }
+
 
         separator {
 
@@ -186,13 +211,17 @@ class CategoryMenu : View() {
                 right = hbox {
                     alignment = Pos.CENTER
                     imageview {
+                        // 关闭穿透，防止添加分类按钮点击不到
+                        isPickOnBounds = true
                         image = Image("icon/menu/add_category.png")
                         style {
                             cursor = Cursor.HAND
                         }
 
-                        onLeftClick {
-                            EventBus.getDefault().post(ShowEditCategoryEvent(null))
+                        onMouseClicked = EventHandler {
+                            if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
+                                EventBus.getDefault().post(ShowEditCategoryEvent(null))
+                            }
                         }
                     }
                     region {

@@ -11,10 +11,7 @@ import com.hupubao.klipnote.events.LoadNotesEvent
 import com.hupubao.klipnote.listener.ClipboardChangedListener
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Notes
-import com.hupubao.klipnote.utils.AppUtils
-import com.hupubao.klipnote.utils.ClipboardHelper
-import com.hupubao.klipnote.utils.DataUtils
-import com.hupubao.klipnote.utils.ImageUtils
+import com.hupubao.klipnote.utils.*
 import javafx.stage.StageStyle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -87,9 +84,10 @@ class MainView : View("Klipnote") {
                         when {
                             it.isDataFlavorSupported(DataFlavor.stringFlavor) -> {
                                 val strVal = it.getTransferData(DataFlavor.stringFlavor).toString()
+                                val strValTitle = StringUtils.replaceBlank(strVal)
                                 Notes.insert {
-                                    it.title to if (strVal.length > 20) {
-                                        strVal.replace("\n", "").substring(0, 20)
+                                    it.title to if (strValTitle.length > 20) {
+                                        strVal.substring(0, 20)
                                     } else {
                                         strVal
                                     }

@@ -123,39 +123,69 @@ class NoteListCell<T> : ListCell<T>() {
                         prefWidth = 16.0
                     }
 
-                    imageview {
-                        alignment = Pos.CENTER_RIGHT
-                        if (note.category == Constants.STAR_CATEGORY_ID) {
-                            image = Image("icon/note/note_star.png")
-                            tooltip {
-                                text = "取消收藏"
+                    if (note.category == Constants.RECYCLE_CATEGORY_ID) {
+                        imageview {
+                            alignment = Pos.CENTER_RIGHT
+                            image = Image("icon/note/note_revert.png")
+                            style {
+                                cursor = Cursor.HAND
                             }
-                        } else {
-                            image = Image("icon/note/note_unstar.png")
                             tooltip {
-                                text = "收藏"
+                                text = "恢复"
                             }
-                        }
-                        style {
-                            cursor = Cursor.HAND
-                        }
 
-                        onMouseClicked = EventHandler {
-                            if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
+                            onMouseClicked = EventHandler {
+                                if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
+                                    val originCategory = Categories.findById(note.originCategory)
 
-                                val starCategory = Categories.findById(Constants.STAR_CATEGORY_ID)!!
-                                if (note.category == Constants.STAR_CATEGORY_ID) {
-                                    // 取消收藏
-                                    confirm(header = "", content = "确定取消收藏吗？", owner = FX.primaryStage, actionFn = {
-                                        note.category = note.originCategory
+                                    confirm(header = "", content = "笔记将被恢复到分类【${originCategory?.name}】下\n确定恢复笔记吗？", owner = FX.primaryStage, actionFn = {
+                                        note.category = originCategory!!.id
                                         note.flushChanges()
                                     })
-                                } else {
-                                    //收藏
-                                    note.category = starCategory.id
-                                    note.flushChanges()
+
+                                    // 重新加载列表
+                                    EventBus.getDefault().post(LoadNotesEvent())
+
                                 }
-                                EventBus.getDefault().post(LoadNotesEvent())
+                            }
+                        }
+                    }
+
+                    if (note.category != Constants.RECYCLE_CATEGORY_ID) {
+                        imageview {
+                            alignment = Pos.CENTER_RIGHT
+                            if (note.category == Constants.STAR_CATEGORY_ID) {
+                                image = Image("icon/note/note_star.png")
+                                tooltip {
+                                    text = "取消收藏"
+                                }
+                            } else {
+                                image = Image("icon/note/note_unstar.png")
+                                tooltip {
+                                    text = "收藏"
+                                }
+                            }
+                            style {
+                                cursor = Cursor.HAND
+                            }
+
+                            onMouseClicked = EventHandler {
+                                if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
+
+                                    val starCategory = Categories.findById(Constants.STAR_CATEGORY_ID)!!
+                                    if (note.category == Constants.STAR_CATEGORY_ID) {
+                                        // 取消收藏
+                                        confirm(header = "", content = "确定取消收藏吗？", owner = FX.primaryStage, actionFn = {
+                                            note.category = note.originCategory
+                                            note.flushChanges()
+                                        })
+                                    } else {
+                                        //收藏
+                                        note.category = starCategory.id
+                                        note.flushChanges()
+                                    }
+                                    EventBus.getDefault().post(LoadNotesEvent())
+                                }
                             }
                         }
                     }
@@ -200,6 +230,8 @@ class NoteListCell<T> : ListCell<T>() {
                     region {
                         prefWidth = 10.0
                     }
+
+
                 }
             }
         }

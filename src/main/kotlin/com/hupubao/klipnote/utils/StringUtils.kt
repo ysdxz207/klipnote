@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.alibaba.fastjson.serializer.SerializerFeature
 import com.hupubao.klipnote.enums.FormatType
+import java.util.regex.Pattern
 
 object StringUtils {
     fun isNumeric(input: String): Boolean =
@@ -82,4 +83,19 @@ object StringUtils {
         }
     }
 
+    /**
+     * <h1>删除空格，换行符，制表符</h1>
+     *
+     * @param str
+     * @return
+     */
+    fun replaceBlank(str: String?): String {
+        var dest = ""
+        if (str != null) {
+            val p = Pattern.compile("\\s*|\t|\r|\n")
+            val m = p.matcher(str)
+            dest = m.replaceAll("")
+        }
+        return dest
+    }
 }
