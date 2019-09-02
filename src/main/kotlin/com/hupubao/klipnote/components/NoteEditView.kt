@@ -28,15 +28,20 @@ import me.liuwj.ktorm.entity.findById
 import me.liuwj.ktorm.entity.findList
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 class NoteEditView(noteInfo: Note?) : View() {
 
-    lateinit var textFieldTitle: TextField
-    lateinit var textAreaContent: TextArea
-    lateinit var labelTime: Label
-    lateinit var comboBoxCategory: ComboBox<ComboBoxCategory>
-    lateinit var buttonSave: Button
+    private val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    private lateinit var textFieldTitle: TextField
+    private lateinit var textAreaContent: TextArea
+    private lateinit var labelTime: Label
+    private lateinit var comboBoxCategory: ComboBox<ComboBoxCategory>
+    private lateinit var buttonSave: Button
 
     override val root = scrollpane {
         region {
@@ -45,10 +50,7 @@ class NoteEditView(noteInfo: Note?) : View() {
 
 
         form {
-            fieldset {
-                labelTime = label {
-                }
-            }
+
             fieldset {
                 textFieldTitle = textfield {
                     hgrow = Priority.ALWAYS
@@ -59,6 +61,14 @@ class NoteEditView(noteInfo: Note?) : View() {
                     font = Font.font(18.0)
 
                     text = noteInfo?.title
+                }
+            }
+
+            fieldset {
+                labelTime = label {
+                    if (noteInfo != null) {
+                        text = dateTimeFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(noteInfo.createTime), ZoneId.systemDefault()))
+                    }
                 }
             }
 
