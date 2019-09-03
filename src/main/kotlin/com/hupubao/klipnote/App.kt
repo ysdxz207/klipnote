@@ -12,9 +12,15 @@ import com.hupubao.klipnote.utils.AppUtils
 import com.hupubao.klipnote.views.ConfigFragment
 import com.hupubao.klipnote.views.MainView
 import java.awt.GraphicsEnvironment
+import java.io.IOException
+import java.net.BindException
+import java.net.InetAddress
+import java.net.ServerSocket
 
 class App : App() {
     private val iconPath = "/icon/icon.png"
+    private val port = 23333
+    private var socket: ServerSocket? = null
 
     override val primaryView = MainView::class
 
@@ -46,6 +52,8 @@ class App : App() {
 
 
     override fun start(stage: Stage) {
+
+        checkIfRunning()
         if (parameters.named["devmode"] == "true") {
             reloadStylesheetsOnFocus()
             reloadViewsOnFocus()
@@ -81,5 +89,20 @@ class App : App() {
                 }
             }
         }
+    }
+
+    fun checkIfRunning() {
+        try {
+            //Bind to localhost adapter with a zero connection queue
+            socket = ServerSocket(port, 0, InetAddress.getByAddress(byteArrayOf(127, 0, 0, 1)))
+        } catch (e: BindException) {
+            System.err.println("Already running.")
+            System.exit(1)
+        } catch (e: IOException) {
+            System.err.println("Unexpected error.")
+            e.printStackTrace()
+            System.exit(2)
+        }
+
     }
 }

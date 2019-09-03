@@ -13,12 +13,18 @@ import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Configs
 import java.io.File
 import java.util.concurrent.TimeUnit
+import java.io.IOException
+import java.net.BindException
+import java.net.InetAddress
+import java.net.ServerSocket
+
+
 
 object AppUtils {
-    val REG_STARTUP_KEY = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
-    val APP_NAME = "klipnote"
-    val APP_FULL_PATH = File(javaClass.protectionDomain.codeSource.location.toURI()).path
-    private val SHOW_KEY_MARK = 1
+    private const val REG_STARTUP_KEY = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+    private const val APP_NAME = "klipnote"
+    private val APP_FULL_PATH = File(javaClass.protectionDomain.codeSource.location.toURI()).path
+    private const val SHOW_KEY_MARK = 1
 
     var config: Config = Configs.select().limit(0, 1).map { Configs.createEntity(it) }[0]
     val categoryRecycle = Categories.findById(Constants.RECYCLE_CATEGORY_ID)
@@ -26,7 +32,6 @@ object AppUtils {
     val categoryClipboard = Categories.findById(Constants.CLIPBOARD_CATEGORY_ID)
     val categoryDefault = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
     private var firstHotKeyRegister = false
-
     /**
      * 显示或隐藏主窗口
      */
@@ -123,4 +128,6 @@ object AppUtils {
             }
         }
     }
+
+
 }
