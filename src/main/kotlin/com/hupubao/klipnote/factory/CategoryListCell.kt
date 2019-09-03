@@ -55,7 +55,7 @@ class CategoryListCell<T> : ListCell<T>() {
 
                     if (category.id != Constants.DEFAULT_CATEGORY_ID) {
 
-                        item("上移动") {
+                        item("上移") {
                             action {
                                 // 查询上一个分类
                                 val categoryList = Categories.select().where { Categories.id greater Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
