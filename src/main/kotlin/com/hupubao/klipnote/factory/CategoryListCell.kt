@@ -53,6 +53,24 @@ class CategoryListCell<T> : ListCell<T>() {
                             find<MainView>().root.center = noteEditView.root
                         }
                     }
+
+                    item("上移动") {
+                        action {
+
+                        }
+                    }
+
+                    item("下移") {
+                        action {
+
+                        }
+                    }
+
+                    item("置顶") {
+                        action {
+
+                        }
+                    }
                 }
 
                 onMouseClicked = EventHandler {

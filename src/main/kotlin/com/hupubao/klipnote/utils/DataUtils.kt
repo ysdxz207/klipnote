@@ -12,8 +12,6 @@ import me.liuwj.ktorm.entity.aggregateColumns
 import me.liuwj.ktorm.entity.asSequenceWithoutReferences
 import me.liuwj.ktorm.entity.filter
 import me.liuwj.ktorm.entity.findById
-import me.liuwj.ktorm.logging.ConsoleLogger
-import me.liuwj.ktorm.logging.LogLevel
 import java.sql.Connection
 import java.sql.DriverManager
 import kotlin.concurrent.thread
@@ -21,20 +19,20 @@ import kotlin.concurrent.thread
 
 object DataUtils {
 
-    private val databaseDir = "${System.getProperty("user.home")}/klipnote/klipnote.db"
+    private val databaseDir = "${System.getProperty("user.home")}/klipnote/klipnote_test.db"
     private val username = "root"
     private val password = "*DFj8/!127i"
 
     fun initData() {
 
 
-        val database = Database.connect(url = "jdbc:sqlite:$databaseDir",
+        /*val database = Database.connect(url = "jdbc:sqlite:$databaseDir",
                 driver = "org.sqlite.JDBC",
                 user = username,
                 password = password,
-                logger = ConsoleLogger(threshold = LogLevel.DEBUG))
+                logger = ConsoleLogger(threshold = LogLevel.DEBUG))*/
 
-        /*val conn = DriverManager.getConnection("jdbc:sqlite:$databaseDir", username, password)
+        val conn = DriverManager.getConnection("jdbc:sqlite:$databaseDir", username, password)
 
         Runtime.getRuntime().addShutdownHook(
                 thread(start = false) {
@@ -43,7 +41,7 @@ object DataUtils {
                 }
         )
 
-        val database = Database.connect {
+        Database.connect {
             object : Connection by conn {
                 override fun close() {
                     // 重写 close 方法，保持连接不关闭
@@ -55,10 +53,74 @@ object DataUtils {
         }
 
 
-        // 判断表是否存在
-        database.invoke {
+        // 生成表
+        Database.global.useConnection { conn ->
+            var statement = conn.prepareStatement("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'Categories'")
+            var resultSet = statement.executeQuery()
+            if (resultSet.getInt(1) == 0) {
+                // 生成表
+                statement = conn.prepareStatement("create table Categories\n" +
+                        "(\n" +
+                        "    id   INTEGER\n" +
+                        "        primary key,\n" +
+                        "    name VARCHAR(256) not null,\n" +
+                        "    sort INT          not null\n" +
+                        ");\n")
+                statement.execute()
+                statement.close()
+                resultSet.close()
+            }
 
-        }*/
+            statement = conn.prepareStatement("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'Notes'")
+            resultSet = statement.executeQuery()
+            if (resultSet.getInt(1) == 0) {
+                // 生成表
+                statement = conn.prepareStatement("create table Notes\n" +
+                        "(\n" +
+                        "    id              INTEGER\n" +
+                        "        primary key,\n" +
+                        "    title           VARCHAR(256),\n" +
+                        "    content         TEXT,\n" +
+                        "    create_time     NUMERIC     not null,\n" +
+                        "    category        INT         not null,\n" +
+                        "    origin_category INT         not null,\n" +
+                        "    type            VARCHAR(32) not null,\n" +
+                        "    description     text default '' not null\n" +
+                        ");\n")
+                statement.execute()
+
+                statement = conn.prepareStatement("create index Notes_category_index\n" +
+                        "    on Notes (category);")
+                statement.execute()
+
+                statement = conn.prepareStatement("create index Notes_title_index\n" +
+                        "    on Notes (title);")
+                statement.execute()
+
+
+                statement.close()
+                resultSet.close()
+            }
+
+            statement = conn.prepareStatement("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'Configs'")
+            resultSet = statement.executeQuery()
+            if (resultSet.getInt(1) == 0) {
+                // 生成表
+                statement = conn.prepareStatement("create table Configs\n" +
+                        "(\n" +
+                        "    id                       INTEGER\n" +
+                        "        primary key,\n" +
+                        "    startup                  BOOLEAN     not null,\n" +
+                        "    keep_top                 BOOLEAN     not null,\n" +
+                        "    watching_clipboard       BOOLEAN     not null,\n" +
+                        "    main_win_hotkey_modifier VARCHAR(32) not null,\n" +
+                        "    main_win_hotkey          VARCHAR(32) not null\n" +
+                        ");\n")
+                statement.execute()
+                statement.close()
+                resultSet.close()
+            }
+        }
 
 
         if (Categories.findById(Constants.DEFAULT_CATEGORY_ID) == null) {
