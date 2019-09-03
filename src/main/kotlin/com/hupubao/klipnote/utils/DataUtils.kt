@@ -168,7 +168,7 @@ object DataUtils {
 
 
     fun getCategorySortNum(): Int {
-        var sortNum = 0
+        val sortNum: Int
         val n = Categories.asSequenceWithoutReferences()
                 .aggregateColumns { max(it.sort) }
 
