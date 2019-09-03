@@ -17,9 +17,8 @@ import javafx.scene.Cursor
 import javafx.scene.control.ContentDisplay
 import javafx.scene.control.ListCell
 import javafx.scene.image.Image
-import javafx.scene.input.MouseButton
-import me.liuwj.ktorm.dsl.eq
-import me.liuwj.ktorm.dsl.update
+import me.liuwj.ktorm.dsl.*
+import me.liuwj.ktorm.entity.createEntity
 import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
@@ -54,21 +53,68 @@ class CategoryListCell<T> : ListCell<T>() {
                         }
                     }
 
-                    item("上移动") {
-                        action {
+                    if (category.id != Constants.DEFAULT_CATEGORY_ID) {
 
+                        item("上移动") {
+                            action {
+                                // 查询上一个分类
+                                val categoryList = Categories.select().where { Categories.id greater Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
+                                val currentCategory = categoryList.find { it.id == category.id }
+                                val index = categoryList.indexOf(currentCategory)
+                                if (index > 0) {
+
+                                    val categoryLastOne = categoryList[index - 1]
+                                    if (categoryLastOne.id == Constants.DEFAULT_CATEGORY_ID) {
+                                        return@action
+                                    }
+                                    categoryLastOne.sort = categoryLastOne.sort xor category.sort
+                                    category.sort = categoryLastOne.sort xor category.sort
+                                    categoryLastOne.sort = categoryLastOne.sort xor category.sort
+
+                                    categoryLastOne.flushChanges()
+                                    category.flushChanges()
+                                    EventBus.getDefault().post(LoadCategoriesEvent(category.id))
+                                }
+                            }
                         }
-                    }
 
-                    item("下移") {
-                        action {
+                        item("下移") {
+                            action {
+                                // 查询下一个分类
+                                val categoryList = Categories.select().where { Categories.id greater Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
+                                val currentCategory = categoryList.find { it.id == category.id }
+                                val index = categoryList.indexOf(currentCategory)
+                                if (index < categoryList.size) {
 
+                                    val categoryNextOne = categoryList[index + 1]
+                                    if (categoryNextOne.id == Constants.DEFAULT_CATEGORY_ID) {
+                                        return@action
+                                    }
+                                    categoryNextOne.sort = categoryNextOne.sort xor category.sort
+                                    category.sort = categoryNextOne.sort xor category.sort
+                                    categoryNextOne.sort = categoryNextOne.sort xor category.sort
+
+                                    categoryNextOne.flushChanges()
+                                    category.flushChanges()
+                                    EventBus.getDefault().post(LoadCategoriesEvent(category.id))
+                                }
+                            }
                         }
-                    }
 
-                    item("置顶") {
-                        action {
+                        item("置顶") {
+                            action {
+                                val categoryList = Categories.select().where { Categories.id greater Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
 
+                                // 查询第一个分类
+                                val categoryFirst = categoryList[0]
+                                categoryFirst.sort = categoryFirst.sort xor category.sort
+                                category.sort = categoryFirst.sort xor category.sort
+                                categoryFirst.sort = categoryFirst.sort xor category.sort
+
+                                categoryFirst.flushChanges()
+                                category.flushChanges()
+                                EventBus.getDefault().post(LoadCategoriesEvent(category.id))
+                            }
                         }
                     }
                 }
@@ -77,7 +123,7 @@ class CategoryListCell<T> : ListCell<T>() {
                     if (it.clickCount == 1)
 
                     // 选择当前分类
-                    find<CategoryMenu>().selectedCategory = category
+                        find<CategoryMenu>().selectedCategory = category
                     EventBus.getDefault().post(LoadNotesEvent())
                 }
 
