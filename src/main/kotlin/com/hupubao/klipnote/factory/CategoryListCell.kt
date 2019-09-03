@@ -45,6 +45,7 @@ class CategoryListCell<T> : ListCell<T>() {
 
                 //右键菜单
                 contextmenu {
+                    val categoryList = Categories.select().where { Categories.id greater Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
                     item("添加笔记") {
                         action {
                             val noteEditView =
@@ -55,65 +56,67 @@ class CategoryListCell<T> : ListCell<T>() {
 
                     if (category.id != Constants.DEFAULT_CATEGORY_ID) {
 
-                        item("上移") {
-                            action {
-                                // 查询上一个分类
-                                val categoryList = Categories.select().where { Categories.id greater Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
-                                val currentCategory = categoryList.find { it.id == category.id }
-                                val index = categoryList.indexOf(currentCategory)
-                                if (index > 0) {
+                        if(category.id != categoryList[0].id) {
+                            item("上移") {
+                                action {
+                                    // 查询上一个分类
+                                    val currentCategory = categoryList.find { it.id == category.id }
+                                    val index = categoryList.indexOf(currentCategory)
+                                    if (index > 0) {
 
-                                    val categoryLastOne = categoryList[index - 1]
-                                    if (categoryLastOne.id == Constants.DEFAULT_CATEGORY_ID) {
-                                        return@action
+                                        val categoryLastOne = categoryList[index - 1]
+                                        if (categoryLastOne.id == Constants.DEFAULT_CATEGORY_ID) {
+                                            return@action
+                                        }
+                                        categoryLastOne.sort = categoryLastOne.sort xor category.sort
+                                        category.sort = categoryLastOne.sort xor category.sort
+                                        categoryLastOne.sort = categoryLastOne.sort xor category.sort
+
+                                        categoryLastOne.flushChanges()
+                                        category.flushChanges()
+                                        EventBus.getDefault().post(LoadCategoriesEvent(category.id))
                                     }
-                                    categoryLastOne.sort = categoryLastOne.sort xor category.sort
-                                    category.sort = categoryLastOne.sort xor category.sort
-                                    categoryLastOne.sort = categoryLastOne.sort xor category.sort
-
-                                    categoryLastOne.flushChanges()
-                                    category.flushChanges()
-                                    EventBus.getDefault().post(LoadCategoriesEvent(category.id))
                                 }
                             }
                         }
 
-                        item("下移") {
-                            action {
-                                // 查询下一个分类
-                                val categoryList = Categories.select().where { Categories.id greater Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
-                                val currentCategory = categoryList.find { it.id == category.id }
-                                val index = categoryList.indexOf(currentCategory)
-                                if (index < categoryList.size) {
+                        if (category.id != categoryList[categoryList.size - 1].id) {
+                            item("下移") {
+                                action {
+                                    // 查询下一个分类
+                                    val currentCategory = categoryList.find { it.id == category.id }
+                                    val index = categoryList.indexOf(currentCategory)
+                                    if (index < categoryList.size) {
 
-                                    val categoryNextOne = categoryList[index + 1]
-                                    if (categoryNextOne.id == Constants.DEFAULT_CATEGORY_ID) {
-                                        return@action
+                                        val categoryNextOne = categoryList[index + 1]
+                                        if (categoryNextOne.id == Constants.DEFAULT_CATEGORY_ID) {
+                                            return@action
+                                        }
+                                        categoryNextOne.sort = categoryNextOne.sort xor category.sort
+                                        category.sort = categoryNextOne.sort xor category.sort
+                                        categoryNextOne.sort = categoryNextOne.sort xor category.sort
+
+                                        categoryNextOne.flushChanges()
+                                        category.flushChanges()
+                                        EventBus.getDefault().post(LoadCategoriesEvent(category.id))
                                     }
-                                    categoryNextOne.sort = categoryNextOne.sort xor category.sort
-                                    category.sort = categoryNextOne.sort xor category.sort
-                                    categoryNextOne.sort = categoryNextOne.sort xor category.sort
-
-                                    categoryNextOne.flushChanges()
-                                    category.flushChanges()
-                                    EventBus.getDefault().post(LoadCategoriesEvent(category.id))
                                 }
                             }
                         }
+                        if (category.id != categoryList[0].id) {
+                            item("置顶") {
+                                action {
 
-                        item("置顶") {
-                            action {
-                                val categoryList = Categories.select().where { Categories.id greater Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
+                                    // 查询第一个分类
+                                    val categoryFirst = categoryList[0]
+                                    categoryFirst.sort = categoryFirst.sort xor category.sort
+                                    category.sort = categoryFirst.sort xor category.sort
+                                    categoryFirst.sort = categoryFirst.sort xor category.sort
 
-                                // 查询第一个分类
-                                val categoryFirst = categoryList[0]
-                                categoryFirst.sort = categoryFirst.sort xor category.sort
-                                category.sort = categoryFirst.sort xor category.sort
-                                categoryFirst.sort = categoryFirst.sort xor category.sort
-
-                                categoryFirst.flushChanges()
-                                category.flushChanges()
-                                EventBus.getDefault().post(LoadCategoriesEvent(category.id))
+                                    categoryFirst.flushChanges()
+                                    category.flushChanges()
+                                    EventBus.getDefault().post(LoadCategoriesEvent(category.id))
+                                }
                             }
                         }
                     }

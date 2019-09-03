@@ -7,10 +7,8 @@ import me.liuwj.ktorm.database.Database
 import me.liuwj.ktorm.dsl.count
 import me.liuwj.ktorm.dsl.insert
 import me.liuwj.ktorm.dsl.max
-import me.liuwj.ktorm.dsl.notEq
 import me.liuwj.ktorm.entity.aggregateColumns
 import me.liuwj.ktorm.entity.asSequenceWithoutReferences
-import me.liuwj.ktorm.entity.filter
 import me.liuwj.ktorm.entity.findById
 import java.sql.Connection
 import java.sql.DriverManager
@@ -172,7 +170,6 @@ object DataUtils {
     fun getCategorySortNum(): Int {
         var sortNum = 0
         val n = Categories.asSequenceWithoutReferences()
-                .filter { it.sort notEq Constants.DEFAULT_CATEGORY_SORT }
                 .aggregateColumns { max(it.sort) }
 
         sortNum = if (n == null) {
