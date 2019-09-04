@@ -225,7 +225,10 @@ class EventListeners {
         } else {
             StringSelection(event.note.content)
         }
+
+
         Toolkit.getDefaultToolkit().systemClipboard.setContents(content, null)
         Alert.show("复制成功", 600L)
     }
 }
+

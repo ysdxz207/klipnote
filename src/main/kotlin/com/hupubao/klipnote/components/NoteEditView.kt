@@ -112,6 +112,7 @@ class NoteEditView(noteInfo: Note?) : View() {
             if (noteInfo != null && NoteType.IMAGE.name == noteInfo.type) {
                 fieldset {
                     imageview {
+                        tooltip("点击查看原图")
                         val img = ImageUtils.getImageFromBase64(noteInfo.description)
                         image = img
                         onMouseClicked = EventHandler {

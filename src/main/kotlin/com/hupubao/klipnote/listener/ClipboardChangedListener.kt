@@ -7,8 +7,8 @@ import java.awt.datatransfer.ClipboardOwner
 import java.awt.datatransfer.Transferable
 
 object ClipboardChangedListener : ClipboardOwner {
-    val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-    var watching = true
+    private val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+    private var watching = true
     var onChanged = fun (_: Transferable) {
 
     }

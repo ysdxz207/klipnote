@@ -9,7 +9,7 @@ import com.hupubao.klipnote.utils.ImageUtils
 class ImageViewFragment : Fragment() {
 
     override val root = borderpane {
-        // 背景透明
+        // 背景色
         style {
             backgroundColor += Color.LIGHTGREY
         }
@@ -18,7 +18,6 @@ class ImageViewFragment : Fragment() {
         if (params.isNotEmpty() && note is Note) {
             center = imageview {
                 image = ImageUtils.getImageFromBase64(note.content)
-                tooltip("点击查看")
             }
         }
     }
