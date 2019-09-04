@@ -95,7 +95,7 @@ class Header : View("header") {
                         promptTextFill = Color.valueOf("#D9D9D9")
                     }
 
-                    textProperty().addListener(ChangeListener { _, _, newValue ->
+                    textProperty().addListener(ChangeListener { _, _, _ ->
                         EventBus.getDefault().post(LoadNotesEvent())
                     })
                 }
