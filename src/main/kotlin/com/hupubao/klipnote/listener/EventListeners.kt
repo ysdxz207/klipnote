@@ -216,7 +216,7 @@ class EventListeners {
     /**
      * 添加到剪贴板
      */
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.ASYNC)
     fun onAddToClipboardEvent(event: AddToClipboardEvent) {
         ClipboardHelper.isBySet = true
 
