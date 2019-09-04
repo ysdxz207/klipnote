@@ -207,13 +207,14 @@
                                 <fileVersion>1.0.0.0</fileVersion>
                                 <txtFileVersion>${project.version}</txtFileVersion>
                                 <fileDescription>${project.description}</fileDescription>
-                                <copyright>(c) ${project.inceptionYear} MyCompany</copyright>
+                                <copyright>(c) ysdxz207</copyright>
                                 <productVersion>1.0.0.0</productVersion>
                                 <txtProductVersion>${project.version}</txtProductVersion>
                                 <productName>${project.name}</productName>
                                 <companyName>${project.organization.name}</companyName>
                                 <internalName>${project.name}</internalName>
                                 <originalFilename>${project.build.finalName}.exe</originalFilename>
+                                <language>SIMPLIFIED_CHINESE</language>
                             </versionInfo>
                         </configuration>
                     </execution>
