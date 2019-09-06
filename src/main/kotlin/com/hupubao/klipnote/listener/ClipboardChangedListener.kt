@@ -6,10 +6,15 @@ import java.awt.datatransfer.Clipboard
 import java.awt.datatransfer.ClipboardOwner
 import java.awt.datatransfer.Transferable
 
+/**
+ * <h1>剪贴板监听器</h1>
+ * @author ysdxz207
+ * @date 2019-09-06
+ */
 object ClipboardChangedListener : ClipboardOwner {
     private val clipboard = Toolkit.getDefaultToolkit().systemClipboard
     var watching = true
-    var onChanged = fun (_: Transferable) {
+    var onChanged = fun(_: Transferable) {
 
     }
 
@@ -19,11 +24,17 @@ object ClipboardChangedListener : ClipboardOwner {
 
     override fun lostOwnership(c: Clipboard, t: Transferable) {
 
-        try {
-            Thread.sleep(1000)
-            regainOwnership(c.getContents(this))
-        } catch (e: Exception) {
-            e.printStackTrace()
+        var notReady = true
+        while (notReady) {
+            try {
+                regainOwnership(c.getContents(this))
+            } catch (e: IllegalStateException) {
+                // 剪贴板正在被系统使用时无法获取剪贴板内容，重试就好了
+                continue
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            notReady = false
         }
 
     }

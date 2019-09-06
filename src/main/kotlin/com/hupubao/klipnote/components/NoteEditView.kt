@@ -44,6 +44,10 @@ class NoteEditView(noteInfo: Note?) : View() {
     private lateinit var buttonSave: Button
 
     override val root = scrollpane {
+
+
+        addClass("note-edit-scroll-pane")
+
         region {
             prefWidth = 8.0
         }
@@ -128,7 +132,11 @@ class NoteEditView(noteInfo: Note?) : View() {
                 textAreaContent = textarea {
                     hgrow = Priority.ALWAYS
                     maxWidth = Double.POSITIVE_INFINITY
-                    prefHeight = 420.0
+                    prefHeight = if (noteInfo != null && NoteType.IMAGE.name == noteInfo.type) {
+                        140.0
+                    } else {
+                        420.0
+                    }
                     font = Font.font(16.0)
 
                     Platform.runLater {

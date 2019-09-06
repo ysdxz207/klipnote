@@ -8,7 +8,6 @@
 
 .list-cell-category:filled:selected:focused {
     -fx-background-color: #fbaee0;
-    -fx-text-fill: white;
 }
 
 
@@ -96,4 +95,10 @@
     -fx-background-color :derive(#4D4C4F,10.0%);
     -fx-background-insets : 0.0, 0.0, 0.0;
     -fx-background-radius : 4px;
+}
+
+
+/*移除编辑笔记页面scroll-pane的边框和焦点边框*/
+.note-edit-scroll-pane,.note-edit-scroll-pane:focused {
+    -fx-background-insets: 0, 0;
 }

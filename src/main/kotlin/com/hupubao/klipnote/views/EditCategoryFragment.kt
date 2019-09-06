@@ -10,6 +10,10 @@ import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.TextField
+import javafx.scene.layout.Border
+import javafx.scene.layout.BorderStroke
+import javafx.scene.layout.BorderStrokeStyle
+import javafx.scene.paint.Paint
 import me.liuwj.ktorm.dsl.insertAndGenerateKey
 import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
@@ -23,6 +27,11 @@ class EditCategoryFragment : Fragment("编辑分类") {
     private lateinit var btnSave: Button
 
     override val root = borderpane {
+
+        style {
+            backgroundColor += Paint.valueOf("#DDDDDD")
+        }
+
 
         prefHeight = 180.0
         prefWidth = 400.0

@@ -17,6 +17,7 @@ import javafx.scene.Cursor
 import javafx.scene.control.ContentDisplay
 import javafx.scene.control.ListCell
 import javafx.scene.image.Image
+import javafx.scene.paint.Paint
 import me.liuwj.ktorm.dsl.*
 import me.liuwj.ktorm.entity.createEntity
 import me.liuwj.ktorm.entity.findById
@@ -40,8 +41,10 @@ class CategoryListCell<T> : ListCell<T>() {
             graphic = null
         } else {
 
+
             val category = t as Category
             graphic = borderpane {
+
 
                 //右键菜单
                 contextmenu {
@@ -56,7 +59,7 @@ class CategoryListCell<T> : ListCell<T>() {
 
                     if (category.id != Constants.DEFAULT_CATEGORY_ID) {
 
-                        if(category.id != categoryList[0].id) {
+                        if (category.id != categoryList[0].id) {
                             item("上移") {
                                 action {
                                     // 查询上一个分类
@@ -126,7 +129,7 @@ class CategoryListCell<T> : ListCell<T>() {
                     if (it.clickCount == 1)
 
                     // 选择当前分类
-                        find<CategoryMenu>().selectedCategory = category
+                    find<CategoryMenu>().selectedCategory = category
                     EventBus.getDefault().post(LoadNotesEvent())
                 }
 
@@ -136,6 +139,7 @@ class CategoryListCell<T> : ListCell<T>() {
                     alignment = Pos.CENTER
                     label {
                         text = category.name
+                        textFill = Paint.valueOf("#444444")
                         prefWidth = windowSize.Lwidth - 110.0
                     }
                 }
