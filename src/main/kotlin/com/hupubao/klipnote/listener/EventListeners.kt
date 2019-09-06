@@ -216,7 +216,7 @@ class EventListeners {
     /**
      * 添加到剪贴板
      */
-    @Subscribe(threadMode = ThreadMode.ASYNC)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAddToClipboardEvent(event: AddToClipboardEvent) {
         ClipboardHelper.isBySet = true
 
@@ -227,7 +227,7 @@ class EventListeners {
         }
 
 
-        Toolkit.getDefaultToolkit().systemClipboard.setContents(content, null)
+        Toolkit.getDefaultToolkit().systemClipboard.setContents(content, ClipboardChangedListener)
         Alert.show("复制成功", 600L)
     }
 }

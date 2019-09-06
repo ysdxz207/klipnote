@@ -36,6 +36,10 @@ class AlertFragment : Fragment() {
         currentStage?.isResizable = false
     }
 
+    override fun onDock() {
+        currentStage?.scene?.fill = null
+    }
+
     fun show(text: String) {
         this.openModal(stageStyle = StageStyle.TRANSPARENT)
 
