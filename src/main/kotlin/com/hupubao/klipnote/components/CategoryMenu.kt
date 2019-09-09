@@ -13,6 +13,7 @@ import com.hupubao.klipnote.sql.Configs
 import com.hupubao.klipnote.sql.Notes
 import com.hupubao.klipnote.utils.AppUtils
 import com.hupubao.klipnote.views.MainView
+import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Cursor
@@ -178,8 +179,27 @@ class CategoryMenu : View() {
                 paddingLeft = 36.0
 
                 onMouseClicked = EventHandler {
-                    selectedCategory = AppUtils.categoryClipboard
-                    EventBus.getDefault().post(LoadNotesEvent())
+                    if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
+                        selectedCategory = AppUtils.categoryClipboard
+                        EventBus.getDefault().post(LoadNotesEvent())
+                    }
+                }
+
+
+
+                //右键菜单
+                contextmenu {
+                    item("清空剪贴板") {
+                        action {
+                            confirm(header = "", content = "清空剪贴板后将不能恢复，确认清空剪贴板？", owner = FX.primaryStage, actionFn = {
+                                Platform.runLater {
+                                    Notes.delete { Notes.category eq Constants.CLIPBOARD_CATEGORY_ID }
+                                    // 重新加载笔记列表
+                                    EventBus.getDefault().post(LoadNotesEvent())
+                                }
+                            })
+                        }
+                    }
                 }
 
 
