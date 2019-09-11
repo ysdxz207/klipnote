@@ -5,7 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
-import com.hupubao.klipnote.views.AlertFragment
+import com.hupubao.klipnote.components.AlertFragment
 
 object Alert {
 

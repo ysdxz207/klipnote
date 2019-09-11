@@ -1,6 +1,7 @@
-package com.hupubao.klipnote.components
+package com.hupubao.klipnote.views
 
 import com.hupubao.klipnote.App.Companion.windowSize
+import com.hupubao.klipnote.components.SwitchButton
 import com.hupubao.klipnote.constants.Constants
 import com.hupubao.klipnote.entity.Category
 import com.hupubao.klipnote.entity.Config
@@ -12,13 +13,11 @@ import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Configs
 import com.hupubao.klipnote.sql.Notes
 import com.hupubao.klipnote.utils.AppUtils
-import com.hupubao.klipnote.views.MainView
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.control.Button
-import javafx.scene.control.ContextMenu
 import javafx.scene.control.ListView
 import javafx.scene.image.Image
 import javafx.scene.input.MouseButton

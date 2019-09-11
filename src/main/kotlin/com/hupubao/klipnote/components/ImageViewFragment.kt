@@ -1,4 +1,4 @@
-package com.hupubao.klipnote.views
+package com.hupubao.klipnote.components
 
 import javafx.scene.paint.Color
 import tornadofx.*

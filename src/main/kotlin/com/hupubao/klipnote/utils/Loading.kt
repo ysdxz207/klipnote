@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
-import com.hupubao.klipnote.views.LoadingFragment
+import com.hupubao.klipnote.components.LoadingFragment
 
 object Loading {
 

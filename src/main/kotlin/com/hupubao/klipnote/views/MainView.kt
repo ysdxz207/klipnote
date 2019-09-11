@@ -1,9 +1,7 @@
 package com.hupubao.klipnote.views
 
 import com.hupubao.klipnote.App
-import com.hupubao.klipnote.components.CategoryMenu
 import com.hupubao.klipnote.components.Header
-import com.hupubao.klipnote.components.NoteListView
 import com.hupubao.klipnote.constants.Constants
 import com.hupubao.klipnote.enums.NoteType
 import com.hupubao.klipnote.events.LoadCategoriesEvent

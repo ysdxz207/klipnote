@@ -1,5 +1,6 @@
-package com.hupubao.klipnote.components
+package com.hupubao.klipnote.views
 
+import com.hupubao.klipnote.components.ImageViewFragment
 import com.hupubao.klipnote.components.bean.ComboBoxCategory
 import com.hupubao.klipnote.constants.Constants
 import com.hupubao.klipnote.entity.Category
@@ -10,7 +11,6 @@ import com.hupubao.klipnote.events.LoadNotesEvent
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Notes
 import com.hupubao.klipnote.utils.ImageUtils
-import com.hupubao.klipnote.views.ImageViewFragment
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.Cursor

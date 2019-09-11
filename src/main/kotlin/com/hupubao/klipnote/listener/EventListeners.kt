@@ -1,8 +1,8 @@
 package com.hupubao.klipnote.listener
 
-import com.hupubao.klipnote.components.CategoryMenu
+import com.hupubao.klipnote.views.CategoryMenu
 import com.hupubao.klipnote.components.Header
-import com.hupubao.klipnote.components.NoteListView
+import com.hupubao.klipnote.views.NoteListView
 import com.hupubao.klipnote.constants.Constants
 import com.hupubao.klipnote.entity.Category
 import com.hupubao.klipnote.entity.Note
@@ -17,7 +17,7 @@ import com.hupubao.klipnote.sql.Notes
 import com.hupubao.klipnote.utils.Alert
 import com.hupubao.klipnote.utils.ClipboardHelper
 import com.hupubao.klipnote.utils.image.TransferableImage
-import com.hupubao.klipnote.views.EditCategoryFragment
+import com.hupubao.klipnote.components.EditCategoryFragment
 import com.hupubao.klipnote.views.MainView
 import javafx.application.Platform
 import javafx.collections.FXCollections

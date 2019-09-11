@@ -1,9 +1,9 @@
-package com.hupubao.klipnote.views
+package com.hupubao.klipnote.components
 
-import com.hupubao.klipnote.components.CategoryMenu
 import com.hupubao.klipnote.events.LoadCategoriesEvent
 import com.hupubao.klipnote.utils.AppUtils
 import com.hupubao.klipnote.utils.KeyCodeUtils
+import com.hupubao.klipnote.views.CategoryMenu
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode

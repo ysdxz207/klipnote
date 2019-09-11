@@ -9,7 +9,7 @@ import tornadofx.App
 import com.hupubao.klipnote.enums.WindowSize
 import com.hupubao.klipnote.listener.EventListeners
 import com.hupubao.klipnote.utils.AppUtils
-import com.hupubao.klipnote.views.ConfigFragment
+import com.hupubao.klipnote.components.ConfigFragment
 import com.hupubao.klipnote.views.MainView
 import java.awt.GraphicsEnvironment
 import java.io.IOException

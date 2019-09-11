@@ -1,7 +1,7 @@
 package com.hupubao.klipnote.factory
 
 import com.hupubao.klipnote.App
-import com.hupubao.klipnote.components.NoteEditView
+import com.hupubao.klipnote.views.NoteEditView
 import com.hupubao.klipnote.constants.Constants
 import com.hupubao.klipnote.entity.Note
 import com.hupubao.klipnote.enums.NoteType

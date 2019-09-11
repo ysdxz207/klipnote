@@ -15,6 +15,7 @@ import tornadofx.*
 import com.hupubao.klipnote.events.LoadNotesEvent
 import com.hupubao.klipnote.listener.MouseDragListener
 import com.hupubao.klipnote.utils.AppUtils
+import com.hupubao.klipnote.views.NoteListView
 
 class Header : View("header") {
 

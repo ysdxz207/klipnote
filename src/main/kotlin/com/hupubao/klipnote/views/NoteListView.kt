@@ -1,4 +1,4 @@
-package com.hupubao.klipnote.components
+package com.hupubao.klipnote.views
 
 import javafx.scene.control.Pagination
 import javafx.scene.layout.Priority

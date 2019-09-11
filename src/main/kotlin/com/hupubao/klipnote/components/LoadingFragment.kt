@@ -1,46 +1,36 @@
-package com.hupubao.klipnote.views
+package com.hupubao.klipnote.components
 
-import javafx.geometry.Pos
-import javafx.scene.control.Label
-import javafx.scene.paint.Paint
-import javafx.scene.text.Font
+import com.hupubao.klipnote.views.MainView
+import javafx.scene.image.Image
+import javafx.scene.paint.Color
 import javafx.stage.StageStyle
 import tornadofx.*
 
 
-class AlertFragment : Fragment() {
+class LoadingFragment : Fragment() {
     private val mainView: MainView by inject()
-    private lateinit var labelContent: Label
 
     override val root = vbox {
+        imageview(image = Image(resources.stream("/image/loading.gif")))
 
-        prefHeight = 54.0
-        prefWidth = 168.0
-
+        // 背景透明
         style {
-            backgroundColor += Paint.valueOf("#5ad7e8")
-            backgroundRadius += box(26.px)
+            backgroundColor += Color.TRANSPARENT
         }
+    }
 
-        vboxConstraints {
-            alignment = Pos.CENTER
-        }
-
-        labelContent = label {
-            textFill = c("#FFFFFF")
-            font = Font(16.0)
-        }
+    /**
+     * 背景透明
+     */
+    override fun onDock() {
+        currentStage?.scene?.fill = null
     }
 
     init {
         currentStage?.isResizable = false
     }
 
-    override fun onDock() {
-        currentStage?.scene?.fill = null
-    }
-
-    fun show(text: String) {
+    fun show() {
         this.openModal(stageStyle = StageStyle.TRANSPARENT)
 
         // 计算位置，使其居中
@@ -56,7 +46,6 @@ class AlertFragment : Fragment() {
 
         this.currentStage?.x = x
         this.currentStage?.y = y
-        this.labelContent.text = text
     }
 
     fun hide() {
