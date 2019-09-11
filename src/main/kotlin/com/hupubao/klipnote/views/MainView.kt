@@ -85,9 +85,9 @@ class MainView : View("Klipnote") {
                                 val strValTitle = StringUtils.replaceBlank(strVal)
                                 Notes.insert {
                                     it.title to if (strValTitle.length > 20) {
-                                        strVal.substring(0, 20)
+                                        strValTitle.substring(0, 20)
                                     } else {
-                                        strVal
+                                        strValTitle
                                     }
                                     it.content to strVal
                                     it.category to categoryClipboard.id

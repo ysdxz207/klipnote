@@ -141,7 +141,8 @@ class EventListeners {
             val conditions = ArrayList<ColumnDeclaring<Boolean>>()
             conditions += Notes.category eq category!!.id
             if (header.textFieldSearch.text.isNotBlank()) {
-                conditions += Notes.title like "%${header.textFieldSearch.text}%"
+                conditions += Notes.type notEq NoteType.IMAGE.name
+                conditions += Notes.title like "%${header.textFieldSearch.text}%" or (Notes.content like "%${header.textFieldSearch.text}%")
             }
 
             Platform.runLater {
