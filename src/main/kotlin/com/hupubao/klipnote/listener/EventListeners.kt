@@ -147,10 +147,10 @@ class EventListeners {
             Platform.runLater {
 
                 // 获取笔记总条数
-                val start = System.currentTimeMillis()
+                var start = System.currentTimeMillis()
 
                 val count = Notes.count { conditions.combineConditions() }
-                val end = System.currentTimeMillis()
+                var end = System.currentTimeMillis()
                 println("count耗时：" + (end - start))
                 pagination.pageCount = when {
                     count == 0 -> 1
@@ -174,7 +174,7 @@ class EventListeners {
 
 
                     listViewNotes.asyncItems {
-                        val start = System.currentTimeMillis()
+                        start = System.currentTimeMillis()
                         val query = Notes.select().where { conditions.combineConditions() }
 
                         // 这里如果根据创建时间排序会超级慢，所以改为了根据主键排序
@@ -183,7 +183,7 @@ class EventListeners {
                                 .map { Notes.createEntity(it) }
 
 
-                        val end = System.currentTimeMillis()
+                        end = System.currentTimeMillis()
                         println("列表耗时：" + (end - start))
 
                         list
