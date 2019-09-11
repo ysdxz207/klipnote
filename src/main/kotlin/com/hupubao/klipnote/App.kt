@@ -1,26 +1,21 @@
 package com.hupubao.klipnote
 
+import com.hupubao.klipnote.components.ConfigFragment
+import com.hupubao.klipnote.enums.WindowSize
+import com.hupubao.klipnote.listener.EventListeners
+import com.hupubao.klipnote.utils.AppUtils
+import com.hupubao.klipnote.views.MainView
 import javafx.application.Platform
 import javafx.stage.Modality
 import javafx.stage.Stage
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
 import tornadofx.App
-import com.hupubao.klipnote.enums.WindowSize
-import com.hupubao.klipnote.listener.EventListeners
-import com.hupubao.klipnote.utils.AppUtils
-import com.hupubao.klipnote.components.ConfigFragment
-import com.hupubao.klipnote.views.MainView
 import java.awt.GraphicsEnvironment
-import java.io.IOException
-import java.net.BindException
-import java.net.InetAddress
 import java.net.ServerSocket
 
 class App : App() {
     private val iconPath = "/icon/icon.png"
-    private val port = 23333
-    private var socket: ServerSocket? = null
 
     override val primaryView = MainView::class
 
