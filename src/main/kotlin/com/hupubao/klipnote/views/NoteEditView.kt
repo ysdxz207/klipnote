@@ -1,5 +1,6 @@
 package com.hupubao.klipnote.views
 
+import com.hupubao.klipnote.App
 import com.hupubao.klipnote.components.ImageViewFragment
 import com.hupubao.klipnote.components.bean.ComboBoxCategory
 import com.hupubao.klipnote.constants.Constants
@@ -10,6 +11,7 @@ import com.hupubao.klipnote.events.AddToClipboardEvent
 import com.hupubao.klipnote.events.LoadNotesEvent
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Notes
+import com.hupubao.klipnote.utils.AppUtils
 import com.hupubao.klipnote.utils.ImageUtils
 import javafx.application.Platform
 import javafx.event.EventHandler
@@ -133,9 +135,9 @@ class NoteEditView(noteInfo: Note?) : View() {
                     hgrow = Priority.ALWAYS
                     maxWidth = Double.POSITIVE_INFINITY
                     prefHeight = if (noteInfo != null && NoteType.IMAGE.name == noteInfo.type) {
-                        140.0
+                        60.0
                     } else {
-                        420.0
+                        App.windowSize.height - 320
                     }
                     font = Font.font(16.0)
 
