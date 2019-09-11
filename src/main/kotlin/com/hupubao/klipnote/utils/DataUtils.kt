@@ -10,6 +10,7 @@ import me.liuwj.ktorm.dsl.max
 import me.liuwj.ktorm.entity.aggregateColumns
 import me.liuwj.ktorm.entity.asSequenceWithoutReferences
 import me.liuwj.ktorm.entity.findById
+import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 import kotlin.concurrent.thread
@@ -29,6 +30,11 @@ object DataUtils {
                 user = username,
                 password = password,
                 logger = ConsoleLogger(threshold = LogLevel.DEBUG))*/
+        val dbDir = File(databaseDir).parentFile
+
+        if (!dbDir.exists()) {
+            dbDir.mkdirs()
+        }
 
         val conn = DriverManager.getConnection("jdbc:sqlite:$databaseDir", username, password)
 

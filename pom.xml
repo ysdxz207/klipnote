@@ -6,7 +6,7 @@
 
     <groupId>com.hupubao</groupId>
     <artifactId>klipnote</artifactId>
-    <version>2.0.1</version>
+    <version>1.0.0</version>
     <description>Klipnote.</description>
     <organization>
         <name>ysdxz207</name>
@@ -192,6 +192,7 @@
                                 <originalFilename>${project.build.finalName}.exe</originalFilename>
                                 <language>SIMPLIFIED_CHINESE</language>
                             </versionInfo>
+                            <downloadUrl>http://java.com/download</downloadUrl>
                         </configuration>
                     </execution>
                 </executions>
