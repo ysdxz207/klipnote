@@ -60,8 +60,6 @@ class ConfigFragment : Fragment("设置") {
                             AppUtils.config.keepTop = checkboxKeepTop.isSelected
                             AppUtils.config.flushChanges()
                             AppUtils.refreshConfig()
-                            // 触发加载分类列表事件
-                            EventBus.getDefault().post(LoadCategoriesEvent(null))
 
                         })
                     }

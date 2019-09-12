@@ -11,8 +11,12 @@ import javafx.stage.Stage
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
 import tornadofx.App
+import java.awt.Desktop
 import java.awt.GraphicsEnvironment
+import java.io.IOException
 import java.net.ServerSocket
+import java.net.URI
+import java.net.URISyntaxException
 
 class App : App() {
     private val iconPath = "/icon/icon.png"
@@ -23,7 +27,7 @@ class App : App() {
         val windowSize = resolveWindowSize()
 
         /**
-         * Decide witch window size to choose.
+         * Decide which window size to choose.
          * WindowSize.Normal or WindowSize.Large
          */
         private fun resolveWindowSize(): WindowSize {
@@ -65,11 +69,27 @@ class App : App() {
             }
 
             menu("klipnote") {
+                item("关于") {
 
+                    setOnAction(fxThread = true) {
+                        Platform.runLater {
+                            if (Desktop.isDesktopSupported()) {
+                                try {
+                                    Desktop.getDesktop().browse(URI("https://github.com/ysdxz207/klipnote"))
+                                } catch (e1: IOException) {
+                                    e1.printStackTrace()
+                                } catch (e1: URISyntaxException) {
+                                    e1.printStackTrace()
+                                }
+
+                            }
+                        }
+                    }
+                }
                 item("设置") {
 
                     setOnAction(fxThread = true) {
-                        AppUtils.showMainWin()
+//                        AppUtils.showMainWin()
                         Platform.runLater {
                             ConfigFragment().openWindow(modality = Modality.APPLICATION_MODAL, resizable = false)
                         }
