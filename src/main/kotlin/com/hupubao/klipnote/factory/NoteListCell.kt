@@ -219,10 +219,11 @@ class NoteListCell<T> : ListCell<T>() {
                                         note.category = Constants.RECYCLE_CATEGORY_ID
                                         note.flushChanges()
                                     }
+
+                                    // 重新加载列表
+                                    EventBus.getDefault().post(LoadNotesEvent())
                                 })
 
-                                // 重新加载列表
-                                EventBus.getDefault().post(LoadNotesEvent())
 
                             }
                         }
