@@ -11,7 +11,6 @@ import com.hupubao.klipnote.events.AddToClipboardEvent
 import com.hupubao.klipnote.events.LoadNotesEvent
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Notes
-import com.hupubao.klipnote.utils.AppUtils
 import com.hupubao.klipnote.utils.ImageUtils
 import javafx.application.Platform
 import javafx.event.EventHandler
@@ -107,15 +106,16 @@ class NoteEditView(noteInfo: Note?) : View() {
                         list
                     }
 
-                    var selectCategory = find<CategoryMenu>().selectedCategory
+                    val selectedCategoryId = find<CategoryMenu>().selectedCategoryId
+                    var selectedCategory = Categories.findById(selectedCategoryId)
                     if (noteInfo != null) {
-                        selectCategory = Categories.findById(noteInfo.category)
+                        selectedCategory = Categories.findById(noteInfo.category)!!
 
                     }
                     val comboBoxCategory = ComboBoxCategory()
-                    comboBoxCategory.id = selectCategory!!.id
-                    comboBoxCategory.name = selectCategory.name
-                    comboBoxCategory.category = selectCategory
+                    comboBoxCategory.id = selectedCategory!!.id
+                    comboBoxCategory.name = selectedCategory.name
+                    comboBoxCategory.category = selectedCategory
                     selectionModel.select(comboBoxCategory)
                 }
             }

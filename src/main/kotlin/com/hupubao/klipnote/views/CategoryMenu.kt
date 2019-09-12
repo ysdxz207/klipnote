@@ -5,14 +5,13 @@ import com.hupubao.klipnote.components.SwitchButton
 import com.hupubao.klipnote.constants.Constants
 import com.hupubao.klipnote.entity.Category
 import com.hupubao.klipnote.entity.Config
+import com.hupubao.klipnote.events.LoadCategoriesEvent
 import com.hupubao.klipnote.events.LoadNotesEvent
 import com.hupubao.klipnote.events.ShowEditCategoryEvent
 import com.hupubao.klipnote.factory.CategoryListCell
 import com.hupubao.klipnote.listener.ClipboardChangedListener
-import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Configs
 import com.hupubao.klipnote.sql.Notes
-import com.hupubao.klipnote.utils.AppUtils
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.geometry.Pos
@@ -30,7 +29,6 @@ import javafx.scene.text.FontWeight
 import me.liuwj.ktorm.dsl.delete
 import me.liuwj.ktorm.dsl.eq
 import me.liuwj.ktorm.entity.findAll
-import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
 import tornadofx.*
 
@@ -44,7 +42,7 @@ class CategoryMenu : View() {
     lateinit var buttonCategoryClipboard: BorderPane
 
 
-    var selectedCategory: Category? = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
+    var selectedCategoryId: Int = Constants.DEFAULT_CATEGORY_ID
 
 
     override val root = vbox {
@@ -73,8 +71,8 @@ class CategoryMenu : View() {
                 paddingLeft = 36.0
 
                 action {
-                    selectedCategory = AppUtils.categoryRecycle
-                    EventBus.getDefault().post(LoadNotesEvent())
+
+                    EventBus.getDefault().post(LoadCategoriesEvent(Constants.RECYCLE_CATEGORY_ID))
                 }
 
 
@@ -121,9 +119,7 @@ class CategoryMenu : View() {
                 paddingLeft = 36.0
 
                 action {
-                    selectedCategory = AppUtils.categoryStar
-
-                    EventBus.getDefault().post(LoadNotesEvent())
+                    EventBus.getDefault().post(LoadCategoriesEvent(Constants.STAR_CATEGORY_ID))
                 }
             }
         }
@@ -179,8 +175,7 @@ class CategoryMenu : View() {
 
                 onMouseClicked = EventHandler {
                     if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
-                        selectedCategory = AppUtils.categoryClipboard
-                        EventBus.getDefault().post(LoadNotesEvent())
+                        EventBus.getDefault().post(LoadCategoriesEvent(Constants.CLIPBOARD_CATEGORY_ID))
                     }
                 }
 

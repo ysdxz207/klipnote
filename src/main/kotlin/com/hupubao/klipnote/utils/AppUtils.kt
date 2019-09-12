@@ -1,5 +1,9 @@
 package com.hupubao.klipnote.utils
 
+import com.hupubao.klipnote.constants.Constants
+import com.hupubao.klipnote.entity.Config
+import com.hupubao.klipnote.sql.Categories
+import com.hupubao.klipnote.sql.Configs
 import com.melloware.jintellitype.JIntellitype
 import javafx.application.Platform
 import me.liuwj.ktorm.dsl.limit
@@ -7,16 +11,8 @@ import me.liuwj.ktorm.dsl.select
 import me.liuwj.ktorm.entity.createEntity
 import me.liuwj.ktorm.entity.findById
 import tornadofx.*
-import com.hupubao.klipnote.constants.Constants
-import com.hupubao.klipnote.entity.Config
-import com.hupubao.klipnote.sql.Categories
-import com.hupubao.klipnote.sql.Configs
 import java.io.File
 import java.util.concurrent.TimeUnit
-import java.io.IOException
-import java.net.BindException
-import java.net.InetAddress
-import java.net.ServerSocket
 
 
 
@@ -27,10 +23,10 @@ object AppUtils {
     private const val SHOW_KEY_MARK = 1
 
     var config: Config = Configs.select().limit(0, 1).map { Configs.createEntity(it) }[0]
-    val categoryRecycle = Categories.findById(Constants.RECYCLE_CATEGORY_ID)
-    val categoryStar = Categories.findById(Constants.STAR_CATEGORY_ID)
-    val categoryClipboard = Categories.findById(Constants.CLIPBOARD_CATEGORY_ID)
-    val categoryDefault = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
+    val categoryRecycle = Categories.findById(Constants.RECYCLE_CATEGORY_ID)!!
+    val categoryStar = Categories.findById(Constants.STAR_CATEGORY_ID)!!
+    val categoryClipboard = Categories.findById(Constants.CLIPBOARD_CATEGORY_ID)!!
+    val categoryDefault = Categories.findById(Constants.DEFAULT_CATEGORY_ID)!!
     private var firstHotKeyRegister = false
     /**
      * 显示或隐藏主窗口

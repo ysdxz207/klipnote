@@ -1,16 +1,15 @@
 package com.hupubao.klipnote.factory
 
 import com.hupubao.klipnote.App
-import com.hupubao.klipnote.views.CategoryMenu
-import com.hupubao.klipnote.views.NoteEditView
 import com.hupubao.klipnote.constants.Constants
 import com.hupubao.klipnote.entity.Category
 import com.hupubao.klipnote.events.LoadCategoriesEvent
-import com.hupubao.klipnote.events.LoadNotesEvent
+import com.hupubao.klipnote.events.SelectCategoryEvent
 import com.hupubao.klipnote.events.ShowEditCategoryEvent
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Notes
 import com.hupubao.klipnote.views.MainView
+import com.hupubao.klipnote.views.NoteEditView
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Cursor
@@ -129,8 +128,7 @@ class CategoryListCell<T> : ListCell<T>() {
                     if (it.clickCount == 1)
 
                     // 选择当前分类
-                    find<CategoryMenu>().selectedCategory = category
-                    EventBus.getDefault().post(LoadNotesEvent())
+                    EventBus.getDefault().post(SelectCategoryEvent(category.id))
                 }
 
 

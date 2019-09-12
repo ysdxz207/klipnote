@@ -63,8 +63,6 @@ class MainView : View("Klipnote") {
 
         // 触发加载分类列表事件
         EventBus.getDefault().post(LoadCategoriesEvent(null))
-        // 触发加载笔记列表事件
-        EventBus.getDefault().post(LoadNotesEvent())
 
         // 注册快捷键
         AppUtils.registHotkey()

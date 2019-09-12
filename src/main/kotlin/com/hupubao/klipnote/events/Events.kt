@@ -8,6 +8,10 @@ import com.hupubao.klipnote.entity.Note
  */
 class LoadCategoriesEvent(val selectedCategorId: Int?)
 /**
+ * 选择分类事件
+ */
+class SelectCategoryEvent(val selectedCategorId: Int?)
+/**
  * 加载笔记列表事件
  */
 class LoadNotesEvent()

@@ -1,24 +1,21 @@
 package com.hupubao.klipnote.listener
 
-import com.hupubao.klipnote.views.CategoryMenu
+import com.hupubao.klipnote.components.EditCategoryFragment
 import com.hupubao.klipnote.components.Header
-import com.hupubao.klipnote.views.NoteListView
 import com.hupubao.klipnote.constants.Constants
 import com.hupubao.klipnote.entity.Category
 import com.hupubao.klipnote.entity.Note
 import com.hupubao.klipnote.enums.NoteType
-import com.hupubao.klipnote.events.AddToClipboardEvent
-import com.hupubao.klipnote.events.LoadCategoriesEvent
-import com.hupubao.klipnote.events.LoadNotesEvent
-import com.hupubao.klipnote.events.ShowEditCategoryEvent
+import com.hupubao.klipnote.events.*
 import com.hupubao.klipnote.factory.NoteListCell
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Notes
 import com.hupubao.klipnote.utils.Alert
 import com.hupubao.klipnote.utils.ClipboardHelper
 import com.hupubao.klipnote.utils.image.TransferableImage
-import com.hupubao.klipnote.components.EditCategoryFragment
+import com.hupubao.klipnote.views.CategoryMenu
 import com.hupubao.klipnote.views.MainView
+import com.hupubao.klipnote.views.NoteListView
 import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.scene.control.ListView
@@ -33,6 +30,7 @@ import me.liuwj.ktorm.dsl.*
 import me.liuwj.ktorm.entity.createEntity
 import me.liuwj.ktorm.entity.findById
 import me.liuwj.ktorm.schema.ColumnDeclaring
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import tornadofx.*
@@ -53,11 +51,79 @@ class EventListeners {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoadCategoriesEvent(event: LoadCategoriesEvent) {
         val categoryMenu = find(CategoryMenu::class)
-        val categoryList = Categories.select().where { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
-        categoryMenu.listViewCategories.items = FXCollections.observableArrayList(categoryList)
-        if (event.selectedCategorId != null) {
-            categoryMenu.listViewCategories.selectionModel.select(categoryList.findLast { it.id == event.selectedCategorId })
+        Constants.categoryList = Categories.select().where { Categories.id greaterEq Constants.DEFAULT_CATEGORY_ID }.orderBy(Categories.sort.asc()).map { Categories.createEntity(it) }
+        categoryMenu.listViewCategories.items = FXCollections.observableArrayList(Constants.categoryList)
+        // 选择分类
+        EventBus.getDefault().post(SelectCategoryEvent(event.selectedCategorId))
+    }
+
+    /**
+     * 选择分类事件
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSelectCategory(event: SelectCategoryEvent) {
+        val categoryMenu = find(CategoryMenu::class)
+
+        var selectedCategoryId = event.selectedCategorId
+        if (event.selectedCategorId == null) {
+            selectedCategoryId = Constants.DEFAULT_CATEGORY_ID
         }
+
+        if (Categories.findById(selectedCategoryId!!) == null) {
+            // 分类已删除
+            return
+        }
+        /**
+         * 分类按钮背景色重置
+         */
+        categoryMenu.buttonCategoryStar.style {
+            backgroundColor += Paint.valueOf("#FFFFFF")
+        }
+        categoryMenu.buttonCategoryRecycle.style {
+            backgroundColor += Paint.valueOf("#FFFFFF")
+        }
+        categoryMenu.buttonCategoryClipboard.style {
+            backgroundColor += Paint.valueOf("#FFFFFF")
+        }
+        categoryMenu.buttonCategoryClipboard.left.lookup("Label").style {
+            textFill = Paint.valueOf("#787878")
+        }
+        categoryMenu.listViewCategories.selectionModel.select(-1)
+        /**
+         * 设置分类背景色
+         */
+        when (selectedCategoryId) {
+            Constants.DEFAULT_CATEGORY_ID -> {
+                categoryMenu.listViewCategories.selectionModel.select(0)
+            }
+            Constants.STAR_CATEGORY_ID -> {
+                categoryMenu.buttonCategoryStar.style {
+                    backgroundColor += Paint.valueOf("#fbaee0")
+                    textFill = Paint.valueOf("#FFFFFF")
+                }
+            }
+            Constants.RECYCLE_CATEGORY_ID -> {
+                categoryMenu.buttonCategoryRecycle.style {
+                    backgroundColor += Paint.valueOf("#fbaee0")
+                    textFill = Paint.valueOf("#FFFFFF")
+                }
+            }
+            Constants.CLIPBOARD_CATEGORY_ID -> {
+                categoryMenu.buttonCategoryClipboard.style {
+                    backgroundColor += Paint.valueOf("#fbaee0")
+                }
+                categoryMenu.buttonCategoryClipboard.left.lookup("Label").style {
+                    textFill = Paint.valueOf("#FFFFFF")
+
+                }
+            }
+            else -> {
+                categoryMenu.listViewCategories.selectionModel.select(Constants.categoryList.findLast { it.id == selectedCategoryId })
+            }
+        }
+        categoryMenu.selectedCategoryId = selectedCategoryId!!
+        // 触发笔记加载事件
+        EventBus.getDefault().post(LoadNotesEvent())
     }
 
     /**
@@ -71,66 +137,10 @@ class EventListeners {
 
             val categoryMenu = find<CategoryMenu>()
             val pagination = find<NoteListView>().paginationNotes
-            val listViewCategories = categoryMenu.listViewCategories
 
-            var category = categoryMenu.selectedCategory ?: listViewCategories.selectedItem
-            // 默认选中默认分类
-            if (category == null) {
-                category = Categories.findById(Constants.DEFAULT_CATEGORY_ID)
-                listViewCategories.selectionModel.select(category)
-            }
+            // 当前选中的分类
+            val selectedCategoryId = categoryMenu.selectedCategoryId
 
-            /**
-             * 分类按钮背景色重置
-             */
-            categoryMenu.buttonCategoryStar.style {
-                backgroundColor += Paint.valueOf("#FFFFFF")
-            }
-            categoryMenu.buttonCategoryRecycle.style {
-                backgroundColor += Paint.valueOf("#FFFFFF")
-            }
-            categoryMenu.buttonCategoryClipboard.style {
-                backgroundColor += Paint.valueOf("#FFFFFF")
-            }
-            categoryMenu.buttonCategoryClipboard.left.lookup("Label").style {
-                textFill = Paint.valueOf("#787878")
-            }
-
-            /**
-             * 设置分类背景色
-             */
-            when (category?.id) {
-                Constants.DEFAULT_CATEGORY_ID -> {
-                    listViewCategories.selectionModel.select(0)
-                }
-                Constants.STAR_CATEGORY_ID -> {
-                    categoryMenu.buttonCategoryStar.style {
-                        backgroundColor += Paint.valueOf("#fbaee0")
-                        textFill = Paint.valueOf("#FFFFFF")
-                    }
-                    listViewCategories.selectionModel.select(-1)
-                }
-                Constants.RECYCLE_CATEGORY_ID -> {
-                    categoryMenu.buttonCategoryRecycle.style {
-                        backgroundColor += Paint.valueOf("#fbaee0")
-                        textFill = Paint.valueOf("#FFFFFF")
-                    }
-                    listViewCategories.selectionModel.select(-1)
-                }
-                Constants.CLIPBOARD_CATEGORY_ID -> {
-                    categoryMenu.buttonCategoryClipboard.style {
-                        backgroundColor += Paint.valueOf("#fbaee0")
-                    }
-                    categoryMenu.buttonCategoryClipboard.left.lookup("Label").style {
-                        textFill = Paint.valueOf("#FFFFFF")
-
-                    }
-                    listViewCategories.selectionModel.select(-1)
-                }
-                else -> {
-
-                }
-            }
             val header = tornadofx.find<Header>()
 
             val currentPageIndex = pagination.currentPageIndex
@@ -139,7 +149,7 @@ class EventListeners {
 
 
             val conditions = ArrayList<ColumnDeclaring<Boolean>>()
-            conditions += Notes.category eq category!!.id
+            conditions += Notes.category eq selectedCategoryId
             if (header.textFieldSearch.text.isNotBlank()) {
                 conditions += Notes.type notEq NoteType.IMAGE.name
                 conditions += Notes.title like "%${header.textFieldSearch.text}%" or (Notes.content like "%${header.textFieldSearch.text}%")

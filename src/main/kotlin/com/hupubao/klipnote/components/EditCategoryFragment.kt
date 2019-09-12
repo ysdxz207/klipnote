@@ -1,11 +1,11 @@
 package com.hupubao.klipnote.components
 
-import com.hupubao.klipnote.views.CategoryMenu
 import com.hupubao.klipnote.entity.Category
 import com.hupubao.klipnote.events.LoadCategoriesEvent
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.utils.DataUtils
 import com.hupubao.klipnote.utils.StringUtils
+import com.hupubao.klipnote.views.CategoryMenu
 import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonBar
