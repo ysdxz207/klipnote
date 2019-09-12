@@ -180,7 +180,7 @@ class EventListeners {
 
                         // 这里如果根据创建时间排序会超级慢，所以改为了根据主键排序
                         val list = query.orderBy(Notes.id.desc())
-                                .limit(pageIndex * Constants.PAGE_SIZE, (pageIndex + 1) * Constants.PAGE_SIZE)
+                                .limit(pageIndex * Constants.PAGE_SIZE, Constants.PAGE_SIZE)
                                 .map { Notes.createEntity(it) }
 
 
