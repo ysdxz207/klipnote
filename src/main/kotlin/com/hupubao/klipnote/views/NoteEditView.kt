@@ -45,6 +45,11 @@ class NoteEditView(noteInfo: Note?) : View() {
     private lateinit var comboBoxCategory: ComboBox<ComboBoxCategory>
     private lateinit var buttonSave: Button
 
+    /**
+     * 图片高度
+     */
+    private var imageHeight: Double = 300.0
+
     override val root = scrollpane {
 
 
@@ -120,6 +125,7 @@ class NoteEditView(noteInfo: Note?) : View() {
                     imageview {
                         tooltip("点击查看原图")
                         val img = ImageUtils.getImageFromBase64(noteInfo.description)
+                        imageHeight = img.height
                         image = img
                         onMouseClicked = EventHandler {
                             if (it.clickCount == 1 && it.button == MouseButton.PRIMARY) {
@@ -135,7 +141,7 @@ class NoteEditView(noteInfo: Note?) : View() {
                     hgrow = Priority.ALWAYS
                     maxWidth = Double.POSITIVE_INFINITY
                     prefHeight = if (noteInfo != null && NoteType.IMAGE.name == noteInfo.type) {
-                        60.0
+                        App.windowSize.height - imageHeight - 380
                     } else {
                         App.windowSize.height - 320
                     }
