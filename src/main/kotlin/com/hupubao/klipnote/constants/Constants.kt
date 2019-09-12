@@ -6,5 +6,5 @@ object Constants {
     const val RECYCLE_CATEGORY_ID = -1
     const val STAR_CATEGORY_ID = -2
     const val CLIPBOARD_CATEGORY_ID = -3
-    const val PAGE_SIZE = 20
+    const val PAGE_SIZE = 50
 }
