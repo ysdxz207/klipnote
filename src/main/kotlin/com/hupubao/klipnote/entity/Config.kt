@@ -9,6 +9,7 @@ interface Config : Entity<Config> {
     var startup: Boolean
     var keepTop: Boolean
     var watchingClipboard: Boolean
+    var toTray: Boolean
     var mainWinHotkeyModifier: String
     var mainWinHotkey: String
 }

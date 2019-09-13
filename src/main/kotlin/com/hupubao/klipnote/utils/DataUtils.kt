@@ -117,6 +117,7 @@ object DataUtils {
                         "    startup                  BOOLEAN     not null,\n" +
                         "    keep_top                 BOOLEAN     not null,\n" +
                         "    watching_clipboard       BOOLEAN     not null,\n" +
+                        "    to_tray                  BOOLEAN     not null,\n" +
                         "    main_win_hotkey_modifier VARCHAR(32) not null,\n" +
                         "    main_win_hotkey          VARCHAR(32) not null\n" +
                         ");\n")
@@ -164,6 +165,7 @@ object DataUtils {
                 it.mainWinHotkeyModifier to "Ctrl"
                 it.mainWinHotkey to "`"
                 it.watchingClipboard to true
+                it.toTray to false
             }
         }
 

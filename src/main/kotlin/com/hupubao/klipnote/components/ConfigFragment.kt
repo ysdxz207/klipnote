@@ -1,13 +1,11 @@
 package com.hupubao.klipnote.components
 
-import com.hupubao.klipnote.events.LoadCategoriesEvent
 import com.hupubao.klipnote.utils.AppUtils
 import com.hupubao.klipnote.utils.KeyCodeUtils
 import com.hupubao.klipnote.views.CategoryMenu
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
-import org.greenrobot.eventbus.EventBus
 import tornadofx.*
 
 
@@ -17,6 +15,7 @@ class ConfigFragment : Fragment("设置") {
     private lateinit var textfieldHotkey: TextField
     private lateinit var checkboxStartup: CheckBox
     private lateinit var checkboxKeepTop: CheckBox
+    private lateinit var checkboxToTray: CheckBox
     private lateinit var checkboxCtrl: CheckBox
     private lateinit var checkboxShift: CheckBox
     private lateinit var checkboxAlt: CheckBox
@@ -58,6 +57,20 @@ class ConfigFragment : Fragment("设置") {
 
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
                             AppUtils.config.keepTop = checkboxKeepTop.isSelected
+                            AppUtils.config.flushChanges()
+                            AppUtils.refreshConfig()
+
+                        })
+                    }
+                }
+                field {
+                    checkboxToTray = checkbox("启动后最小化到托盘") {
+                        isSelected = AppUtils.config.toTray
+
+
+
+                        selectedProperty().addListener(ChangeListener { _, _, _ ->
+                            AppUtils.config.toTray = checkboxToTray.isSelected
                             AppUtils.config.flushChanges()
                             AppUtils.refreshConfig()
 

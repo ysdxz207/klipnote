@@ -4,6 +4,7 @@ import com.hupubao.klipnote.components.ConfigFragment
 import com.hupubao.klipnote.enums.WindowSize
 import com.hupubao.klipnote.listener.EventListeners
 import com.hupubao.klipnote.utils.AppUtils
+import com.hupubao.klipnote.utils.DataUtils
 import com.hupubao.klipnote.views.MainView
 import javafx.application.Platform
 import javafx.stage.Modality
@@ -14,7 +15,6 @@ import tornadofx.App
 import java.awt.Desktop
 import java.awt.GraphicsEnvironment
 import java.io.IOException
-import java.net.ServerSocket
 import java.net.URI
 import java.net.URISyntaxException
 
@@ -46,6 +46,7 @@ class App : App() {
 
     init {
         importStylesheet("/css/style.css")
+        DataUtils.initData()
         EventBus.getDefault().register(EventListeners())
     }
 
@@ -57,7 +58,13 @@ class App : App() {
             reloadViewsOnFocus()
         }
         stage.icons += resources.image(iconPath)
+
         super.start(stage)
+
+        // 启动后最小化到托盘
+        if (AppUtils.config.toTray) {
+            stage.hide()
+        }
 
         // Don't exit on window close (Optional)
         Platform.setImplicitExit(false)

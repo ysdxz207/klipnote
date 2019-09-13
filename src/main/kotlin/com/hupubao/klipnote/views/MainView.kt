@@ -36,8 +36,6 @@ class MainView : View("Klipnote") {
 
     override val root = borderpane {
 
-        DataUtils.initData()
-
         // header
         top<Header>()
 
