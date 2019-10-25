@@ -1,4 +1,5 @@
-package win.hupubao.utils
+package com.hupubao.klipnote.utils
+
 
 import com.hupubao.klipnote.components.LoadingFragment
 import kotlinx.coroutines.Dispatchers
