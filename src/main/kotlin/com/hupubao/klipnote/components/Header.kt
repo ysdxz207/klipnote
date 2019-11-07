@@ -16,6 +16,7 @@ import com.hupubao.klipnote.events.LoadNotesEvent
 import com.hupubao.klipnote.listener.MouseDragListener
 import com.hupubao.klipnote.utils.AppUtils
 import com.hupubao.klipnote.views.NoteListView
+import javafx.scene.input.KeyCode
 
 class Header : View("header") {
 
@@ -96,9 +97,11 @@ class Header : View("header") {
                         promptTextFill = Color.valueOf("#D9D9D9")
                     }
 
-                    textProperty().addListener(ChangeListener { _, _, _ ->
-                        EventBus.getDefault().post(LoadNotesEvent())
-                    })
+                    onKeyReleased = EventHandler {
+                        if (it.code == KeyCode.ENTER) {
+                            EventBus.getDefault().post(LoadNotesEvent())
+                        }
+                    }
                 }
             }
         }
