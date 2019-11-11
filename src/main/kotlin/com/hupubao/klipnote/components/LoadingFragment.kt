@@ -1,16 +1,15 @@
 package com.hupubao.klipnote.components
 
+
 import com.hupubao.klipnote.views.MainView
 import javafx.scene.image.Image
 import javafx.scene.paint.Color
-import javafx.stage.Stage
 import javafx.stage.StageStyle
 import tornadofx.*
 
 
 class LoadingFragment : Fragment() {
     private val mainView: MainView by inject()
-    private val stage: Stage? = currentStage
 
 
     override val root = vbox {
@@ -26,11 +25,11 @@ class LoadingFragment : Fragment() {
      * 背景透明
      */
     override fun onDock() {
-        stage?.scene?.fill = null
+        currentStage?.scene?.fill = null
     }
 
     init {
-        stage?.isResizable = false
+        currentStage?.isResizable = false
     }
 
     fun show() {
@@ -47,11 +46,12 @@ class LoadingFragment : Fragment() {
         val x = mainX + (mainWidth.div(2)) - (width.div(2))
         val y = mainY + (mainHeight.div(2)) - (height.div(2))
 
-        stage?.x = x
-        stage?.y = y
+        currentStage?.x = x
+        currentStage?.y = y
+
     }
 
     fun hide() {
-        stage?.hide()
+        currentStage?.hide()
     }
 }

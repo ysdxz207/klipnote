@@ -101,6 +101,10 @@ object DataUtils {
                         "    on Notes (title);")
                 statement.execute()
 
+                statement = conn.prepareStatement("create index Notes_type_index\n" +
+                        "    on Notes (type);")
+                statement.execute()
+
 
                 statement.close()
                 resultSet.close()

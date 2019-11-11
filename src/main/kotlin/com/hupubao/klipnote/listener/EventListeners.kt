@@ -121,7 +121,7 @@ class EventListeners {
                 categoryMenu.listViewCategories.selectionModel.select(Constants.categoryList.findLast { it.id == selectedCategoryId })
             }
         }
-        categoryMenu.selectedCategoryId = selectedCategoryId!!
+        categoryMenu.selectedCategoryId = selectedCategoryId
         // 触发笔记加载事件
         EventBus.getDefault().post(LoadNotesEvent())
     }
@@ -160,7 +160,8 @@ class EventListeners {
                 // 获取笔记总条数
                 var start = System.currentTimeMillis()
 
-                val count = Notes.count { conditions.combineConditions() }
+                val query = Notes.select().where { conditions.combineConditions() }
+                val count = query.count()
                 var end = System.currentTimeMillis()
                 println("count耗时：" + (end - start))
                 pagination.pageCount = when {
@@ -186,7 +187,7 @@ class EventListeners {
 
                     listViewNotes.asyncItems {
                         start = System.currentTimeMillis()
-                        val query = Notes.select().where { conditions.combineConditions() }
+
 
                         // 这里如果根据创建时间排序会超级慢，所以改为了根据主键排序
                         val list = query.orderBy(Notes.id.desc())
