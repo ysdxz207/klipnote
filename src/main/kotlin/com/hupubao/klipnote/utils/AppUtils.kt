@@ -4,23 +4,25 @@ import com.hupubao.klipnote.constants.Constants
 import com.hupubao.klipnote.entity.Config
 import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Configs
-import com.melloware.jintellitype.JIntellitype
+import com.tulskiy.keymaster.common.Provider
 import javafx.application.Platform
+import javafx.scene.input.KeyCode
 import me.liuwj.ktorm.dsl.limit
 import me.liuwj.ktorm.dsl.select
 import me.liuwj.ktorm.entity.createEntity
 import me.liuwj.ktorm.entity.findById
 import tornadofx.*
+import java.awt.event.InputEvent
+import java.awt.event.KeyEvent
 import java.io.File
 import java.util.concurrent.TimeUnit
-
+import javax.swing.KeyStroke
 
 
 object AppUtils {
     private const val REG_STARTUP_KEY = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
     private const val APP_NAME = "klipnote"
     private val APP_FULL_PATH = File(javaClass.protectionDomain.codeSource.location.toURI()).path
-    private const val SHOW_KEY_MARK = 1
 
     var config: Config = Configs.select().limit(0, 1).map { Configs.createEntity(it) }[0]
     val categoryRecycle = Categories.findById(Constants.RECYCLE_CATEGORY_ID)!!
@@ -96,33 +98,23 @@ object AppUtils {
         val config = AppUtils.config
         var modifier = 0
         if (config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.CONTROL.character)) {
-            modifier += JIntellitype.MOD_CONTROL
+            modifier += InputEvent.CTRL_DOWN_MASK
         }
         if (config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.SHIFT.character)) {
-            modifier += JIntellitype.MOD_SHIFT
+            modifier += InputEvent.SHIFT_DOWN_MASK
         }
         if (config.mainWinHotkeyModifier.contains(KeyCodeUtils.KeyEventCode.ALT.character)) {
-            modifier += JIntellitype.MOD_ALT
+            modifier += InputEvent.ALT_DOWN_MASK
         }
 
-        // 取消快捷键注册
-        JIntellitype.getInstance().unregisterHotKey(SHOW_KEY_MARK)
+        val provider = Provider.getCurrentProvider(false)
 
-        //第一步：注册热键，第一个参数表示该热键的标识，第二个参数表示组合键，如果没有则为0，第三个参数为定义的主要热键
-        JIntellitype.getInstance().registerHotKey(SHOW_KEY_MARK,
-                modifier,
-                KeyCodeUtils.getKeyEventCodeFromKey(config.mainWinHotkey).keyEvent)
+        provider.reset()
 
-
-        //第二步：添加热键监听器，只有第一次注册时需要添加
-        if (!firstHotKeyRegister) {
-            firstHotKeyRegister = true
-            JIntellitype.getInstance().addHotKeyListener { markCode: Int ->
-                when (markCode) {
-                    SHOW_KEY_MARK -> AppUtils.showOrHideMainWin()
-                }
-            }
+        provider.register(KeyStroke.getKeyStroke(KeyCodeUtils.getKeyEventCodeFromKey(config.mainWinHotkey).keyEvent, modifier)) {
+            AppUtils.showOrHideMainWin()
         }
+
     }
 
 
