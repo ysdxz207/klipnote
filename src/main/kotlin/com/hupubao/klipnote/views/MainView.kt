@@ -30,9 +30,6 @@ import javax.imageio.ImageIO
  * Main window.
  */
 class MainView : View("Klipnote") {
-    private val noteListView: NoteListView by inject()
-    private val header: Header by inject()
-
 
     override val root = borderpane {
 

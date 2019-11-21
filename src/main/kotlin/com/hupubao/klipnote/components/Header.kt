@@ -20,8 +20,6 @@ import javafx.scene.input.KeyCode
 
 class Header : View("header") {
 
-    private val noteListView: NoteListView by inject()
-
     lateinit var textFieldSearch: TextField
 
     override val root = hbox {
