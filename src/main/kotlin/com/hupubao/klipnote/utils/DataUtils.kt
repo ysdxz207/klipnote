@@ -173,9 +173,9 @@ object DataUtils {
             }
         }
 
-        val config = Configs.findById(1)
+//        val config = Configs.findById(1)
 
-        println(config)
+//        println(config)
     }
 
 

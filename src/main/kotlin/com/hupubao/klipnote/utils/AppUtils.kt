@@ -30,6 +30,12 @@ object AppUtils {
     val categoryClipboard = Categories.findById(Constants.CLIPBOARD_CATEGORY_ID)!!
     val categoryDefault = Categories.findById(Constants.DEFAULT_CATEGORY_ID)!!
     private var firstHotKeyRegister = false
+
+
+    fun isWindows(): Boolean {
+        return System.getProperties().getProperty("os.name").toUpperCase().contains("WINDOWS")
+    }
+
     /**
      * 显示或隐藏主窗口
      */
@@ -69,6 +75,9 @@ object AppUtils {
      * 在【开机启动】【开机不启动】之间切换
      */
     fun toogleBootup(): Boolean {
+        if (!isWindows()) {
+            return true
+        }
         if (checkBootup()) {
             Runtime.getRuntime().exec(arrayOf("cmd", "/c", "reg", "delete", REG_STARTUP_KEY, "/v", APP_NAME, "/f")).waitFor(500L, TimeUnit.MILLISECONDS)
         } else {
@@ -81,6 +90,9 @@ object AppUtils {
      * 检查是否已开启【开机启动】
      */
     fun checkBootup(): Boolean {
+        if (!isWindows()) {
+            return true
+        }
         return Runtime.getRuntime().exec(arrayOf("cmd", "/c", "reg", "query", REG_STARTUP_KEY, "/v", APP_NAME)).waitFor() == 0
     }
 

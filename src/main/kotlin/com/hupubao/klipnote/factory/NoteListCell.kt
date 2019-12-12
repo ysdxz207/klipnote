@@ -18,6 +18,7 @@ import javafx.scene.control.ListCell
 import javafx.scene.image.Image
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.Priority
+import javafx.scene.layout.Region
 import javafx.scene.paint.Paint
 import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
@@ -176,6 +177,7 @@ class NoteListCell<T> : ListCell<T>() {
                                     if (note.category == Constants.STAR_CATEGORY_ID) {
                                         // 取消收藏
                                         confirm(header = "", content = "确定取消收藏吗？", owner = FX.primaryStage, actionFn = {
+                                            minWidth = Region.USE_PREF_SIZE
                                             note.category = note.originCategory
                                             note.flushChanges()
                                         })

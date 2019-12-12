@@ -1,5 +1,6 @@
 package com.hupubao.klipnote.components
 
+import com.hupubao.klipnote.App
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.Cursor
@@ -26,6 +27,9 @@ class Header : View("header") {
         paddingBottom = 8.0
         hgrow = Priority.ALWAYS
         maxWidth = Double.POSITIVE_INFINITY
+        // linux上不设置不行
+        prefWidth = App.windowSize.width
+
 
         borderpane {
             prefHeight = 80.0

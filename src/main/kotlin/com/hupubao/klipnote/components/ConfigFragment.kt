@@ -38,6 +38,10 @@ class ConfigFragment : Fragment("设置") {
                         isSelected = AppUtils.config.startup
 
                         selectedProperty().addListener(ChangeListener { _, _, _ ->
+                            if (!AppUtils.isWindows()) {
+                                information("提示", "非windows暂不支持开机启动", owner = FX.primaryStage)
+                                return@ChangeListener
+                            }
                             AppUtils.config.startup = checkboxStartup.isSelected
                             AppUtils.refreshConfig()
                             // 处理开机启动
