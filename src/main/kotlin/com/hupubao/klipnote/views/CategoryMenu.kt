@@ -26,6 +26,7 @@ import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
+import me.liuwj.ktorm.database.Database
 import me.liuwj.ktorm.dsl.delete
 import me.liuwj.ktorm.dsl.eq
 import me.liuwj.ktorm.entity.findAll
@@ -82,6 +83,7 @@ class CategoryMenu : View() {
                         action {
                             confirm(header = "", content = "清空回收站后将不能恢复，确认清空回收站？", owner = FX.primaryStage, actionFn = {
                                 Notes.delete { Notes.category eq Constants.RECYCLE_CATEGORY_ID }
+
                                 // 重新加载笔记列表
                                 EventBus.getDefault().post(LoadNotesEvent())
                             })
@@ -178,7 +180,6 @@ class CategoryMenu : View() {
                         EventBus.getDefault().post(LoadCategoriesEvent(Constants.CLIPBOARD_CATEGORY_ID))
                     }
                 }
-
 
 
                 //右键菜单

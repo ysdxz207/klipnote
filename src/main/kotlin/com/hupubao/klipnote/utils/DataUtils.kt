@@ -56,6 +56,9 @@ object DataUtils {
 
         }
 
+        // 自动回收sqlite文件占用空间
+        Database.global.invoke { conn.prepareStatement("PRAGMA auto_vacuum = FULL;").execute() }
+
 
         // 生成表
         Database.global.useConnection { conn ->
