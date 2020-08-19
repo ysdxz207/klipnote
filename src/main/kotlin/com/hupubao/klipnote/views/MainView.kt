@@ -3,11 +3,13 @@ package com.hupubao.klipnote.views
 import com.hupubao.klipnote.App
 import com.hupubao.klipnote.components.Header
 import com.hupubao.klipnote.constants.Constants
+import com.hupubao.klipnote.entity.Config
 import com.hupubao.klipnote.enums.NoteType
 import com.hupubao.klipnote.events.LoadCategoriesEvent
 import com.hupubao.klipnote.events.LoadNotesEvent
 import com.hupubao.klipnote.listener.ClipboardChangedListener
 import com.hupubao.klipnote.sql.Categories
+import com.hupubao.klipnote.sql.Configs
 import com.hupubao.klipnote.sql.Notes
 import com.hupubao.klipnote.utils.*
 import javafx.stage.StageStyle
@@ -16,6 +18,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
 import me.liuwj.ktorm.dsl.insert
+import me.liuwj.ktorm.entity.findAll
 import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
 import sun.misc.BASE64Encoder
@@ -65,6 +68,7 @@ class MainView : View("Klipnote") {
 
 
     fun startWatchingClipboard() {
+        ClipboardChangedListener.watching = AppUtils.config.watchingClipboard
         ClipboardChangedListener.onChanged = {
 
             if (!ClipboardHelper.isBySet) {
