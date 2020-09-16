@@ -68,8 +68,8 @@ class MainView : View("Klipnote") {
 
 
     fun startWatchingClipboard() {
-        ClipboardChangedListener.watching = AppUtils.config.watchingClipboard
-        ClipboardChangedListener.onChanged = {
+        ClipboardChangedListener.instance.watching = AppUtils.config.watchingClipboard
+        ClipboardChangedListener.instance.onChanged = {
 
             if (!ClipboardHelper.isBySet) {
 
@@ -126,6 +126,8 @@ class MainView : View("Klipnote") {
             }
 
         }
+
+        ClipboardChangedListener.instance.start()
     }
 
 }

@@ -155,7 +155,7 @@ class CategoryMenu : View() {
                     val config: Config? = Configs.findAll()[0]
                     switchButton.switchedOnProperty().value = config?.watchingClipboard
                     switchButton.switchedOnProperty().addListener(ChangeListener { observable, oldValue, newValue ->
-                        ClipboardChangedListener.watching = newValue
+                        ClipboardChangedListener.instance.watching = newValue
                         config?.watchingClipboard = newValue
                         config?.flushChanges()
                     })

@@ -239,7 +239,7 @@ class EventListeners {
         }
 
 
-        Toolkit.getDefaultToolkit().systemClipboard.setContents(content, ClipboardChangedListener)
+        Toolkit.getDefaultToolkit().systemClipboard.setContents(content, ClipboardChangedListener.instance)
         Alert.show("复制成功", 600L)
     }
 }

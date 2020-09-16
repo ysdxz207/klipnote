@@ -11,7 +11,16 @@ import java.awt.datatransfer.Transferable
  * @author ysdxz207
  * @date 2019-09-06
  */
-object ClipboardChangedListener : ClipboardOwner {
+class ClipboardChangedListener private constructor(): Thread(), ClipboardOwner {
+
+    companion object {
+        val instance = SingletonHolder.holder
+    }
+
+    private object SingletonHolder {
+        val holder= ClipboardChangedListener()
+    }
+
     private val clipboard = Toolkit.getDefaultToolkit().systemClipboard
     var watching = true
     var onChanged = fun(_: Transferable) {
@@ -19,7 +28,11 @@ object ClipboardChangedListener : ClipboardOwner {
     }
 
     init {
+    }
+
+    override fun run() {
         this.regainOwnership(clipboard.getContents(this))
+        while(true){}
     }
 
     override fun lostOwnership(c: Clipboard, t: Transferable) {
