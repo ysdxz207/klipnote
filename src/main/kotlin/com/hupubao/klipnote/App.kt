@@ -26,6 +26,8 @@ class App : App() {
     companion object {
         val windowSize = resolveWindowSize()
 
+        val imageExtFileName = "png"
+
         /**
          * Decide which window size to choose.
          * WindowSize.Normal or WindowSize.Large

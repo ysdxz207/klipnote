@@ -3,26 +3,29 @@ package com.hupubao.klipnote.views
 import com.hupubao.klipnote.App
 import com.hupubao.klipnote.components.Header
 import com.hupubao.klipnote.constants.Constants
-import com.hupubao.klipnote.entity.Config
 import com.hupubao.klipnote.enums.NoteType
 import com.hupubao.klipnote.events.LoadCategoriesEvent
 import com.hupubao.klipnote.events.LoadNotesEvent
 import com.hupubao.klipnote.listener.ClipboardChangedListener
 import com.hupubao.klipnote.sql.Categories
-import com.hupubao.klipnote.sql.Configs
 import com.hupubao.klipnote.sql.Notes
-import com.hupubao.klipnote.utils.*
+import com.hupubao.klipnote.utils.AppUtils
+import com.hupubao.klipnote.utils.ClipboardHelper
+import com.hupubao.klipnote.utils.ImageUtils
+import com.hupubao.klipnote.utils.StringUtils
+import com.sun.scenario.effect.ImageData
 import javafx.stage.StageStyle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
 import me.liuwj.ktorm.dsl.insert
-import me.liuwj.ktorm.entity.findAll
 import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
+import sun.awt.image.MultiResolutionCachedImage
 import sun.misc.BASE64Encoder
-import tornadofx.*
+import tornadofx.View
+import tornadofx.borderpane
 import java.awt.datatransfer.DataFlavor
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -74,7 +77,7 @@ class MainView : View("Klipnote") {
             if (!ClipboardHelper.isBySet) {
 
                 try {
-                    GlobalScope.launch(Dispatchers.JavaFx) {
+                    runAsync {
                         val categoryClipboard = Categories.findById(Constants.CLIPBOARD_CATEGORY_ID)!!
                         when {
                             it.isDataFlavorSupported(DataFlavor.stringFlavor) -> {
@@ -94,14 +97,30 @@ class MainView : View("Klipnote") {
                                 }
                             }
                             it.isDataFlavorSupported(DataFlavor.imageFlavor) -> {
-                                val imageVal = it.getTransferData(DataFlavor.imageFlavor) as BufferedImage
+
+                                val bufferedImage: BufferedImage = when (val imageDataFlavor = it.getTransferData(DataFlavor.imageFlavor)) {
+                                    // windows
+                                    is BufferedImage -> {
+                                        imageDataFlavor
+                                    }
+
+                                    // mac os
+                                    is MultiResolutionCachedImage -> {
+                                        imageDataFlavor.resolutionVariants[0] as BufferedImage
+                                    }
+
+                                    else -> {
+                                        return@runAsync
+                                    }
+                                }
+
                                 val byteArrayOutputStream = ByteArrayOutputStream()
-                                ImageIO.write(imageVal, "png", byteArrayOutputStream)
+                                ImageIO.write(bufferedImage, App.imageExtFileName, byteArrayOutputStream)
                                 val imageBase64 = BASE64Encoder().encode(byteArrayOutputStream.toByteArray())
 
-                                val imgDescription = ImageUtils.resize(imageVal, 450)
+                                val imgDescription = ImageUtils.resize(bufferedImage, 450)
                                 val byteArrayOutputStreamDescription = ByteArrayOutputStream()
-                                ImageIO.write(imgDescription, "png", byteArrayOutputStreamDescription)
+                                ImageIO.write(imgDescription, App.imageExtFileName, byteArrayOutputStreamDescription)
                                 val imageBase64Description = BASE64Encoder().encode(byteArrayOutputStreamDescription.toByteArray())
 
                                 Notes.insert {
