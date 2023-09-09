@@ -3,13 +3,11 @@ package com.hupubao.klipnote.views
 import com.hupubao.klipnote.App
 import com.hupubao.klipnote.components.Header
 import com.hupubao.klipnote.constants.Constants
-import com.hupubao.klipnote.entity.Config
 import com.hupubao.klipnote.enums.NoteType
 import com.hupubao.klipnote.events.LoadCategoriesEvent
 import com.hupubao.klipnote.events.LoadNotesEvent
 import com.hupubao.klipnote.listener.ClipboardChangedListener
 import com.hupubao.klipnote.sql.Categories
-import com.hupubao.klipnote.sql.Configs
 import com.hupubao.klipnote.sql.Notes
 import com.hupubao.klipnote.utils.*
 import javafx.stage.StageStyle
@@ -18,10 +16,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
 import me.liuwj.ktorm.dsl.insert
-import me.liuwj.ktorm.entity.findAll
 import me.liuwj.ktorm.entity.findById
 import org.greenrobot.eventbus.EventBus
-import sun.misc.BASE64Encoder
 import tornadofx.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.image.BufferedImage
@@ -97,12 +93,12 @@ class MainView : View("Klipnote") {
                                 val imageVal = it.getTransferData(DataFlavor.imageFlavor) as BufferedImage
                                 val byteArrayOutputStream = ByteArrayOutputStream()
                                 ImageIO.write(imageVal, "png", byteArrayOutputStream)
-                                val imageBase64 = BASE64Encoder().encode(byteArrayOutputStream.toByteArray())
+                                val imageBase64 = ImageUtils.encodeToBase64(byteArrayOutputStream.toByteArray())
 
                                 val imgDescription = ImageUtils.resize(imageVal, 450)
                                 val byteArrayOutputStreamDescription = ByteArrayOutputStream()
                                 ImageIO.write(imgDescription, "png", byteArrayOutputStreamDescription)
-                                val imageBase64Description = BASE64Encoder().encode(byteArrayOutputStreamDescription.toByteArray())
+                                val imageBase64Description = ImageUtils.encodeToBase64(byteArrayOutputStreamDescription.toByteArray())
 
                                 Notes.insert {
                                     it.title to ""

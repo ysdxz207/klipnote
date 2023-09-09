@@ -2,9 +2,9 @@ package com.hupubao.klipnote.utils
 
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
-import sun.misc.BASE64Decoder
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
+import java.util.*
 import javax.imageio.ImageIO
 import kotlin.math.max
 
@@ -16,7 +16,10 @@ import kotlin.math.max
  */
 object ImageUtils {
 
-    val BASE64_HEADER = "data:image/png;base64,"
+    const val BASE64_HEADER = "data:image/png;base64,"
+
+    private val base64Decoder = Base64.getDecoder()
+    private val base64Encoder = Base64.getEncoder()
 
     fun getImageFromBase64(base64: String?, height: Int): Image {
         return SwingFXUtils.toFXImage(getBufferedImageFromBase64(base64, height), null)
@@ -26,11 +29,11 @@ object ImageUtils {
         return ImageUtils.getImageFromBase64(base64, 0)
     }
 
-    fun getBufferedImageFromBase64(base64: String?, size: Int): BufferedImage {
-        if (base64 == null || base64.isBlank()) {
+    private fun getBufferedImageFromBase64(base64: String?, size: Int): BufferedImage {
+        if (base64.isNullOrBlank()) {
             return BufferedImage(400, 300, BufferedImage.TYPE_BYTE_GRAY)
         }
-        var bufferedImage = ImageIO.read(ByteArrayInputStream(BASE64Decoder().decodeBuffer(base64.replace(BASE64_HEADER, ""))))
+        var bufferedImage = ImageIO.read(ByteArrayInputStream(base64Decoder.decode(base64.replace(BASE64_HEADER, ""))))
         if (size > 0) {
             bufferedImage = ImageUtils.resize(bufferedImage, size)
         }
@@ -67,5 +70,8 @@ object ImageUtils {
         return resized
     }
 
+    fun encodeToBase64(bytes: ByteArray): String? {
+        return base64Encoder.encodeToString(bytes)
+    }
 
 }

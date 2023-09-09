@@ -6,14 +6,12 @@ import com.hupubao.klipnote.sql.Categories
 import com.hupubao.klipnote.sql.Configs
 import com.tulskiy.keymaster.common.Provider
 import javafx.application.Platform
-import javafx.scene.input.KeyCode
 import me.liuwj.ktorm.dsl.limit
 import me.liuwj.ktorm.dsl.select
 import me.liuwj.ktorm.entity.createEntity
 import me.liuwj.ktorm.entity.findById
 import tornadofx.*
 import java.awt.event.InputEvent
-import java.awt.event.KeyEvent
 import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.swing.KeyStroke
